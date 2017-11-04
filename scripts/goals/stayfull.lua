@@ -8,6 +8,5 @@ end)
 function StayFull:Satisfaction()
     -- body
     -- basically just inverse of hunger percentage
-
-    return self.inst.components.hunger:GetPercent()    
+   return self.inst.components.hunger:GetPercent()    
 end

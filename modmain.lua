@@ -7,7 +7,7 @@ function SpawnSmartCompanion(player)
    local smart_brain = GLOBAL.require 'brains/goalbasedbrain'
 
    local pos = Vector3(player.Transform:GetWorldPosition()) -- : is oo syntatic sugar to pass self
-   local abigail = GLOBAL.SpawnPrefab("wendy")
+   local abigail = GLOBAL.SpawnPrefab("wilson")
    if abigail and pos then
       print('dst smart companion is now running')
       abigail:SetBrain(smart_brain)

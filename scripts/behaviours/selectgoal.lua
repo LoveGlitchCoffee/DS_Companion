@@ -1,11 +1,11 @@
 SelectGoal = Class(BehaviourNode, function (self, inst, gwu_list)
 		      BehaviourNode._ctor(self, 'SelectGoal')
 		      self.inst = inst
-		      self.gwu_list = gwu_list
+		      self.gwu_list = gwu_list -- should be by reference
 end)
 
 function SelectGoal:Visit()
-   if self.status == READY then
+   if self.status == READY and self.gwu_list then
       -- Given a list of goals, along with their weighting and urgency
       -- decide which goal to pursue
       -- assume that all goals passed in are available goals, otherwise wouldn't be in goal list
@@ -13,28 +13,33 @@ function SelectGoal:Visit()
       -- @param goal_weight_urgency_list: list of goals, their weighting and urgency as a 3-tuple
       -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction
       
-      weighted_goals = get_weighted_goals(gwu_list)
-      next_goal = max_goal(weighted_goals)
-
+      local weighted_goals = get_weighted_goals(self.gwu_list)
+      local next_goal = max_goal(weighted_goals)
+      
       -- return next goal somehow. seems like might have to push event
-      print(next_goal)
+      print(string.format('my next goal is %s', next_goal))
 
       self.status = SUCCESS
    end   
 end
 
 function get_weighted_goals( gwu_list )
-    --  get a weighted goal value, representing how important a goal is, how much it is satisfied and whether its urgent
-    weighted_goals = {}
-    for i=1,#gwu_list do        
-        weighted_goals[i] = {}
-        weighted_goals[i].name = gwu_list[i].goal.name
-        -- multiply the inverse current satisfaciton value of goal and weightage
-        -- we multiply inverse because we usually want to satisfy goals that are less satisfied
-        weighted_goals[i].weighted_value = (1 - gwu_list[i].goal.Satisfaction()) * gwu_list[i].weight * gwu_list[i].urgency
-    end
+   --  get a weighted goal value, representing how important a goal is, how much it is satisfied and whether its urgent
+   local weighted_goals = {}
+   if gwu_list == nil then
+      return -- not ready yet
+   end
 
-    return weighted_goals
+   for i=1,#gwu_list do
+      weighted_goals[i] = {}
+      weighted_goals[i]['name'] = gwu_list[i]['goal'].name
+      -- multiply the inverse current satisfaciton value of goal and weightage
+      -- we multiply inverse because we usually want to satisfy goals that are less satisfied
+      weighted_goals[i]['weighted_value'] = (1 - gwu_list[i]['goal']:Satisfaction()) * gwu_list[i]['weight'] * gwu_list[i]['urgency']
+      print (weighted_goals[i]['weighted_value'])
+   end
+
+   return weighted_goals
 end
 
 function max_goal( weighted_goals )
