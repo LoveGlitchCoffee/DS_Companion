@@ -14,11 +14,12 @@ StayFull = Class(Goal, function(self, inst)
 		       end
 		    end
 		    
-		    self.inst:ListenForEvent("healthdelta", self.updateUrgency)
+		    self.inst:ListenForEvent("hungerdelta", self.updateUrgency)
+		    -- could do for start starving event too
 end)
 
 function StayFull:Satisfaction()
     -- body
     -- basically just inverse of hunger percentage
-   return self.inst.components.hunger:GetPercent()    
+   return self.inst.components.hunger:GetPercent()
 end

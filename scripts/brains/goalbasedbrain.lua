@@ -34,7 +34,7 @@ function GoalBasedBrain:OnStart()
 	 -- maybe put this in if node
 	 SelectGoal(self.inst, self.gwu_list)
 	 -- sequence of behav in 'current sequence of actions'
-      }, 10)
+      }, 5)
    self.bt = BT(self.inst, root)
 end
 

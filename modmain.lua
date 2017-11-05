@@ -7,11 +7,16 @@ function SpawnSmartCompanion(player)
    local smart_brain = GLOBAL.require 'brains/goalbasedbrain'
 
    local pos = Vector3(player.Transform:GetWorldPosition()) -- : is oo syntatic sugar to pass self
-   local abigail = GLOBAL.SpawnPrefab("wilson")
-   if abigail and pos then
+   local companion = GLOBAL.SpawnPrefab("common/characters/pigman")
+   if companion and pos then
       print('dst smart companion is now running')
-      abigail:SetBrain(smart_brain)
-      abigail.Transform:SetPosition(pos:Get())
+      companion:AddComponent('hunger')
+      --companion:RemoveComponent('combat')
+      companion:SetBrain(smart_brain)
+      companion.Transform:SetPosition(pos:Get())
+
+      -- try remove component follower and leader and player
+      
    end   
 end
 
