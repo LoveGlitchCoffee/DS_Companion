@@ -35,7 +35,7 @@ function get_weighted_goals( gwu_list )
       weighted_goals[i]['name'] = gwu_list[i]['goal'].name
       -- multiply the inverse current satisfaciton value of goal and weightage
       -- we multiply inverse because we usually want to satisfy goals that are less satisfied
-      weighted_goals[i]['weighted_value'] = (1 - gwu_list[i]['goal']:Satisfaction()) * gwu_list[i]['weight'] * gwu_list[i]['urgency']
+      weighted_goals[i]['weighted_value'] = (1 - gwu_list[i].goal:Satisfaction()) * gwu_list[i].weight * gwu_list[i].goal:Urgency()
       print (weighted_goals[i]['weighted_value'])
    end
 

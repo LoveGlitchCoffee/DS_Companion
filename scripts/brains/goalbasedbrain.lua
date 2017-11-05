@@ -11,10 +11,10 @@ end)
 
 
 local function initialise_gwu(inst)
-   -- Add all goals to the list, for now weight is always 1 (most important), urgency is 0.1 (but changes)
+   -- Add all goals to the list, for now weight is always 1 (most important)
    local gwu_list = {}
-   local healthy = goal_tuple(StayHealthy(inst), 1, 0.1)
-   local full = goal_tuple(StayFull(inst), 1, 0.1)
+   local healthy = goal_tuple(StayHealthy(inst), 1)
+   local full = goal_tuple(StayFull(inst), 1)
       
    table.insert(gwu_list, 1, healthy)
    table.insert(gwu_list, 2, full)   
