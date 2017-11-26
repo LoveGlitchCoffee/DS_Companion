@@ -4,9 +4,13 @@ Action = Class(function (self, inst, name)
 end)
 
 function Action:Precondition()
-   print('error. This needs to be implemented')
+   print('error. Precondition() needs to be implemented')
 end
 
 function Action:PostEffect()
-   print('error. This needs to be implemented')
+   print('error. PostEffect() needs to be implemented')
+end
+
+function Action:Cost()
+   print('error. Cost() needs to be implemented')   
 end

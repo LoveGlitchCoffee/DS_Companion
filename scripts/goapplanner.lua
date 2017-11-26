@@ -1,55 +1,73 @@
-require 'general-utils/sets.lua'
-require 'general-utils/peaque.lua'
+require 'general-utils/sets'
+Peaque = require 'general-utils/peaque'
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}
 action_taken = {}
 
 function reset_all_tables(all_actions)
-   for a in all_actions do
+   for _, a in ipairs(all_actions) do
       distance[a] = 0;
    end
    predecessor = {}
    action_taken = {}
 end
 
+function generate_available_actions(all_actions, world_state)
+   -- from all actions, which actions has precondition matching world state
+   local available_a = {}
+   for _, a in ipairs(all_actions) do      
+      print('checking ' .. a.name)
+      if is_subset(a:Precondition(), world_state) then
+	 print('inserting ' .. a.name)
+	 table.insert(available_a, a)
+      end
+   end
+   return available_a
+end
+
 function goap_plan_action(world_state, goal_state, all_actions)
-
    reset_all_tables(all_actions)
-
-   local pending_actions = {} -- priority queue
+   local pending_actions = Peaque:new()
    local available_actions = generate_available_actions(all_actions, world_state)
-   world_set = Sets.new(world_state)
+   print 'all available actions gen'   
+   local world_set = Set.new(world_state)
+   print 'new world state'
    
-   for a in available_actions do      
-      precond_set = Sets.new(a:Precondition())
-      posteff_set = Sets.new(a:Posteffect())
-      
-      a_node = Node(a, nil, a:Cost(), world_set - precond_set + posteff_set)
+   for _, a in ipairs(available_actions) do
+      local precond_set = Set.new(a:Precondition())
+      local posteff_set = Set.new(a:PostEffect())
+      print 'seting precond and post-cond'
+      local node_state = world_set - precond_set + posteff_set
+      print 'settting node'
+      local a_node = Node(a, nil, a:Cost(), node_state)
+      print 'create node success'
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
       predecessor[a] = nil
-      table.insert(pending_actions, a) -- change to priorityqueue.add
+      pending_actions:push(a_node, a:Cost())
    end
+
+   print 'now going to plan actions'
    
-   while #pending_actions > 0 do
+   while pending_actions:size() > 0 do
       -- for a single node
-      node = pending_actions.remove(1, pending_actions)
-      if subset(node.world_state, goal_node.current_state) then
-	 print 'found'
+      node = pending_actions:pop()
+      if is_subset(node.world_state, goal_node.current_state) then
+	 print 'found goal state'
 	 -- add next action and get all the way back to parent for sequence of action
       else
 	 table.insert(action_taken, node.next_action)
 	 local available_actions = generate_available_actions(all_actions, node.world_state)
 	 for action in available_actions do
-	    if action not in action_taken then
+	    if action_taken[action] == nil then
 	       cost = distance[node.next_action] + action:Cost()
 	       
 	       if distance[node.action] ~= nil -- need to set?
 		  and cost < distance[node.action]
 	       or not subset_exist(node, pending_actions) then -- pending_actions already - node
-		  next_node = Node(node.current_state - action:Precondition + action:Posteffect, node, action, cost)
+		  next_node = Node(node.current_state - action:Precondition() + action:PostEffect(), node, action, cost)
 		  distance[next_node.action] = cost
-		  table.insert(pending_actions, node) -- no priority
+		  pending_actions:push(node, cost)
 		  table.insert(action_taken, action)
 	       end
 	    end
@@ -58,8 +76,8 @@ function goap_plan_action(world_state, goal_state, all_actions)
    end
 end
 
-function subset(set, superset)
-   is_subset = true
+function is_subset(set, superset)
+   local is_subset = true   
    for k, _ in pairs(set) do
       if superset[k] == nil then
 	 is_subset = false

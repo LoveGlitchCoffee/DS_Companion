@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 ---------------
 -- ## Peaque, Lua module for a priority queue
 -- @author Shakil Thakur
