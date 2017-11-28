@@ -38,6 +38,7 @@ function goap_plan_action(world_state, goal_state, all_actions)
    local world_set = Set.new(world_state)
    
    for _, a in ipairs(available_actions) do
+
       local precond_set = Set.new(a:Precondition())
       local posteff_set = Set.new(a:PostEffect())
       local node_state = world_set - precond_set + posteff_set
@@ -47,11 +48,13 @@ function goap_plan_action(world_state, goal_state, all_actions)
       pending_actions:push(a_node, a:Cost())
    end
 
+   print('FINISH INIT')
+
    -- now plan
    while pending_actions:size() > 0 do
       -- for a single node
       local node = pending_actions:pop()
-      
+      print('looking at ' .. tostring(node.next_action))
       if is_subset(node.world_state, goal_state) then
 	 print 'found goal state'
 	 -- add next action and get all the way back to parent for sequence of action
@@ -59,7 +62,7 @@ function goap_plan_action(world_state, goal_state, all_actions)
 	 while found_node ~= nil do
 	    print(found_node.next_action.name)
 	    print 'moving on to parent'
-	    found_node = found_node.parent_action
+          found_node = found_node.parent_node
 	 end
       else
 	 table.insert(action_taken, node.next_action)
@@ -68,20 +71,21 @@ function goap_plan_action(world_state, goal_state, all_actions)
 	    if action_taken[action] == nil then
 	       print('never tried this action: ', action.name)
 	       local cost = distance[node.next_action] + action:Cost()
-	       print 'IN DISTANCE?'
-	       print(tostring(distance[node.next_action] ~= nil))
-	       print 'COST LESS'
-	       print(tostring(cost < distance[node.next_action]))
-	       
-	       
-	       if distance[node.action] ~= nil -- need to set?
-		  and cost < distance[node.action]
-	       or not pending_actions:is_exist(action)  then -- pending_actions already - node
-		  print 'recoding'
-		  next_node = Node(node.current_state - action:Precondition() + action:PostEffect(), node, action, cost)
-		  distance[next_node.action] = cost
-		  pending_actions:push(node, cost)
-		  table.insert(action_taken, action)
+	      --  print 'IN DISTANCE?'
+	      --  print(tostring(distance[node.next_action] ~= nil))
+	      --  print 'COST LESS'
+	      --  print(tostring(cost < distance[node.next_action]))
+	       	       
+	       if distance[node.next_action] ~= nil -- need to set?
+		  and cost < distance[node.next_action]
+             or not pending_actions:is_exist(action)  then -- pending_actions already - node              
+              local precond = Set.new(action:Precondition())
+              local postcond = Set.new(action:PostEffect())              
+              local next_node = Node(action, node, cost, node.world_state - precond + postcond)
+              print ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(node.next_action))
+		  distance[next_node.next_action] = cost
+		  pending_actions:push(next_node, cost)
+		  -- table.insert(action_taken, action)
 	       end
 	    else
 	       print 'aciton already taken'
@@ -102,9 +106,9 @@ function is_subset(set, superset)
    return is_subset
 end
 
-Node = Class(function (self, next_action, parent_action, cost, world_state)
+Node = Class(function (self, next_action, parent_node, cost, world_state)
       self.next_action = next_action
-      self.parent_action = parent_action
+      self.parent_node = parent_node
       self.cost = cost -- of next action
       self.world_state = world_state -- of next_action
 end)

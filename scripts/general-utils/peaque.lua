@@ -174,10 +174,11 @@ end
 function Heap:is_exist(a)
    print 'chekc if exist'
    print(tostring(self.A))
-   for k, v in self.A do
+   for k, v in pairs(self.A) do
+      print(tostring(k))
+      print(tostring(v))
       if a == k then
-	 print 'fo'
-	 return true
+	    return true
       end      
    end
    return false

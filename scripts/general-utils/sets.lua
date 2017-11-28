@@ -11,14 +11,14 @@ function Set.new (t)
    return set
 end
 
-function Set.union (a,b)
+function Set.union (a,b)   
    local res = {}
    for k, v in pairs(a) do res[k] = v end
    for k, v in pairs(b) do res[k] = v end
    return Set.new(res)
 end
 
-function Set.complement(a, b)
+function Set.complement(a, b)   
    local res = {}
    for k, _ in pairs(a) do
       if b[k] == nil then

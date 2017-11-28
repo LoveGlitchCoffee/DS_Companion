@@ -10,9 +10,9 @@ function Eat:Precondition()
          return self.inst.components.eater:CanEat(item) and
 	    item.components.edible:GetHunger(self.inst) > 0 -- when eaten by eater, reduce hunger
       end
-   )   
+   )
 end
    
-function ()
-   
+function Eat:PoseEffect()
+	   
 end
