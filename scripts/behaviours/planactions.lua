@@ -6,8 +6,8 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 		       BehaviourNode._ctor(self, 'PlanActions')
 		       self.inst = inst
 		       self.all_actions = {
-			  Gather('twigs', inst),
-			  Gather('food', inst), -- generic
+			  Gather(inst, 'twigs'),
+			  Gather(inst, 'food'), -- generic
 			  Eat(inst)
 		       }
 end)

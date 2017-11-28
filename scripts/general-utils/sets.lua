@@ -3,29 +3,39 @@ Set = {}
 function Set.new (t)
    local set = {}
    setmetatable(set, Set.mt)
-   for _, l in ipairs(t) do set[l] = true end
+   for k,v in pairs(t) do
+      --print( tostring(k))
+      --print( tostring(v))
+      set[k] = v
+   end
    return set
 end
 
 function Set.union (a,b)
-   print 'adding set'
    local res = {}
-   for k in pairs(a) do res[k] = true end
-   for k in pairs(b) do res[k] = true end
-   return res
+   for k, v in pairs(a) do res[k] = v end
+   for k, v in pairs(b) do res[k] = v end
+   return Set.new(res)
 end
 
 function Set.complement(a, b)
-   print 'subtracting set'
    local res = {}
-   for k in pairs(a) do
+   for k, _ in pairs(a) do
       if b[k] == nil then
 	 res[k] = a[k]
       end
    end
-   return res
+   return Set.new(res)
+end
+
+function Set.printset(t)
+   for k, v in pairs(t) do
+      print('key ', tostring(k))
+      print('value ', tostring(v))
+   end
 end
 
 Set.mt = {}
 Set.mt.__add = Set.union
 Set.mt.__sub = Set.complement
+Set.mt.__tostring = Set.printset

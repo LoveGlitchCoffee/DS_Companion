@@ -171,4 +171,16 @@ function Heap:size()
     return #self.A
 end
 
+function Heap:is_exist(a)
+   print 'chekc if exist'
+   print(tostring(self.A))
+   for k, v in self.A do
+      if a == k then
+	 print 'fo'
+	 return true
+      end      
+   end
+   return false
+end
+
 return Heap
