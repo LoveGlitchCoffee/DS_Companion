@@ -23,3 +23,7 @@ function StayFull:Satisfaction()
     -- basically just inverse of hunger percentage
    return self.inst.components.hunger:GetPercent()
 end
+
+function StayFull:GetGoalState()
+	return {eaten=true}
+end

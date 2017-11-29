@@ -58,10 +58,10 @@ function goap_plan_action(world_state, goal_state, all_actions)
       if is_subset(node.world_state, goal_state) then
 	 print 'found goal state'
 	 -- add next action and get all the way back to parent for sequence of action
-	 local found_node = node
-	 while found_node ~= nil do
-	    print(found_node.next_action.name)
-	    print 'moving on to parent'
+       local found_node = node
+       local action_sequence = {}
+	 while found_node ~= nil do          
+          table.insert(action_sequence, 1, found_node.next_action)
           found_node = found_node.parent_node
 	 end
       else

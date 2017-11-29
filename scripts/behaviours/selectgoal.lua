@@ -18,9 +18,7 @@ function SelectGoal:Visit()
       
       -- return next goal somehow. seems like might have to push event
       print(string.format('my next goal is %s', next_goal))
-      self.inst:PushEvent('nextgoalfound', {goal=next_goal})
-
-      self.status = SUCCESS
+      self.inst:PushEvent('nextgoalfound', {goal=next_goal})      
    end   
 end
 

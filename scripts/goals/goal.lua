@@ -16,3 +16,7 @@ end
 function Goal:Urgency()
    return self.urgency
 end
+
+function Goal:GetGoalState()
+    print('error. State needs to be implemented')
+end
