@@ -17,7 +17,7 @@ function SelectGoal:Visit()
       local next_goal = max_goal(weighted_goals)
       
       -- return next goal somehow. seems like might have to push event
-      print(string.format('my next goal is %s', next_goal))
+      -- print(string.format('my next goal is %s', next_goal))
       self.inst:PushEvent('nextgoalfound', {goal=next_goal})      
    end   
 end
@@ -31,7 +31,7 @@ function get_weighted_goals( gwu_list )
 
    for i=1,#gwu_list do
       weighted_goals[i] = {}
-      weighted_goals[i]['name'] = gwu_list[i]['goal'].name
+      weighted_goals[i]['goal'] = gwu_list[i]['goal']
       -- multiply the inverse current satisfaciton value of goal and weightage
       -- we multiply inverse because we usually want to satisfy goals that are less satisfied
       weighted_goals[i]['weighted_value'] = (1 - gwu_list[i].goal:Satisfaction()) * gwu_list[i].weight * gwu_list[i].goal:Urgency()
@@ -51,5 +51,5 @@ function max_goal( weighted_goals )
        end
     end
 
-    return max_goal.name
+    return max_goal.goal
 end

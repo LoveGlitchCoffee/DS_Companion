@@ -63,7 +63,8 @@ function goap_plan_action(world_state, goal_state, all_actions)
 	 while found_node ~= nil do          
           table.insert(action_sequence, 1, found_node.next_action)
           found_node = found_node.parent_node
-	 end
+       end
+       return action_sequence
       else
 	 table.insert(action_taken, node.next_action)
 	 local available_actions = generate_available_actions(all_actions, node.world_state)

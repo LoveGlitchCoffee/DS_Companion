@@ -11,6 +11,7 @@ function SpawnSmartCompanion(player)
    if companion and pos then
       print('dst smart companion is now running')
       companion:AddComponent('hunger')
+      companion:AddComponent('planholder')
       --companion:RemoveComponent('combat')
       companion:SetBrain(smart_brain)
       companion.Transform:SetPosition(pos:Get())

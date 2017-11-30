@@ -2,10 +2,9 @@ require 'goapplanner'
 require 'actions/gather'
 require 'actions/eat'
 
-PlanActions = Class(BehaviourNode, function(self, inst, current_goal)
+PlanActions = Class(BehaviourNode, function(self, inst)
 		       BehaviourNode._ctor(self, 'PlanActions')
-			   self.inst = inst
-			   self.current_goal = current_goal
+			   self.inst = inst			   
 		       self.all_actions = {
 			  Gather(inst, 'twigs'),
 			  Gather(inst, 'food'), -- generic
@@ -13,18 +12,20 @@ PlanActions = Class(BehaviourNode, function(self, inst, current_goal)
 		       }
 end)
 
-function PlanActions:generate_world_state()
+function PlanActions:generate_world_state()	
 	local res = {}
-	if not self.inst.components.inventory:IsFull() then
-		res{has_inv_spc = true}		
-	end	
-
+	if not self.inst.components.inventory:IsFull() then				
+		res['has_inv_spc'] = true		
+	end
 	return res
 end
 
-function PlanActions:Visit()   
+function PlanActions:Visit()
+   print('planning action')
    local world_state = self:generate_world_state()
-   local goal_state = self.current_goal:GetGoalState()
-   action_sequence = goap_plan_action(world_state, goal_state, self.all_actions)
+   print ('genrate world state')      
+   local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
+   print 'generate goal state'
+   local action_sequence = goap_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end

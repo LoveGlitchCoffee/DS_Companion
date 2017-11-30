@@ -5,11 +5,16 @@ require 'goals/stayhealthy'
 
 require 'brains/utils'
 
+local function printt(t)
+   for k, v in pairs(t) do
+      print(tostring(k))
+      print(tostring(v))
+   end
+end
+
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
-	self.gwu_list = {}
-	self.current_goal = {}
-	self.action_sequence = {}
+	self.gwu_list = {}	
 end)
 
 
@@ -25,20 +30,20 @@ local function initialise_gwu(inst)
    return gwu_list
 end
 
-function GoalBasedBrain:onNextGoalFound(data)   
-   self.current_goal = data.goal
-   print('received: ' .. self.current_goal)
+local function onNextGoalFound(inst, data)    
+   inst.components.planholder.currentgoal = data.goal   
 end
 
-function GoalBasedBrain:onActionPlanned(data)
-   self.action_sequence = data.a_sequence
+local function onActionPlanned(inst, data)
+   inst.components.planholder.actionplan = data.a_sequence
+   printt(inst.components.planholder.actionplan)
 end
 
 function GoalBasedBrain:OnStart()
    self.gwu_list = initialise_gwu(self.inst)
-
-   self.inst:ListenForEvent('nextgoalfound', self.onNextGoalFound)
-   self.inst:ListenForEvent('actionplanned', self.onActionPlanned)
+   
+   self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)
+   self.inst:ListenForEvent('actionplanned', onActionPlanned)
    
    -- Sequence node, 1 child, behaviour select goal   
    
@@ -47,7 +52,7 @@ function GoalBasedBrain:OnStart()
 	 RunAway(self.inst, "scarytoprey", 5, 7),	 
      -- maybe put this in if node     
      SelectGoal(self.inst, self.gwu_list),
-     PlanActions(self.inst, self.current_goal)
+     PlanActions(self.inst)
 	 -- sequence of behav in 'current sequence of actions'	 
       }, 5)
    self.bt = BT(self.inst, root)
