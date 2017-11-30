@@ -171,12 +171,10 @@ function Heap:size()
     return #self.A
 end
 
-function Heap:is_exist(a)
-   print 'chekc if exist'
-   print(tostring(self.A))
+function Heap:is_exist(a)   
    for k, v in pairs(self.A) do
-      print(tostring(k))
-      print(tostring(v))
+      -- print(tostring(k))
+      -- print(tostring(v))
       if a == k then
 	    return true
       end      

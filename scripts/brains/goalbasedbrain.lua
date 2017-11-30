@@ -31,7 +31,8 @@ local function initialise_gwu(inst)
 end
 
 local function onNextGoalFound(inst, data)    
-   inst.components.planholder.currentgoal = data.goal   
+   inst.components.planholder.currentgoal = data.goal 
+   print(tostring(inst.components.planholder.currentgoal))   
 end
 
 local function onActionPlanned(inst, data)
@@ -39,7 +40,7 @@ local function onActionPlanned(inst, data)
    printt(inst.components.planholder.actionplan)
 end
 
-function GoalBasedBrain:OnStart()
+function GoalBasedBrain:OnStart()   
    self.gwu_list = initialise_gwu(self.inst)
    
    self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)

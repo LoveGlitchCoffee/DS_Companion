@@ -22,10 +22,8 @@ end
 
 function PlanActions:Visit()
    print('planning action')
-   local world_state = self:generate_world_state()
-   print ('genrate world state')      
-   local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
-   print 'generate goal state'
+   local world_state = self:generate_world_state()   
+   local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()   
    local action_sequence = goap_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end

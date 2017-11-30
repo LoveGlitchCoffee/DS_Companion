@@ -48,7 +48,7 @@ function goap_plan_action(world_state, goal_state, all_actions)
       pending_actions:push(a_node, a:Cost())
    end
 
-   print('FINISH INIT')
+   -- print('FINISH INIT')
 
    -- now plan
    while pending_actions:size() > 0 do
@@ -94,6 +94,7 @@ function goap_plan_action(world_state, goal_state, all_actions)
 	 end
       end
    end
+   print("no action sequence found")
 end
 
 function is_subset(set, superset)

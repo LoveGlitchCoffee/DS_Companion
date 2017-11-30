@@ -5,6 +5,7 @@ SelectGoal = Class(BehaviourNode, function (self, inst, gwu_list)
 end)
 
 function SelectGoal:Visit()
+   print('\n')
    if self.status == READY and self.gwu_list then
       -- Given a list of goals, along with their weighting and urgency
       -- decide which goal to pursue
@@ -35,7 +36,7 @@ function get_weighted_goals( gwu_list )
       -- multiply the inverse current satisfaciton value of goal and weightage
       -- we multiply inverse because we usually want to satisfy goals that are less satisfied
       weighted_goals[i]['weighted_value'] = (1 - gwu_list[i].goal:Satisfaction()) * gwu_list[i].weight * gwu_list[i].goal:Urgency()
-      --print (string.format("%s: %s", weighted_goals[i]['name'], weighted_goals[i]['weighted_value']))
+      print (string.format("%s: %s", weighted_goals[i]['goal'].name, weighted_goals[i]['weighted_value']))
    end
 
    return weighted_goals

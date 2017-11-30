@@ -17,3 +17,7 @@ end)
 function StayHealthy:Satisfaction()
    return self.inst.components.health:GetPercent()
 end
+
+function StayHealthy:GetGoalState()
+	return {heal=true}
+end
