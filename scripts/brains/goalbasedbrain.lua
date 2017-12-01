@@ -36,8 +36,10 @@ local function onNextGoalFound(inst, data)
 end
 
 local function onActionPlanned(inst, data)
-   inst.components.planholder.actionplan = data.a_sequence
-   printt(inst.components.planholder.actionplan)
+   if data.a_sequence ~= nil then
+      inst.components.planholder.actionplan = data.a_sequence
+      printt(inst.components.planholder.actionplan)
+   end
 end
 
 function GoalBasedBrain:OnStart()   
