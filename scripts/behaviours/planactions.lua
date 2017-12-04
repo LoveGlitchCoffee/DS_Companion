@@ -14,8 +14,14 @@ end)
 
 function PlanActions:generate_world_state()	
 	local res = {}
-	if not self.inst.components.inventory:IsFull() then				
+	local inventory = self.inst.components.inventory
+	if not inventory:IsFull() then
 		res['has_inv_spc'] = true		
+	end
+
+	for i=1,inventory:GetNumSlots() do
+		local item = inventory:GetItemInSlot(i)
+		res[] = inventory
 	end
 	return res
 end

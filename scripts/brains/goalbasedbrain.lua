@@ -55,8 +55,12 @@ function GoalBasedBrain:OnStart()
 	 RunAway(self.inst, "scarytoprey", 5, 7),	 
      -- maybe put this in if node     
      SelectGoal(self.inst, self.gwu_list),
-     PlanActions(self.inst)
-	 -- sequence of behav in 'current sequence of actions'	 
+     PlanActions(self.inst),
+     SequenceNode(
+         self.inst.components.planholder.GenerateActionSequence()
+     )
+     -- if goal is same then dun come up with new plan?
+     -- 
       }, 5)
    self.bt = BT(self.inst, root)
 end
