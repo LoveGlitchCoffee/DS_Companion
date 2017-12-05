@@ -4,7 +4,7 @@ require 'actions/eat'
 
 PlanActions = Class(BehaviourNode, function(self, inst)
 		       BehaviourNode._ctor(self, 'PlanActions')
-			   self.inst = inst			   
+		       self.inst = inst			   
 		       self.all_actions = {
 			  Gather(inst, 'twigs'),
 			  Gather(inst, 'food'), -- generic
@@ -13,17 +13,31 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 end)
 
 function PlanActions:generate_world_state()	
-	local res = {}
-	local inventory = self.inst.components.inventory
-	if not inventory:IsFull() then
-		res['has_inv_spc'] = true		
-	end
+   local res = {}
+   local inventory = self.inst.components.inventory
+   if not inventory:IsFull() then
+      res['has_inv_spc'] = true		
+   end
 
-	for i=1,inventory:GetNumSlots() do
-		local item = inventory:GetItemInSlot(i)
-		res[] = inventory
-	end
-	return res
+   for i=1,inventory:GetNumSlots() do
+      local item = inventory:GetItemInSlot(i)
+      if res[item] then
+	 -- total stack size, not restricted by in-game
+	 if item.components.stackable then
+	    res[item] = res[item] + item.components.stackable.stacksize
+	 else
+	    res[item] = res[item] + 1
+	 end
+      else
+	 if item.components.stackable then
+	    res[item] = item.components.stackable.stacksize
+	 else
+	    res[item] = 1
+	 end
+      end
+	 
+   end
+   return res
 end
 
 function PlanActions:Visit()

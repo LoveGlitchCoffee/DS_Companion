@@ -1,4 +1,5 @@
 require 'general-utils/sets'
+require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
@@ -95,17 +96,6 @@ function goap_plan_action(world_state, goal_state, all_actions)
       end
    end
    print("no action sequence found")
-end
-
-function is_subset(set, superset)
-   local is_subset = true   
-   for k, _ in pairs(set) do
-      if superset[k] == nil then
-	 is_subset = false
-	 break
-      end
-   end
-   return is_subset
 end
 
 Node = Class(function (self, next_action, parent_node, cost, world_state)
