@@ -6,14 +6,7 @@ distance = {} -- purely to track so far for distance, not used to decide cheapes
 predecessor = {}
 action_taken = {}
 
-local function printt(t)
-   for k, v in pairs(t) do
-      print(tostring(k))
-      print(tostring(v))
-   end
-end
-
-function reset_all_tables(all_actions)
+local function reset_all_tables(all_actions)
    for _, a in ipairs(all_actions) do
       distance[a] = 0;
    end
@@ -21,7 +14,7 @@ function reset_all_tables(all_actions)
    action_taken = {}
 end
 
-function generate_available_actions(all_actions, world_state)
+local function generate_available_actions(all_actions, world_state)
    -- from all actions, which actions has precondition matching world state
    local available_a = {}
    for _, a in ipairs(all_actions) do
@@ -30,6 +23,44 @@ function generate_available_actions(all_actions, world_state)
       end
    end
    return available_a
+end
+
+local function calculate_state_rep(action_precond, action_postcond, world_state, goal_state)
+      local repeats
+      -- for having stack of item, calculate how many repitions
+      -- for sufficient stack size
+
+      -- only catering for gather rn. not catering for down the linw
+      -- requiring 2 or more ingredients for recipe
+      -- e.g. science machine need 2 doodads, 
+      -- we subtract the need to make doodad only occur once,
+      -- but by that time we already finish gather grass, but not enough for 2 doodads
+      -- can break down goal into most base recipe and Perform puts it all together
+      for k, v in pairs(action_postcond) do
+            if type(v) == 'number' then
+               if goal_state[k] then
+                  if world_state[k] then
+                     repeats = goal_state[k] - world_state[k]
+                  else
+                     repeats = goal_state[k]
+                  end
+               end
+            end
+      end
+
+      for k, v in pairs(goal_state) do
+            if type(v) == 'number' then
+                  if world_state[k] then
+                        repeats = goal_state[k] - world_state[k]
+                  else
+                        repeats = goal_state[k]
+                  end
+            end
+
+            if action_postcond[k] then
+                  action_postcond[k] = repeats
+            end
+      end
 end
 
 function goap_plan_action(world_state, goal_state, all_actions)
@@ -43,7 +74,7 @@ function goap_plan_action(world_state, goal_state, all_actions)
       local precond_set = Set.new(a:Precondition())
       local posteff_set = Set.new(a:PostEffect())
       local node_state = world_set - precond_set + posteff_set
-      local a_node = Node(a, nil, a:Cost(), node_state)
+      local a_node = Node(a, nil, a:Cost(), node_state, 1)
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
       predecessor[a] = nil
       pending_actions:push(a_node, a:Cost())
@@ -82,8 +113,11 @@ function goap_plan_action(world_state, goal_state, all_actions)
 		  and cost < distance[node.next_action]
              or not pending_actions:is_exist(action)  then -- pending_actions already - node              
               local precond = Set.new(action:Precondition())
-              local postcond = Set.new(action:PostEffect())              
-              local next_node = Node(action, node, cost, node.world_state - precond + postcond)
+              local postcond = Set.new(action:PostEffect())
+              
+              local state_rep = calc_state_rep(precond, postcond, node.world_state, goal_state)
+
+              local next_node = Node(action, node, cost, state_rep.state, state_rep.repeats)
               print ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(node.next_action))
 		  distance[next_node.next_action] = cost
 		  pending_actions:push(next_node, cost)
@@ -95,12 +129,13 @@ function goap_plan_action(world_state, goal_state, all_actions)
 	 end
       end
    end
-   print("no action sequence found")
+   return {} -- no plan found
 end
 
-Node = Class(function (self, next_action, parent_node, cost, world_state)
+Node = Class(function (self, next_action, parent_node, cost, world_state, repeats)
       self.next_action = next_action
       self.parent_node = parent_node
       self.cost = cost -- of next action
       self.world_state = world_state -- of next_action
+      self.repeats = repeats -- how many times action is repeated
 end)

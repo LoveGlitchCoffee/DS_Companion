@@ -8,3 +8,9 @@ function is_subset(set, superset)
    end
    return is_subset
 end
+
+function printt(t)
+   for k, v in pairs(t) do
+      print(tostring(k) .. ': ' .. tostring(v))      
+   end
+end

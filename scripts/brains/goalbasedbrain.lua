@@ -5,12 +5,7 @@ require 'goals/stayhealthy'
 
 require 'brains/utils'
 
-local function printt(t)
-   for k, v in pairs(t) do
-      print(tostring(k))
-      print(tostring(v))
-   end
-end
+require 'general-utils/table_ops'
 
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
@@ -46,21 +41,28 @@ function GoalBasedBrain:OnStart()
    self.gwu_list = initialise_gwu(self.inst)
    
    self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)
-   self.inst:ListenForEvent('actionplanned', onActionPlanned)
+   self.inst:ListenForEvent('actionplanned', onActionPlanned)   
    
-   -- Sequence node, 1 child, behaviour select goal   
+   self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
+   self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
+   self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
+   --print(tostring(self.inst.components.inventory:FindItem(function(item)
+   --     return true
+   -- end
+   -- )))   
    
    local root = PriorityNode(
       {
-	 RunAway(self.inst, "scarytoprey", 5, 7),	 
+	 RunAway(self.inst, "scarytoprey", 5, 7),
      -- maybe put this in if node     
      SelectGoal(self.inst, self.gwu_list),
      PlanActions(self.inst),
-     SequenceNode(
-         self.inst.components.planholder.GenerateActionSequence()
-     )
-     -- if goal is same then dun come up with new plan?
-     -- 
+     IfNode(function() return #self.inst.components.planholder.actionplan > 0 end, 'has_plan',
+         SequenceNode(
+            self.inst.components.planholder.GenerateActionSequence()
+      ))
+      --if goal is same then dun come up with new plan?
+      
       }, 5)
    self.bt = BT(self.inst, root)
 end
