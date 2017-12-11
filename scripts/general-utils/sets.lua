@@ -11,10 +11,15 @@ function Set.new (t)
    return set
 end
 
-function Set.union (a,b)   
+function Set.union (a,b)
+   -- not regular union, also adds value
    local res = {}
-   for k, v in pairs(a) do res[k] = v end
-   for k, v in pairs(b) do res[k] = v end
+   for k, v in pairs(a) do 
+      res[k] = v 
+   end
+   for k, v in pairs(b) do 
+      res[k] = res[k] + v -- adding here
+   end
    return Set.new(res)
 end
 
@@ -22,7 +27,7 @@ function Set.complement(a, b)
    local res = {}
    for k, _ in pairs(a) do
       if b[k] == nil then
-	 res[k] = a[k]
+         res[k] = a[k]
       end
    end
    return Set.new(res)

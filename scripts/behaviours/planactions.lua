@@ -55,6 +55,6 @@ function PlanActions:Visit()
    print('world state')
    printt(world_state)
    local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
-   local action_sequence = goap_plan_action(world_state, goal_state, self.all_actions)
+   local action_sequence = goap_backwards_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end
