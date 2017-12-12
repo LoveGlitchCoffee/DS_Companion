@@ -26,22 +26,20 @@ local function generate_valid_actions(all_actions, world_state)
    return available_a
 end
 
-local function calc_repeats_needed(node_state, world_state)
+local function calc_repeats_needed(node_state, world_state, action)
    -- calculate number of time needed to repeat an action
    -- in order for to get number of items in node_state (precondition set to node)
    -- this only triggers upon valid action
-   local repeats = 0
-   for k, v in pairs(node_state) do
-      if type(v) == 'number' then
-         print('need ' .. tostring(v))
-         if world_state[k] then
-            print 'has some'
-            repeats = v - world_state[k]
-         else
-            print 'got none'
-            repeats = node_state[k]
+   local repeats = 1 -- default one for actions that is not 'repeatable'      
+   if action.item then -- having item mean its repeatable (might change)      
+      local item = action.item      
+      if node_state[item] then         
+         if world_state[item] then            
+            repeats = node_state[item] - world_state[item]
+         else            
+            repeats = node_state[item]
          end
-      end      
+      end
    end
    return repeats
 end
@@ -53,12 +51,13 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
    local valid_actions = generate_valid_actions(all_actions, goal_state)   
    local goal_set = Set.new(goal_state)
 
+   print('goal is: ')
+   print(tostring(goal_set))
+   print('\n')
+
    for _, a in ipairs(valid_actions) do      
       local precond_set = Set.new(a:Precondition())
-      local posteff_set = Set.new(a:PostEffect())
-      print 'created states'
-      print(tostring(precond_set))
-      print(tostring(posteff_set))
+      local posteff_set = Set.new(a:PostEffect())      
       local node_state = goal_set - posteff_set + precond_set      
       local a_node = Node(a, nil, a:Cost(), node_state, 1)
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
@@ -83,9 +82,13 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
          end
          return action_sequence
       else
+         print 'not world state'
          table.insert(action_taken, node.next_action)
+         print 'current world state'
+         printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
-
+         print 'available actions generated'
+         printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                print('never tried this action: ', action.name)
@@ -100,8 +103,9 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   local new_state = node.world_state - posteffect                  
                   print('state of world up till now ')
                   printt(node.world_state)
-                  -- need to relate the gathering action to the state
-                  local repeats = calc_repeats_needed(node.world_state, world_state)
+
+                  -- need to relate the gathering action to the state                  
+                  local repeats = calc_repeats_needed(node.world_state, world_state, action)
                   print('repeating this action ' .. tostring(repeats))
                   -- repeats is how any times to repeat this action,
                   -- considering the current world state
@@ -118,8 +122,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   end
                                                                      
                   distance[next_node.next_action] = cost
-                  pending_actions:push(next_node, cost)
-                  table.insert(action_taken, action)
+                  pending_actions:push(next_node, cost)                  
                   print 'will not take this aaction again'
                end
             else

@@ -1,16 +1,15 @@
 require 'actions/action'
 
 Build = Class(Action, function (self, inst, item)
-		  self.item_to_build = item
+		  self.item = item
 		  Action._ctor(self, inst, 'Build ' .. item)
 end)
 
 function Build:Precondition()
-   -- body
-   print ('getting recipe for ' .. self.item_to_build)
-   local recipe = GetRecipe(self.item_to_build)   
+   -- body   
+   local recipe = GetRecipe(self.item)   
    if not recipe then
-      print('ERROR: ' .. self.item_to_build .. ' is not buildable')
+      print('ERROR: ' .. self.item .. ' is not buildable')
       return nil
    end   
    local precond = {} -- convert to my own 'logic'   
@@ -23,7 +22,7 @@ end
 function Build:PostEffect()
    -- body   
    local res = {}
-   res[self.item_to_build] = 1
+   res[self.item] = 1
    return res
 end
 

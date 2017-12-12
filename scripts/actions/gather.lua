@@ -1,7 +1,7 @@
 require 'actions/action'
 
 Gather = Class(Action, function (self, inst, item)
-		  self.item_to_gather = item
+		  self.item = item
 		  Action._ctor(self, inst, 'Gather ' .. item)
 end)
 
@@ -11,13 +11,13 @@ end
 
 function Gather:PostEffect()   
    local res = {}
-   if self.item_to_gather == 'food' then      
+   if self.item == 'food' then      
       res['have_food'] = true      
    else
       -- dun care for value of post effect really
       -- because calculations are done based on world state and precondition
       -- may want to make it real value later based on inventory but not needed      
-      res[self.item_to_gather] = 1
+      res[self.item] = 1
    end
    return res
 end

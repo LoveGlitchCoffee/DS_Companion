@@ -12,7 +12,7 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 		       self.inst = inst			   
 		       self.all_actions = {
 			  Gather(inst, 'twigs'),
-			  Gather(inst, 'grass'),
+			  Gather(inst, 'cutgrass'),
 			  Gather(inst, 'food'), -- generic
 			  --SearchFor(inst, 'twigs'),
 			  --SearchFor(inst, 'grass'),
@@ -59,10 +59,11 @@ function PlanActions:generate_world_state()
 end
 
 function PlanActions:Visit()
-   print('planning action')
-   local world_state = self:generate_world_state()
-   print('world state')
-   printt(world_state)
+	local world_state = self:generate_world_state()
+	print('\n')
+   print('world state: ')
+	printt(world_state)
+	print('\n')
 	-- local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
 	local goal_state = {}
 	goal_state['trap'] = 1

@@ -19,7 +19,11 @@ function Set.union (a,b)
    end
    for k, v in pairs(b) do
       if res[k] then
-         res[k] = res[k] + v
+         if type(res[k]) == 'number' then
+            res[k] = res[k] + v
+         else
+            res[k] = v
+         end
       else
          res[k] = v
       end      

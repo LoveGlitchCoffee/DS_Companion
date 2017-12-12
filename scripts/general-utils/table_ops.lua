@@ -18,13 +18,15 @@ function is_subset_key(set, superset)
 end
 
 function is_subset(set, superset)
+   print 'checkgini subset'
    local is_subset = true
-   for k,v in pairs(set) do
+   for k, v in pairs(set) do
       if superset[k] == nil
       or superset[k] ~= set[k] then
          is_subset = false
          break
       end
    end
+   print('reach end')
    return is_subset
 end
