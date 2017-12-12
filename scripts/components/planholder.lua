@@ -16,8 +16,7 @@ function PlanHolder:OnUpdate(dt)
    -- empty for now
 end
 
-function PlanHolder:GenerateActionSequence()   
-    local res
+function PlanHolder:GenerateActionSequence()    
     for a=1,#self.actionplan do
         table.insert(res, #res+1, self.actionplan[a].Perform())
     end

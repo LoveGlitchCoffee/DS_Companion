@@ -9,11 +9,17 @@ function Gather:Precondition()
    return {has_inv_spc=true} -- has space
 end
 
-function Gather:PostEffect()
-   if self.item_to_gather == 'food' then
-      return {have_food=true}
+function Gather:PostEffect()   
+   local res = {}
+   if self.item_to_gather == 'food' then      
+      res['have_food'] = true      
+   else
+      -- dun care for value of post effect really
+      -- because calculations are done based on world state and precondition
+      -- may want to make it real value later based on inventory but not needed      
+      res[self.item_to_gather] = 1
    end
-   return {have=self.item_to_gather} -- need to have something for increased invenctory space
+   return res
 end
 
 function Gather:Cost()

@@ -4,19 +4,19 @@ Action = Class(function (self, inst, name)
 end)
 
 function Action:Precondition()
-   print('error. Precondition() needs to be implemented')
+   print('error. Precondition() of ' .. self.name .. ' needs to be implemented')   
 end
 
 function Action:PostEffect()
-   print('error. PostEffect() needs to be implemented')   
+   print('error. PostEffect() of ' .. self.name .. ' needs to be implemented')   
 end
 
 function Action:Cost()
-   print('error. Cost() needs to be implemented')   
+   print('error. Cost() of ' .. self.name .. ' needs to be implemented')      
 end
 
 function Action:Perform()
-   print('error. Perform() needs to be implemented')
+   print('error. Perform() of ' .. self.name .. ' needs to be implemented')
 end
 
 function Action:__eq(b)

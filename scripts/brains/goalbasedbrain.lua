@@ -57,10 +57,10 @@ function GoalBasedBrain:OnStart()
      -- maybe put this in if node     
      SelectGoal(self.inst, self.gwu_list),
      PlanActions(self.inst),
-     IfNode(function() return #self.inst.components.planholder.actionplan > 0 end, 'has_plan',
-         SequenceNode(
-            self.inst.components.planholder.GenerateActionSequence()
-      ))
+     --IfNode(function() return #self.inst.components.planholder.actionplan > 0 end, 'has_plan',
+     --    SequenceNode(
+     --       self.inst.components.planholder.GenerateActionSequence()
+     -- ))
       --if goal is same then dun come up with new plan?
       
       }, 5)
