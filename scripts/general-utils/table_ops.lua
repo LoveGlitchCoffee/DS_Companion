@@ -17,8 +17,7 @@ function is_subset_key(set, superset)
    return is_subset
 end
 
-function is_subset(set, superset)
-   print 'checkgini subset'
+function is_subset(set, superset)   
    local is_subset = true
    for k, v in pairs(set) do
       if superset[k] == nil
@@ -26,7 +25,6 @@ function is_subset(set, superset)
          is_subset = false
          break
       end
-   end
-   print('reach end')
+   end   
    return is_subset
 end

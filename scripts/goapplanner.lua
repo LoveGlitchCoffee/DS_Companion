@@ -53,13 +53,13 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
 
    print('goal is: ')
    print(tostring(goal_set))
-   print('\n')
+   print("\n")
 
    for _, a in ipairs(valid_actions) do      
       local precond_set = Set.new(a:Precondition())
       local posteff_set = Set.new(a:PostEffect())      
       local node_state = goal_set - posteff_set + precond_set      
-      local a_node = Node(a, nil, a:Cost(), node_state, 1)
+      local a_node = Node(a, a:Cost(), node_state)
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
       predecessor[a] = nil
       pending_actions:push(a_node, a:Cost())
@@ -68,17 +68,18 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
    while pending_actions:size() > 0 do
       -- for a single node
       local node = pending_actions:pop()
+      print('.' .. '\n')
       print('looking at ' .. tostring(node.next_action))
+
       -- backwards so check if satisfy world state
       if is_subset(node.world_state, world_state) then
-
          print 'found world state'
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
          local action_sequence = {}
-         while found_node ~= nil do
+         while predecessor[found_node] do
             table.insert(action_sequence, 1, found_node.next_action)
-            found_node = found_node.parent_node
+            found_node = predecessor[found_node]
          end
          return action_sequence
       else
@@ -87,26 +88,24 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
          print 'current world state'
          printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
-         print 'available actions generated'
+         
          printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                print('never tried this action: ', action.name)
-               local cost = distance[node.next_action] + action:Cost() -- gotta do soething bout this
 
-               if distance[node.next_action] ~= nil -- need to set?
-               and cost < distance[node.next_action]
-               or not pending_actions:is_exist(action)  then -- pending_actions already - node
+               local repeats = calc_repeats_needed(node.world_state, world_state, action)
+               print('repeating this action ' .. tostring(repeats))
 
+               local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
+
+               if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
                   local precond = Set.new(action:Precondition())
                   local posteffect = Set.new(action:PostEffect())
                   local new_state = node.world_state - posteffect                  
                   print('state of world up till now ')
-                  printt(node.world_state)
-
-                  -- need to relate the gathering action to the state                  
-                  local repeats = calc_repeats_needed(node.world_state, world_state, action)
-                  print('repeating this action ' .. tostring(repeats))
+                  printt(node.world_state)                                 
+                  
                   -- repeats is how any times to repeat this action,
                   -- considering the current world state
                   -- in order to reach this node's precondition
@@ -117,27 +116,26 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   
                   for i=1,repeats do
                      print ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(next_node.next_action))
-                     next_node = Node(action, next_node, cost, new_state + precond)
-                     -- REMEMBER its the no of times, not actual test, cba to make it nice rn                        
+                     local new_node = Node(action, cost, new_state + precond)                     
+                     predecessor[new_node] = next_node
+                     next_node = new_node
+                     -- REMEMBER its the no of times, not actual test, cba to make it nice rn
                   end
                                                                      
                   distance[next_node.next_action] = cost
                   pending_actions:push(next_node, cost)                  
-                  print 'will not take this aaction again'
                end
             else
                print 'aciton already taken'
             end
          end
       end
-   end
+   end   
    return {} -- no plan found
-
 end
 
-Node = Class(function (self, next_action, parent_node, cost, world_state, repeats)
-   self.next_action = next_action
-   self.parent_node = parent_node
+Node = Class(function (self, next_action, cost, world_state)
+   self.next_action = next_action   
    self.cost = cost -- of next action
    self.world_state = world_state -- of next_action
 end)

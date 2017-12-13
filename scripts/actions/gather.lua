@@ -6,13 +6,13 @@ Gather = Class(Action, function (self, inst, item)
 end)
 
 function Gather:Precondition()
-   return {has_inv_spc=true} -- has space
+   return {has_inv_spc=true}
 end
 
 function Gather:PostEffect()   
    local res = {}
    if self.item == 'food' then      
-      res['have_food'] = true      
+      res['have_food'] = true
    else
       -- dun care for value of post effect really
       -- because calculations are done based on world state and precondition

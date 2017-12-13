@@ -22,11 +22,9 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 		       }
 end)
 
-function PlanActions:generate_world_state()	
-   local res = {}
-   local inventory = self.inst.components.inventory
+local function generate_inv_state(inventory, state)	
    if not inventory:IsFull() then
-      res['has_inv_spc'] = true
+      state['has_inv_spc'] = true
    end
 
    print('inventory item number start over ' .. tostring(inventory:GetNumSlots()))
@@ -37,25 +35,42 @@ function PlanActions:generate_world_state()
 	  	local item = inventory:GetItemInSlot(i)
 		if item then
 			print(tostring(item))			
-			if res[item.prefab] then				
+			if state[item.prefab] then
 				print 'item exist in state'
 	 			-- total stack size, not restricted by in-game
 	 			if item.components.stackable then
-	    			res[item.prefab] = res[item.prefab] + item.components.stackable.stacksize
+	    			state[item.prefab] = state[item.prefab] + item.components.stackable.stacksize
 	 			else
-	    			res[item.prefab] = res[item.prefab] + 1
+	    			state[item.prefab] = state[item.prefab] + 1
 	 			end
 			else
 		 		if item.components.stackable then				
-	    			res[item.prefab] = item.components.stackable.stacksize
+	    			state[item.prefab] = item.components.stackable.stacksize
 		 		else					
-	    			res[item.prefab] = 1
+	    			state[item.prefab] = 1
 	 	 		end	
 			   end
 			local has_key = 'has' .. tostring(item.prefab)			
       	end	 
    	end
-   return res
+end
+
+local function generate_items_in_view(state)
+	local pt = GLOBAL.GetPlayer():GetPosition()
+	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 50) -- make distance config
+	for k,entity in pairs(ents) do
+		if entity then
+			-- unique key
+		end
+	end	
+end
+
+function PlanActions:generate_world_state()	
+   local state = {}
+	local inventory = self.inst.components.inventory
+	generate_inv_state(inventory, state)
+	--generate_items_in_view(state)
+   return state
 end
 
 function PlanActions:Visit()
