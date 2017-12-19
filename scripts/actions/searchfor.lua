@@ -1,4 +1,5 @@
 require 'actions/action'
+require 'behaviours/performsearchfor'
 
 SearchFor = Class(Action, function (self, inst, item)   
    -- this is for the actual looking
@@ -15,12 +16,17 @@ end
 
 function SearchFor:PostEffect()
    -- body
-   local res = {}
-   res['found'] = self.item_to_search
+   local res = {}      
+   local seenkey = ('seen_' .. self.item_to_search)
+   res[seenkey] = true
    return res
 end
 
 function SearchFor:Cost()
    -- body
    return 5
+end
+
+function SearchFor:Perform()
+   return PerformSearchFor(self.inst, self.item_to_search)
 end

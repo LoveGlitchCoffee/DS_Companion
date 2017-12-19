@@ -73,14 +73,16 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
 
       -- backwards so check if satisfy world state
       if is_subset(node.world_state, world_state) then
-         print 'found world state'
+         print 'found world state\n'
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
          local action_sequence = {}
-         while predecessor[found_node] do
-            table.insert(action_sequence, 1, found_node.next_action)
+         while predecessor[found_node] do            
+            table.insert(action_sequence, #action_sequence+1, found_node.next_action)
             found_node = predecessor[found_node]
          end
+         table.insert(action_sequence, #action_sequence+1, found_node.next_action) -- insert last action         
+         printt(action_sequence)
          return action_sequence
       else
          print 'not world state'

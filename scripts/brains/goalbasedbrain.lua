@@ -1,9 +1,11 @@
 require 'behaviours/selectgoal'
 require 'behaviours/planactions'
+require 'behaviours/goapsequencenode'
 require 'goals/stayfull'
 require 'goals/stayhealthy'
 
 require 'brains/utils'
+require 'behaviours/debug'
 
 require 'general-utils/table_ops'
 
@@ -31,9 +33,21 @@ local function onNextGoalFound(inst, data)
 end
 
 local function onActionPlanned(inst, data)
+   print('this is: ' .. tostring(inst))
    if data.a_sequence ~= nil then
-      inst.components.planholder.actionplan = data.a_sequence
-      printt(inst.components.planholder.actionplan)
+      local a_sequence = data.a_sequence
+      local plan = {}
+      for a=1,#a_sequence do
+         print( 'putting in plan' .. tostring(a_sequence[a]))
+         table.insert(plan, #plan+1, a_sequence[a]:Perform())
+      end            
+      inst.components.planholder.actionplan = plan      
+      --printt(inst.components.planholder.actionplan)
+      -- NOTE: works locally so is not problem the BehaviourNode
+      -- print 'trying in listen for event\n'
+      -- local d = Debug(inst, inst.components.planholder.actionplan)
+      -- d:Visit()
+      -- print 'end print\n'
    end
 end
 
@@ -53,16 +67,22 @@ function GoalBasedBrain:OnStart()
    
    local root = PriorityNode(
       {
-	 RunAway(self.inst, "scarytoprey", 5, 7),
-     -- maybe put this in if node     
-     SelectGoal(self.inst, self.gwu_list),
-     PlanActions(self.inst),
-     --IfNode(function() return #self.inst.components.planholder.actionplan > 0 end, 'has_plan',
-     --    SequenceNode(
-     --       self.inst.components.planholder.GenerateActionSequence()
-     -- ))
-      --if goal is same then dun come up with new plan?
-      
+         RunAway(self.inst, "scarytoprey", 5, 7),
+         -- maybe put this in if node     
+         SelectGoal(self.inst, self.gwu_list),
+         PlanActions(self.inst),         
+         IfNode(function() return self.inst.components.planholder.actionplan end, 'HasPlan',
+         GOAPSequenceNode(function() return self.inst.components.planholder.actionplan end))
+         -- Debug(self.inst, function() return self.inst.components.planholder.actionplan end)) -- it reverts back to constructor values. not a component thing
+         -- works if i use it as a lambda. i.e. wrap in a function
+         -- using global doesn't work, try self and wrap function?
+         -- can't do it from here but can do it inside behaviours
+         -- probably to do with when this was ran, planholder is nothing - confirmed.
+         -- so only way is to make it when visit() is called
+
+         -- SequenceNode(self.inst.components.planholder.actionplan)
+         --if goal is same then dun come up with new plan?      
+         -- need to clean action plan
       }, 5)
    self.bt = BT(self.inst, root)
 end

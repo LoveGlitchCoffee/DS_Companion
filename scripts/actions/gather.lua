@@ -1,15 +1,20 @@
 require 'actions/action'
+require 'behaviours/performgather'
 
 Gather = Class(Action, function (self, inst, item)
-		  self.item = item
-		  Action._ctor(self, inst, 'Gather ' .. item)
+   self.item = item
+   Action._ctor(self, inst, 'Gather ' .. item)
 end)
 
 function Gather:Precondition()
-   return {has_inv_spc=true}
+   local seenkey = ('seen_' .. self.item)
+   local pred = {}
+   pred['has_inv_spc'] = true
+   pred[seenkey] = true
+   return pred
 end
 
-function Gather:PostEffect()   
+function Gather:PostEffect()
    local res = {}
    if self.item == 'food' then      
       res['have_food'] = true
@@ -24,4 +29,8 @@ end
 
 function Gather:Cost()
    return 2
+end
+
+function Gather:Perform()
+   return PerformGather(self.inst, self.item)
 end

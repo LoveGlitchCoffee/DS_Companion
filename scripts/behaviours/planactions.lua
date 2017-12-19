@@ -14,15 +14,15 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 			  Gather(inst, 'twigs'),
 			  Gather(inst, 'cutgrass'),
 			  Gather(inst, 'food'), -- generic
-			  --SearchFor(inst, 'twigs'),
-			  --SearchFor(inst, 'grass'),
-			  --SearchFor(inst, 'food'), -- generic
+			  SearchFor(inst, 'twigs'),
+			  SearchFor(inst, 'grass'),
+			  SearchFor(inst, 'food'), -- generic
 			  Build(inst, 'trap'),
 			  Eat(inst)
 		       }
 end)
 
-local function generate_inv_state(inventory, state)	
+function PlanActions:generate_inv_state(inventory, state)	
    if not inventory:IsFull() then
       state['has_inv_spc'] = true
    end
@@ -55,21 +55,34 @@ local function generate_inv_state(inventory, state)
    	end
 end
 
-local function generate_items_in_view(state)
-	local pt = GLOBAL.GetPlayer():GetPosition()
-	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 50) -- make distance config
+function PlanActions:generate_items_in_view(state)
+	print 'generate items in view'
+	local pt = self.inst:GetPosition()
+	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 4) -- make distance config	
+	print 'see stuff'
 	for k,entity in pairs(ents) do
 		if entity then
-			-- unique key
+         if entity ~= self.inst then
+            print('see' .. tostring(entity))
+            local entityname = entity.prefab
+            if entity.components.pickable then
+               entityname = entity.components.pickable.product -- so gather works
+            end
+            print('build key with ' .. entityname)
+				local seenkey = ('seen_' .. entityname)				
+				state[seenkey] = true
+				print (seenkey)
+			end
 		end
-	end	
+	end
+	print 'done'
 end
 
 function PlanActions:generate_world_state()	
    local state = {}
 	local inventory = self.inst.components.inventory
-	generate_inv_state(inventory, state)
-	--generate_items_in_view(state)
+	self:generate_inv_state(inventory, state)
+	self:generate_items_in_view(state)
    return state
 end
 
@@ -79,9 +92,7 @@ function PlanActions:Visit()
    print('world state: ')
 	printt(world_state)
 	print('\n')
-	-- local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
-	local goal_state = {}
-	goal_state['trap'] = 1
+	local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
    local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end
