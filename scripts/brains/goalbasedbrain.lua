@@ -28,26 +28,20 @@ local function initialise_gwu(inst)
 end
 
 local function onNextGoalFound(inst, data)    
-   inst.components.planholder.currentgoal = data.goal 
-   print(tostring(inst.components.planholder.currentgoal))   
+   inst.components.planholder.currentgoal = data.goal
+   print('DECIDED ON GOAL ' .. tostring(inst.components.planholder.currentgoal) .. '\n')   
 end
 
-local function onActionPlanned(inst, data)
-   print('this is: ' .. tostring(inst))
+local function onActionPlanned(inst, data)   
    if data.a_sequence ~= nil then
       local a_sequence = data.a_sequence
       local plan = {}
       for a=1,#a_sequence do
-         print( 'putting in plan' .. tostring(a_sequence[a]))
+         print('putting in plan' .. tostring(a_sequence[a]))
          table.insert(plan, #plan+1, a_sequence[a]:Perform())
-      end            
-      inst.components.planholder.actionplan = plan      
-      --printt(inst.components.planholder.actionplan)
-      -- NOTE: works locally so is not problem the BehaviourNode
-      -- print 'trying in listen for event\n'
-      -- local d = Debug(inst, inst.components.planholder.actionplan)
-      -- d:Visit()
-      -- print 'end print\n'
+      end
+      print '.\n'
+      inst.components.planholder.actionplan = plan
    end
 end
 
@@ -66,8 +60,7 @@ function GoalBasedBrain:OnStart()
    -- )))   
    
    local root = PriorityNode(
-      {
-         RunAway(self.inst, "scarytoprey", 5, 7),
+      {         
          -- maybe put this in if node     
          SelectGoal(self.inst, self.gwu_list),
          PlanActions(self.inst),         

@@ -16,7 +16,7 @@ end
 
 function Gather:PostEffect()
    local res = {}
-   if self.item == 'food' then      
+   if self.item == 'carrot' then -- expand later
       res['have_food'] = true
    else
       -- dun care for value of post effect really

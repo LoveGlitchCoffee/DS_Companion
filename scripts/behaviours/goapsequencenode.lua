@@ -20,7 +20,7 @@ function GOAPSequenceNode:Visit()
     end
     
     local done = false
-    local plan = self.planfn() -- generate plan
+    local plan = self.planfn() -- generate plan    
     while self.idx <= #plan do
     
         local child = plan[self.idx]

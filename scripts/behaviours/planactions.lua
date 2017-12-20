@@ -13,10 +13,10 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 		       self.all_actions = {
 			  Gather(inst, 'twigs'),
 			  Gather(inst, 'cutgrass'),
-			  Gather(inst, 'food'), -- generic
+			  Gather(inst, 'carrot'),
 			  SearchFor(inst, 'twigs'),
 			  SearchFor(inst, 'grass'),
-			  SearchFor(inst, 'food'), -- generic
+			  SearchFor(inst, 'carrot'),
 			  Build(inst, 'trap'),
 			  Eat(inst)
 		       }
@@ -49,49 +49,52 @@ function PlanActions:generate_inv_state(inventory, state)
 		 		else					
 	    			state[item.prefab] = 1
 	 	 		end	
-			   end
+         end
 			local has_key = 'has' .. tostring(item.prefab)			
-      	end	 
-   	end
+      end	 
+   end
 end
 
-function PlanActions:generate_items_in_view(state)
-	print 'generate items in view'
+function PlanActions:generate_items_in_view(state, inventory)
+	-- problem is see items in inventory
 	local pt = self.inst:GetPosition()
-	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 4) -- make distance config	
-	print 'see stuff'
+	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 4) -- make distance config		
 	for k,entity in pairs(ents) do
 		if entity then
          if entity ~= self.inst then
-            print('see' .. tostring(entity))
-            local entityname = entity.prefab
+            print('see ' .. tostring(entity))
+				local entityname = entity.prefab
+				
             if entity.components.pickable then
                entityname = entity.components.pickable.product -- so gather works
-            end
-            print('build key with ' .. entityname)
-				local seenkey = ('seen_' .. entityname)				
-				state[seenkey] = true
-				print (seenkey)
+				end
+
+				if inventory:FindItem(function (invItem) return invItem == entity end) then
+					print 'item is part of inventory'
+				else
+					local seenkey = ('seen_' .. entityname)				
+					state[seenkey] = true
+					print (seenkey)
+				end				
 			end
 		end
-	end
-	print 'done'
+	end	
 end
 
 function PlanActions:generate_world_state()	
    local state = {}
 	local inventory = self.inst.components.inventory
 	self:generate_inv_state(inventory, state)
-	self:generate_items_in_view(state)
+	self:generate_items_in_view(state, inventory)
    return state
 end
 
 function PlanActions:Visit()
 	local world_state = self:generate_world_state()
-	print('\n')
+	print('.\n')
    print('world state: ')
 	printt(world_state)
-	print('\n')
+	print('.\n')
 	local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
    local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})

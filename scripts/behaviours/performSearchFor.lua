@@ -47,13 +47,14 @@ function PerformSearchFor:SearchWithDirection()
       local randomAngle = math.random() * 360 -- in degrees
       print('random degrees ' .. tostring(randomAngle))
       self.waittime = GetTime() + 4
-      self.inst.components.locomotor:RunInDirection(randomAngle)
+      self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
-   elseif self.status == RUNNING then
-      if GetTime() > self.waittime then         
+   elseif self.status == RUNNING then      
+      if GetTime() > self.waittime then     
+         print 'finish searching. look around'    
          local target = FindEntity(self.inst, 4, function(resource)
-            if resource.components.pickable then -- might want to change at some point              
-               return resource.components.pickable.product.prefab == self.item
+            if resource.components.pickable then -- might want to change at some point
+               return resource.components.pickable.product == self.item
             else
                return resource.prefab == self.item
             end            
@@ -63,9 +64,10 @@ function PerformSearchFor:SearchWithDirection()
             -- found something after searching
             self.status = SUCCESS
          else
-            self.status = FAILED -- for now only try once
+            self.status = FAILED -- for now only try once            
          end
          self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success
+         print 'stop motor'
       end
 
       self:Sleep(self.waittime - GetTime()) -- sleep until wake

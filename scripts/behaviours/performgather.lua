@@ -4,12 +4,24 @@ PerformGather = Class(BehaviourNode, function(self, inst, item)
    BehaviourNode._ctor(self, "PerformGather")
    self.inst = inst
    self.item = item
+   self.action = nil
+
+   self.locomotorFailed = function(inst, data)
+		local theAction = data.action or "[Unknown]"
+		local theReason = data.reason or "[Unknown]"
+		print("\nPerformGather: Action: " .. theAction:__tostring() .. " failed. Reason: " .. tostring(theReason) .. '\n')
+		self:OnFail()
+   end
+
+   self.inst:ListenForEvent("actionfailed", self.locomotorFailed)
 end)
 
 function PerformGather:OnFail()
+   print '\nfail to pick up\n'
    self.pendingstatus = FAILED
 end
 function PerformGather:OnSucceed()
+   print '\nsuccesffuly picked up\n'
    self.pendingstatus = SUCCESS
 end
 
@@ -17,25 +29,36 @@ function PerformGather:Visit()
    -- body
    if self.status == READY then
 
-      local target = FindEntity(self.inst, 4, function(resource)
+      local target = FindEntity(self.inst, 4, function(resource)         
+         if resource.components.pickable then
+            print('FOUND THIS: ' .. tostring(resource.components.pickable.product))
+            print('finding: ' .. self.item .. '\n')
+         end
          return resource.components.pickable
-         and resource.components.pickable.product.prefab == self.item
+         and resource.components.pickable.product == self.item
+         and resource.components.pickable:CanBePicked()
+         and resource.components.pickable.caninteractwith
       end)
+
+      print ('target: ' .. tostring(target))
 
       if target then
          local pAction = BufferedAction(self.inst, target, ACTIONS.PICK)
          pAction:AddFailAction(function() self:OnFail() end)
-			   pAction:AddSuccessAction(function() self:OnSucceed() end)
-			   self.action = pAction
-			   self.pendingstatus = nil
-			   self.inst.components.locomotor:PushAction(pAction, true)
-			   self.status = RUNNING
-      end
-      self.status = FAILED -- can't find anything then fail
+         pAction:AddSuccessAction(function() self:OnSucceed() end)         
+         self.action = pAction
+         self.pendingstatus = nil
+         self.inst.components.locomotor:PushAction(pAction, true)
+         self.status = RUNNING
+      else                  
+         self.status = FAILED -- can't find anything then fail
+      end      
    elseif self.status == RUNNING then
       if self.pendingstatus then
          self.status = self.pendingstatus
+         print '\nkeep running\n'
       elseif not self.action:IsValid() then
+         print '\nfail as action not valid\n'
          self.status = FAILED
       end
    end
