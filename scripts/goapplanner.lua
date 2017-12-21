@@ -1,6 +1,7 @@
 require 'general-utils/sets'
 require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
+require 'general-utils/debugprint'
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}
@@ -19,8 +20,12 @@ local function generate_valid_actions(all_actions, world_state)
    local available_a = {}
    
    for _, a in ipairs(all_actions) do      
-      if is_subset_key(a:PostEffect(), world_state) then         
+      info('can generate this action: ' .. tostring(a))
+      if is_subset_key(a:PostEffect(), world_state) then
+         info('yes\n')
          table.insert(available_a, a)
+      else
+         info('no\n')
       end
    end
    return available_a
@@ -51,9 +56,9 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
    local valid_actions = generate_valid_actions(all_actions, goal_state)   
    local goal_set = Set.new(goal_state)
 
-   print('goal is: ')
-   print(tostring(goal_set))
-   print("\n")
+   info('goal is: ')
+   info(tostring(goal_set))
+   info("\n")
 
    for _, a in ipairs(valid_actions) do      
       local precond_set = Set.new(a:Precondition())
@@ -68,12 +73,12 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
    while pending_actions:size() > 0 do
       -- for a single node
       local node = pending_actions:pop()
-      -- print('.' .. '\n')
-      -- print('looking at ' .. tostring(node.next_action))
+       info('.' .. '\n')
+       info('looking at ' .. tostring(node.next_action))
 
       -- backwards so check if satisfy world state
       if is_subset(node.world_state, world_state) then
-         -- print 'found world state\n'
+         info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
          local action_sequence = {}
@@ -85,19 +90,19 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
          printt(action_sequence)
          return action_sequence
       else
-         -- print 'not world state'
+         info('not world state')
          table.insert(action_taken, node.next_action)
-         -- print 'current world state'
-         -- printt(node.world_state)
-         local available_actions = generate_valid_actions(all_actions, node.world_state)
-         
+         info('current world state')
+         printt(node.world_state)
+         local available_actions = generate_valid_actions(all_actions, node.world_state)         
+         error('available actions generated')
          printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
-               -- print('never tried this action: ', action.name)
+               info('never tried this action: ', action.name)
 
                local repeats = calc_repeats_needed(node.world_state, world_state, action)
-               -- print('repeating this action ' .. tostring(repeats))
+               info('repeating this action ' .. tostring(repeats))
 
                local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
 
@@ -105,7 +110,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   local precond = Set.new(action:Precondition())
                   local posteffect = Set.new(action:PostEffect())
                   local new_state = node.world_state - posteffect                  
-                  -- print('state of world up till now ')
+                  info('state of world up till now ')
                   -- printt(node.world_state)                                 
                   
                   -- repeats is how any times to repeat this action,
@@ -117,7 +122,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   -- need to fix cost at some point
                   
                   for i=1,repeats do
-                     -- print ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(next_node.next_action))
+                     info ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(next_node.next_action))
                      local new_node = Node(action, cost, new_state + precond)                     
                      predecessor[new_node] = next_node
                      next_node = new_node
@@ -128,7 +133,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   pending_actions:push(next_node, cost)                  
                end
             else
-               -- print 'aciton already taken'
+               info('aciton already taken')
             end
          end
       end

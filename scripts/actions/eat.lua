@@ -2,7 +2,7 @@ require 'actions/action'
 require 'behaviours/performeat'
 
 Eat = Class(Action, function (self, inst)
-	       Action._ctor(self, inst, 'Eat')
+   Action._ctor(self, inst, 'Eat')   
 end)
 
 function Eat:Precondition()

@@ -8,7 +8,7 @@ function is_subset_key(set, superset)
    -- Checks if a table is a subset of another
    -- Only accounting for keys, not values   
    local is_subset = true
-   for k, _ in pairs(set) do      
+   for k, _ in pairs(set) do
       if superset[k] == nil then   
          is_subset = false
          break
@@ -28,3 +28,14 @@ function is_subset(set, superset)
    end   
    return is_subset
 end
+
+function has_v(value, list)
+   local found = false
+   for i,v in ipairs(list) do      
+      if v == value then
+         found = true         
+         break
+      end
+   end   
+   return found
+end 

@@ -8,6 +8,7 @@ require 'brains/utils'
 require 'behaviours/debug'
 
 require 'general-utils/table_ops'
+require 'general-utils/debugprint'
 
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
@@ -29,7 +30,7 @@ end
 
 local function onNextGoalFound(inst, data)    
    inst.components.planholder.currentgoal = data.goal
-   print('DECIDED ON GOAL ' .. tostring(inst.components.planholder.currentgoal) .. '\n')   
+   info('DECIDED ON GOAL ' .. tostring(inst.components.planholder.currentgoal) .. '\n')
 end
 
 local function onActionPlanned(inst, data)   
@@ -37,10 +38,10 @@ local function onActionPlanned(inst, data)
       local a_sequence = data.a_sequence
       local plan = {}
       for a=1,#a_sequence do
-         print('putting in plan' .. tostring(a_sequence[a]))
+         info('putting in plan' .. tostring(a_sequence[a]))
          table.insert(plan, #plan+1, a_sequence[a]:Perform())
       end
-      print '.\n'
+      info('.\n')
       inst.components.planholder.actionplan = plan
    end
 end

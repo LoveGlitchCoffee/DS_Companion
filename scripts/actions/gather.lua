@@ -1,10 +1,7 @@
 require 'actions/action'
 require 'behaviours/performgather'
-
-FOOD_LIST = {
-   'carrot',
-   'berries',   
-}
+require 'general-utils/debugprint'
+require 'general-utils/table_ops'
 
 Gather = Class(Action, function (self, inst, item)
    self.item = item
@@ -19,17 +16,12 @@ function Gather:Precondition()
    return pred
 end
 
-function Gather:PostEffect()
+function Gather:PostEffect()   
+   -- dun care for value of post effect really
+   -- because calculations are done based on world state and precondition
+   -- may want to make it real value later based on inventory but not needed   
    local res = {}
-   if FOOD_LIST[self.item] then
-      res['have_food'] = true -- change if no longer cares about own hunger
-      res[self.item] = 1 -- again don't care about value
-   else
-      -- dun care for value of post effect really
-      -- because calculations are done based on world state and precondition
-      -- may want to make it real value later based on inventory but not needed      
-      res[self.item] = 1
-   end
+   res[self.item] = 1
    return res
 end
 

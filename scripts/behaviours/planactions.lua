@@ -1,11 +1,13 @@
 require 'goapplanner'
 
 require 'actions/gather'
+require 'actions/gatherfood'
 require 'actions/build'
 require 'actions/searchfor'
 require 'actions/eat'
 
 require 'general-utils/table_ops'
+require 'general-utils/debugprint'
 
 PlanActions = Class(BehaviourNode, function(self, inst)
 		       BehaviourNode._ctor(self, 'PlanActions')
@@ -14,6 +16,7 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 			  Gather(inst, 'twigs'),
 			  Gather(inst, 'cutgrass'),
 			  Gather(inst, 'carrot'),
+			  GatherFood(inst, 'carrot'), -- special case
 			  SearchFor(inst, 'twigs'),
 			  SearchFor(inst, 'grass'),
 			  SearchFor(inst, 'carrot'),
@@ -27,16 +30,16 @@ function PlanActions:generate_inv_state(inventory, state)
       state['has_inv_spc'] = true
    end
 
-   print('inventory item number start over ' .. tostring(inventory:GetNumSlots()))
+   info('inventory item number start over ' .. tostring(inventory:GetNumSlots()))
    
    -- goal precond + not have enough or not have, need
    -- can get goal and calculate how many times to repeat
    for i=1,inventory:GetNumSlots() do
 	  	local item = inventory:GetItemInSlot(i)
 		if item then
-			print(tostring(item))			
+			info(tostring(item))			
 			if state[item.prefab] then
-				print 'item exist in state'
+				info('item exist in state')
 	 			-- total stack size, not restricted by in-game
 	 			if item.components.stackable then
 	    			state[item.prefab] = state[item.prefab] + item.components.stackable.stacksize
@@ -62,7 +65,7 @@ function PlanActions:generate_items_in_view(state, inventory)
 	for k,entity in pairs(ents) do
 		if entity then
          if entity ~= self.inst then
-            print('see ' .. tostring(entity))
+            info('see ' .. tostring(entity))
 				local entityname = entity.prefab
 				
             if entity.components.pickable then
@@ -70,11 +73,11 @@ function PlanActions:generate_items_in_view(state, inventory)
 				end
 
 				if inventory:FindItem(function (invItem) return invItem == entity end) then
-					print 'item is part of inventory'
+					info('item is part of inventory')
 				else
 					local seenkey = ('seen_' .. entityname)				
 					state[seenkey] = true
-					print (seenkey)
+					info(seenkey)
 				end				
 			end
 		end
@@ -91,10 +94,10 @@ end
 
 function PlanActions:Visit()
 	local world_state = self:generate_world_state()
-	print('.\n')
-   print('world state: ')
-	printt(world_state)
-	print('.\n')
+	info('.\n')
+   info('world state: ')
+	-- printt(world_state)
+	info('.\n')
 	local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
    local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})

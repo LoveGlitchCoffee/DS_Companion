@@ -1,3 +1,5 @@
+require 'general-utils/debugprint'
+
 PerformSearchFor = Class(BehaviourNode, function(self, inst, item)
    -- search for is travelling in a random direction
    -- then do another check to see if item wanted is in view
@@ -43,15 +45,15 @@ end
 
 function PerformSearchFor:SearchWithDirection()
    if self.status == READY then      
-      print 'searching for food now'
+      info('searching for food now')
       local randomAngle = math.random() * 360 -- in degrees
-      print('random degrees ' .. tostring(randomAngle))
+      info('random degrees ' .. tostring(randomAngle))
       self.waittime = GetTime() + 4
       self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
    elseif self.status == RUNNING then      
       if GetTime() > self.waittime then     
-         print 'finish searching. look around'    
+         info('finish searching. look around')
          local target = FindEntity(self.inst, 4, function(resource)
             if resource.components.pickable then -- might want to change at some point
                return resource.components.pickable.product == self.item
@@ -66,8 +68,7 @@ function PerformSearchFor:SearchWithDirection()
          else
             self.status = FAILED -- for now only try once            
          end
-         self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success
-         print 'stop motor'
+         self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success         
       end
 
       self:Sleep(self.waittime - GetTime()) -- sleep until wake

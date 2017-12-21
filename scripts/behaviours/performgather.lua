@@ -17,11 +17,11 @@ PerformGather = Class(BehaviourNode, function(self, inst, item)
 end)
 
 function PerformGather:OnFail()
-   print '\nfail to pick up\n'
+   warning('\nfail to pick up\n')
    self.pendingstatus = FAILED
 end
 function PerformGather:OnSucceed()
-   print '\nsuccesffuly picked up\n'
+   warning('\nsuccesffuly picked up\n')
    self.pendingstatus = SUCCESS
 end
 
@@ -31,8 +31,8 @@ function PerformGather:Visit()
 
       local target = FindEntity(self.inst, 4, function(resource)         
          if resource.components.pickable then
-            print('FOUND THIS: ' .. tostring(resource.components.pickable.product))
-            print('finding: ' .. self.item .. '\n')
+            warning('FOUND THIS: ' .. tostring(resource.components.pickable.product))
+            warning('finding: ' .. self.item .. '\n')
          end
          return resource.components.pickable
          and resource.components.pickable.product == self.item
@@ -40,7 +40,7 @@ function PerformGather:Visit()
          and resource.components.pickable.caninteractwith
       end)
 
-      print ('target: ' .. tostring(target))
+      warning('target: ' .. tostring(target))
 
       if target then
          local pAction = BufferedAction(self.inst, target, ACTIONS.PICK)
@@ -56,9 +56,9 @@ function PerformGather:Visit()
    elseif self.status == RUNNING then
       if self.pendingstatus then
          self.status = self.pendingstatus
-         print '\nkeep running\n'
+         warning('\nkeep running\n')
       elseif not self.action:IsValid() then
-         print '\nfail as action not valid\n'
+         warning('\nfail as action not valid\n')
          self.status = FAILED
       end
    end
