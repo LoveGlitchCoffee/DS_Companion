@@ -1,6 +1,11 @@
 require 'actions/action'
 require 'behaviours/performgather'
 
+FOOD_LIST = {
+   'carrot',
+   'berries',   
+}
+
 Gather = Class(Action, function (self, inst, item)
    self.item = item
    Action._ctor(self, inst, 'Gather ' .. item)
@@ -16,8 +21,9 @@ end
 
 function Gather:PostEffect()
    local res = {}
-   if self.item == 'carrot' then -- expand later
-      res['have_food'] = true
+   if FOOD_LIST[self.item] then
+      res['have_food'] = true -- change if no longer cares about own hunger
+      res[self.item] = 1 -- again don't care about value
    else
       -- dun care for value of post effect really
       -- because calculations are done based on world state and precondition
