@@ -12,6 +12,7 @@ function SpawnSmartCompanion(player)
       print('dst smart companion is now running')
       companion:AddComponent('hunger')
       companion:AddComponent('planholder')
+      companion:AddComponent('gatherminion')
       -- companion:AddComponent('inventory')
       -- companion:RemoveComponent('sleeper')
       companion:SetBrain(smart_brain)
@@ -21,6 +22,5 @@ function SpawnSmartCompanion(player)
       
    end   
 end
-
 
 AddSimPostInit(SpawnSmartCompanion)

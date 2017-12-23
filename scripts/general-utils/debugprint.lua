@@ -1,4 +1,4 @@
-INFO = true
+INFO = false
 WARNING = false
 ERROR = true
 

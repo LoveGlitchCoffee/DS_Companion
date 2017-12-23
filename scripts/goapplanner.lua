@@ -87,16 +87,16 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
             found_node = predecessor[found_node]
          end
          table.insert(action_sequence, #action_sequence+1, found_node.next_action) -- insert last action         
-         printt(action_sequence)
+         -- printt(action_sequence)
          return action_sequence
       else
          info('not world state')
          table.insert(action_taken, node.next_action)
          info('current world state')
-         printt(node.world_state)
+         -- printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)         
          error('available actions generated')
-         printt(available_actions)
+         -- printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                info('never tried this action: ', action.name)
