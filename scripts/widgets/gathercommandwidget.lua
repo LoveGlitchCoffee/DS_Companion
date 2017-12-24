@@ -1,18 +1,23 @@
+require 'general-utils/debugprint'
+require 'general-utils/table_ops'
+require 'class'
 local Widget = require 'widgets/widget'
-local ImageButon = require 'widgets/imagebutton'
-local Image = require 'widgets/image'
 local UIAnim = require 'widgets/uianim'
+local GatherCommandSlot = require 'widgets/gathercommandslot'
+local GatherCommandTile = require 'widgets/gathercommandtile'
 
-local GatherCommandWidget = Class(Widget, function(self, owner)   
+local InvSlot = require 'widgets/invslot'
+
+local GatherCommandWidget = Class(Widget, function(self, owner)
    Widget._ctor(self, "GatherCommand")
-   local scale = .6   
+   local scale = .7
    self:SetScale(scale,scale,scale)
-   self.owner = owner
-   self:SetPosition(0, 0, 0)
-   self.slotsperrow = 3 -- not used
-   self.resource = {}
+   self.owner = owner   
+   self.target = nil
+   self:SetPosition(0, 0, 0)   
+   self.gatherable = {}
    self.isopen = false
-
+      
    self.bganim = self:AddChild(UIAnim()) -- background anim   
 end)
 
@@ -24,7 +29,7 @@ for y=2, 0, -1 do
    end   
 end
 
-local icons = {
+local resource = {
    'cutgrass',
    'flint',
    'rocks',
@@ -36,42 +41,50 @@ local icons = {
    'goldnugget'
 }
 
-function GatherCommandWidget:Open()   
+function GatherCommandWidget:Open(target)   
    self:Close()
-   -- self:StartUpdating()
+   self:StartUpdating()
    self.bganim:GetAnimState():SetBank("ui_chest_3x3")
    self.bganim:GetAnimState():SetBuild("ui_chest_3x3")   
 
-   self:SetPosition(Vector3(700,700,0)) -- not relative to player
+   self:SetPosition(Vector3(0,0,0)) -- not relative to player
    
    self.isopen = true
    self:Show()   
    self.bganim:GetAnimState():PlayAnimation("open")   
    
+   -- each command
    local n = 1
    for k,v in pairs(slotpos_3x3) do
-      error('setting tile')
-      local res = ImageButton('images/hud.xml', "inv_slot_spoiled.tex","inv_slot.tex","inv_slot_spoiled.tex","inv_slot_spoiled.tex","inv_slot_spoiled.tex")
-      self.resource[n] = self:AddChild(res)
-      res:SetPosition(v)
-      -- res:SetOnClick()
-      local resimage = Image('images/inventoryimages.xml', icons[n]..'.tex')
-      res:AddChild(resimage)
-
+      self.gatherable[n] = self:AddChild(InvSlot(n, 'images/hud.xml', 'inv_slot.tex', self.owner, nil))
+      self.gatherable[n]:SetPosition(v)      
+      -- self.gatherable[n]:SetTile(GatherCommandTile(resource[n]))
+      --print('\n'..'THIS IS THE TILE:')
+      --printt(self.gatherable[n])
       n = n + 1
-   end   
+   end
+   print('.\n')
+   printt(self) 
+   print('.\n')
+   self.target = target
 end
 
 function GatherCommandWidget:Close()
    if self.isopen then
-      self:StopUpdating()      
+      self:StopUpdating()
+      for k,v in pairs(self.gatherable) do
+         v:Kill()
+      end
+      self.gatherable = {} -- reset
+      self.bganim:GetAnimState():PlayAnimation('close')      
+      self.isopen = false
    end
 end
 
 function GatherCommandWidget:OnUpdate(dt)
-	if self.isopen and self.owner then	
-	   local distsq = self.owner:GetDistanceSqToInst(self.container)
-	   if distsq > 3*3 then	
+   if self.isopen and self.owner then      
+	   local distsq = self.owner:GetDistanceSqToInst(self.target)
+	   if distsq > 4*4 then	
 	      self:Close()	
       end	
    end
