@@ -5,6 +5,7 @@ local Widget = require 'widgets/widget'
 local UIAnim = require 'widgets/uianim'
 local GatherCommandSlot = require 'widgets/gathercommandslot'
 local GatherCommandTile = require 'widgets/gathercommandtile'
+local ItemTile = require 'widgets/itemtile'
 
 local InvSlot = require 'widgets/invslot'
 
@@ -37,7 +38,7 @@ local resource = {
    'log',
    'carrot',
    'berries',
-   'ice',
+   'silk',
    'goldnugget'
 }
 
@@ -47,7 +48,7 @@ function GatherCommandWidget:Open(target)
    self.bganim:GetAnimState():SetBank("ui_chest_3x3")
    self.bganim:GetAnimState():SetBuild("ui_chest_3x3")   
 
-   self:SetPosition(Vector3(0,0,0)) -- not relative to player
+   self:SetPosition(Vector3(200,0,0)) -- not relative to player
    
    self.isopen = true
    self:Show()   
@@ -56,16 +57,13 @@ function GatherCommandWidget:Open(target)
    -- each command
    local n = 1
    for k,v in pairs(slotpos_3x3) do
-      self.gatherable[n] = self:AddChild(InvSlot(n, 'images/hud.xml', 'inv_slot.tex', self.owner, nil))
+      self.gatherable[n] = self:AddChild(GatherCommandSlot('images/hud.xml', 'inv_slot.tex', self.owner, resource[n]))
       self.gatherable[n]:SetPosition(v)      
-      -- self.gatherable[n]:SetTile(GatherCommandTile(resource[n]))
-      --print('\n'..'THIS IS THE TILE:')
-      --printt(self.gatherable[n])
+      self.gatherable[n]:SetTile(GatherCommandTile(resource[n]))
+      
       n = n + 1
    end
-   print('.\n')
-   printt(self) 
-   print('.\n')
+   
    self.target = target
 end
 
@@ -76,7 +74,7 @@ function GatherCommandWidget:Close()
          v:Kill()
       end
       self.gatherable = {} -- reset
-      self.bganim:GetAnimState():PlayAnimation('close')      
+      self.bganim:GetAnimState():PlayAnimation('close')
       self.isopen = false
    end
 end

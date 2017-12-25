@@ -95,7 +95,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
          info('current world state')
          -- printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)         
-         error('available actions generated')
+         info('available actions generated')
          -- printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then

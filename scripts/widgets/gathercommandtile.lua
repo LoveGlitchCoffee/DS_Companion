@@ -1,42 +1,34 @@
 local Image = require "widgets/image"
 local Widget = require "widgets/widget"
+local ItemTile = require 'widgets/itemtile'
+require 'general-utils/debugprint'
 
 local GatherCommandTile = Class(Widget, function(self, resource)
    Widget._ctor(self, "GatherCommandTile")
-   self.item = resource
-
-   --self.bg = self:AddChild(Image())
-	--self.bg:SetTexture(HUD_ATLAS, "inv_slot_spoiled.tex")
-	--self.bg:Hide()
-   --self.bg:SetClickable(false)
-   
-   self.basescale = 1
-   
-   self.image = self:AddChild(Image('images/inventoryimages.xml', self.item..'.tex'))
-
+   self.image = self:AddChild(Image('images/inventoryimages.xml', resource..'.tex'))
+   self.resource = resource
 end)
 
-function GatherCommandTile:SetBaseScale(sc)
-	self.basescale = sc
-	self:SetScale(sc)
-end
+--function GatherCommandTile:OnControl(control, down)
+--    print('hovering over ' .. self.resource)
+--    self:SetTooltip('Gather '..self.resource)
+--    return false
+--end
 
-function GatherCommandTile:OnControl(control, down)
-    self:UpdateTooltip()
-    return false
+--function GatherCommandTile:GetDescriptionString()
+--   local str = 'Gather '..self.item
+--   return str
+--end
+--
+function GatherCommandTile:OnGainFocus()
+    self:SetTooltip('Gather '..self.resource)
 end
-
-function GatherCommandTile:UpdateTooltip()
-	local str = self:GetDescriptionString()
-	self:SetTooltip(str)
-end
-
-function GatherCommandTile:GetDescriptionString()
-   return 'Gather ' .. self.resource
-end
-
-function GatherCommandTile:OnGainFocus()    
-    self:UpdateTooltip()
-end
+--
+--function GatherCommandTile:StartDrag()    
+--end
+--
+--function GatherCommandTile:HasSpoilage()
+--    return false
+--end
 
 return GatherCommandTile

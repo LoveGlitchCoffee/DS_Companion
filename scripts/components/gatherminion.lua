@@ -11,10 +11,17 @@ function GatherMinion:CollectSceneActions(doer, actions)
 end
 
 function GatherMinion:Command(doer, target)
-   print 'adding child for gather'
-   widget = doer.HUD.controls.containerroot:AddChild(GatherCommandWidget(doer))
-   print('added to player ase')
+   local controls = doer.HUD.controls
+   local widget = controls.containerroot:AddChild(GatherCommandWidget(doer))
    widget:Open(target)
+
+   if controls.containers['gathercommand'] then
+      controls.containers['gathercommand']:Close()
+   else      
+      controls.containers['gathercommand'] = nil
+   end
+   
+   controls.containers['gathercommand'] = widget
 end
 
 
