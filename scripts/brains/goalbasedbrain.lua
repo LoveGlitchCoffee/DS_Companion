@@ -19,11 +19,13 @@ end)
 local function initialise_gwu(inst)
    -- Add all goals to the list, for now weight is always 1 (most important)
    local gwu_list = {}
-   local healthy = goal_tuple(StayHealthy(inst), 1)
-   local full = goal_tuple(StayFull(inst), 1)
+   local stayhealthy = StayHealthy(inst)
+   local stayfull = StayFull(inst)
+   local healthy = goal_tuple(stayhealthy, 1)
+   local full = goal_tuple(stayfull, 1)
       
-   gwu_list['healthy'] = healthy
-   gwu_list['full'] = full
+   gwu_list[stayhealthy.name] = healthy
+   gwu_list[stayfull.name] = full
    -- table.insert(gwu_list, 1, healthy)
    -- table.insert(gwu_list, 2, full)   
    
@@ -49,14 +51,14 @@ local function onActionPlanned(inst, data)
 end
 
 local function onInsertGoal(inst, data)   
-   local goal = data.goal   
-   local name = goal.name
+   local goal = data.goal      
    local g = goal_tuple(goal, 1) -- in proto following orders is important so 1
-   inst.brain.gwu_list[name] = g   
+   inst.brain.gwu_list[goal.name] = g   
    -- currently, this goal is first considered in the next iteration
 end
 
-local function onDropGoal(inst, goalname)
+local function onDropGoal(inst, data)
+   local goalname = data.goalname
    error('GOAL DROPPED '..goalname)
    inst.brain.gwu_list[goalname] = nil
 end

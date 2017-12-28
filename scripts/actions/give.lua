@@ -1,8 +1,11 @@
 require 'actions/action'
+require("general-utils/table_ops")
+require("behaviours/performgive")
 
-Give = Class(Action, function(self, inst, item)
-   self.item = item
+Give = Class(Action, function(self, inst, item, target)   
    Action._ctor(self, inst, 'Give '..item)
+   self.item = item
+   self.target = target -- usually player
 end)
 
 function Give:Precondition()
@@ -13,10 +16,15 @@ end
 
 function Give:PostEffect()
    local post = {}
-   post['giving'] = self.item   
+   local key = 'giving_'..self.item
+   post[key] = true
    return post
 end
 
 function Give:Cost()
    return 1
+end
+
+function Give:Perform()   
+   return PerformGive(self.inst, self.item, self.target)
 end

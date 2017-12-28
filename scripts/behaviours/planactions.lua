@@ -12,15 +12,17 @@ require 'general-utils/debugprint'
 
 PlanActions = Class(BehaviourNode, function(self, inst)
    BehaviourNode._ctor(self, 'PlanActions')
-   self.inst = inst			   
+	self.inst = inst			
+	local player = GetPlayer()
+	error('got player sucessfully')
    self.all_actions = {
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
       Gather(inst, 'carrot'),
       GatherFood(inst, 'carrot'), -- special case
-      --Give(inst, 'twigs'),
-      --Give(inst, 'cutgrass'),
-      --Give(inst, 'carrot'),			  
+      Give(inst, 'twigs', player),
+      Give(inst, 'cutgrass', player),
+      Give(inst, 'carrot', player),			  
       SearchFor(inst, 'twigs'),
       SearchFor(inst, 'grass'),
       SearchFor(inst, 'carrot'),
@@ -100,9 +102,9 @@ function PlanActions:Visit()
 	local world_state = self:generate_world_state()
 	info('.\n')
    info('world state: ')
-	-- printt(world_state)
+	--printt(world_state)
 	info('.\n')
 	local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
    local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
-   --self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
+   self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end

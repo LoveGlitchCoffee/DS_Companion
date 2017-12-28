@@ -20,10 +20,19 @@ end
 function is_subset(set, superset)   
    local is_subset = true
    for k, v in pairs(set) do
-      if superset[k] == nil
-      or superset[k] ~= set[k] then
-         is_subset = false
-         break
+      if superset[k] == nil then
+         if type(set[k]) == 'number' then            
+            if superset[k] < set[k] then
+               is_subset = false
+               break         
+            end
+         else
+            if superset[k] ~= set[k] then
+               is_subset = false
+               break
+            end
+         end
+         
       end
    end   
    return is_subset

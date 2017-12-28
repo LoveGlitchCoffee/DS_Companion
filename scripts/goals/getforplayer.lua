@@ -15,11 +15,13 @@ GetForPlayer = Class(Goal, function(self, inst, item)
          self.urgency = self.urgency - 0.1
          self.cur_time = os.clock()
          error('updating urgency'..tostring(self.urgency))
+         if self.urgency <= 0 then
+            -- drop it
+            self.inst:PushEvent('dropgoal', {goalname=self.name})
+            -- not sure if follow will remove ref and hence prevent memory leak
+            self.inst:RemoveEventCallback('clocktick', self.updateUrgency)
+         end
       end      
-      if self.urgency == 0 then
-         -- drop it
-         self.inst:PushEvent('dropgoal', {goalname=self.name})
-      end
    end
    
    self.inst:ListenForEvent('clocktick', self.updateUrgency)
@@ -37,6 +39,7 @@ end
 
 function GetForPlayer:GetGoalState()
    local state = {}
-   state['giving'] = self.item
+   local key = 'giving_'..self.item
+   state[key] = true      
 	return state
 end

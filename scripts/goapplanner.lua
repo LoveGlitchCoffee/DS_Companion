@@ -46,6 +46,10 @@ local function calc_repeats_needed(node_state, world_state, action)
          end
       end
    end
+   if repeats < 0 then
+      error('repeats is less than 0')
+      repeats = 1 -- otherwise infinite loop where used
+   end
    return repeats
 end
 
@@ -68,7 +72,14 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
       predecessor[a] = nil
       pending_actions:push(a_node, a:Cost())
-   end   
+   end
+
+   --error('STARTING PENDING ACTIONS')
+   --for i=1,#pending_actions.A do
+   --   error('pending action')
+   --   print(tostring(pending_actions.A[i].data.next_action))
+   --   error('end pending action')
+   --end   
 
    while pending_actions:size() > 0 do
       -- for a single node
@@ -93,10 +104,10 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
          info('not world state')
          table.insert(action_taken, node.next_action)
          info('current world state')
-         -- printt(node.world_state)
+         printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)         
          info('available actions generated')
-         -- printt(available_actions)
+         printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                info('never tried this action: ', action.name)
@@ -130,14 +141,14 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   end
                                                                      
                   distance[next_node.next_action] = cost
-                  pending_actions:push(next_node, cost)                  
+                  pending_actions:push(next_node, cost)
                end
             else
                info('aciton already taken')
             end
          end
       end
-   end   
+   end
    return {} -- no plan found
 end
 

@@ -1,4 +1,4 @@
-INFO = true
+INFO = false
 WARNING = false
 ERROR = true
 
@@ -18,6 +18,6 @@ end
 function error(string)
    -- body
    if ERROR then
-      print(string)   
+      print('ERROR: '..string)   
    end
 end
