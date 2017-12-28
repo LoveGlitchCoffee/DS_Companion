@@ -12,7 +12,7 @@ end
 
 function GatherMinion:Command(doer, target)
    local controls = doer.HUD.controls
-   local widget = controls.containerroot:AddChild(GatherCommandWidget(doer))
+   local widget = controls.containerroot:AddChild(GatherCommandWidget(doer, self.inst))
    widget:Open(target)
 
    if controls.containers['gathercommand'] then

@@ -5,24 +5,28 @@ require 'actions/gatherfood'
 require 'actions/build'
 require 'actions/searchfor'
 require 'actions/eat'
+require 'actions/give'
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
 PlanActions = Class(BehaviourNode, function(self, inst)
-		       BehaviourNode._ctor(self, 'PlanActions')
-		       self.inst = inst			   
-		       self.all_actions = {
-			  Gather(inst, 'twigs'),
-			  Gather(inst, 'cutgrass'),
-			  Gather(inst, 'carrot'),
-			  GatherFood(inst, 'carrot'), -- special case
-			  SearchFor(inst, 'twigs'),
-			  SearchFor(inst, 'grass'),
-			  SearchFor(inst, 'carrot'),
-			  Build(inst, 'trap'),
-			  Eat(inst)
-		       }
+   BehaviourNode._ctor(self, 'PlanActions')
+   self.inst = inst			   
+   self.all_actions = {
+      Gather(inst, 'twigs'),
+      Gather(inst, 'cutgrass'),
+      Gather(inst, 'carrot'),
+      GatherFood(inst, 'carrot'), -- special case
+      --Give(inst, 'twigs'),
+      --Give(inst, 'cutgrass'),
+      --Give(inst, 'carrot'),			  
+      SearchFor(inst, 'twigs'),
+      SearchFor(inst, 'grass'),
+      SearchFor(inst, 'carrot'),
+      Build(inst, 'trap'),
+      Eat(inst)
+   }
 end)
 
 function PlanActions:generate_inv_state(inventory, state)	

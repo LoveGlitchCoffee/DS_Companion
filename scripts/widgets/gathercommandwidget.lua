@@ -9,7 +9,7 @@ local ItemTile = require 'widgets/itemtile'
 
 local InvSlot = require 'widgets/invslot'
 
-local GatherCommandWidget = Class(Widget, function(self, owner)
+local GatherCommandWidget = Class(Widget, function(self, owner, target)
    Widget._ctor(self, "GatherCommand")
    local scale = .7
    self:SetScale(scale,scale,scale)
@@ -18,6 +18,7 @@ local GatherCommandWidget = Class(Widget, function(self, owner)
    self:SetPosition(0, 0, 0)   
    self.gatherable = {}
    self.isopen = false
+   self.target = target
       
    self.bganim = self:AddChild(UIAnim()) -- background anim   
 end)
@@ -57,7 +58,7 @@ function GatherCommandWidget:Open(target)
    -- each command
    local n = 1
    for k,v in pairs(slotpos_3x3) do
-      self.gatherable[n] = self:AddChild(GatherCommandSlot('images/hud.xml', 'inv_slot.tex', self.owner, resource[n]))
+      self.gatherable[n] = self:AddChild(GatherCommandSlot('images/hud.xml', 'inv_slot.tex', self.owner, resource[n], self.target))
       self.gatherable[n]:SetPosition(v)      
       self.gatherable[n]:SetTile(GatherCommandTile(resource[n]))
       

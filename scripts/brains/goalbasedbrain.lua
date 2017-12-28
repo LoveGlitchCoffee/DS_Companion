@@ -22,8 +22,10 @@ local function initialise_gwu(inst)
    local healthy = goal_tuple(StayHealthy(inst), 1)
    local full = goal_tuple(StayFull(inst), 1)
       
-   table.insert(gwu_list, 1, healthy)
-   table.insert(gwu_list, 2, full)   
+   gwu_list['healthy'] = healthy
+   gwu_list['full'] = full
+   -- table.insert(gwu_list, 1, healthy)
+   -- table.insert(gwu_list, 2, full)   
    
    return gwu_list
 end
@@ -46,11 +48,26 @@ local function onActionPlanned(inst, data)
    end
 end
 
+local function onInsertGoal(inst, data)   
+   local goal = data.goal   
+   local name = goal.name
+   local g = goal_tuple(goal, 1) -- in proto following orders is important so 1
+   inst.brain.gwu_list[name] = g   
+   -- currently, this goal is first considered in the next iteration
+end
+
+local function onDropGoal(inst, goalname)
+   error('GOAL DROPPED '..goalname)
+   inst.brain.gwu_list[goalname] = nil
+end
+
 function GoalBasedBrain:OnStart()   
    self.gwu_list = initialise_gwu(self.inst)
    
    self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)
    self.inst:ListenForEvent('actionplanned', onActionPlanned)   
+   self.inst:ListenForEvent('insertgoal', onInsertGoal)
+   self.inst:ListenForEvent('dropgoal', onDropGoal)
    
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
@@ -63,18 +80,11 @@ function GoalBasedBrain:OnStart()
    local root = PriorityNode(
       {         
          -- maybe put this in if node     
-         SelectGoal(self.inst, self.gwu_list),
-         PlanActions(self.inst),         
+         SelectGoal(self.inst, function () return self.gwu_list end),
+         PlanActions(self.inst),
          IfNode(function() return self.inst.components.planholder.actionplan end, 'HasPlan',
          GOAPSequenceNode(function() return self.inst.components.planholder.actionplan end))
-         -- Debug(self.inst, function() return self.inst.components.planholder.actionplan end)) -- it reverts back to constructor values. not a component thing
-         -- works if i use it as a lambda. i.e. wrap in a function
-         -- using global doesn't work, try self and wrap function?
-         -- can't do it from here but can do it inside behaviours
-         -- probably to do with when this was ran, planholder is nothing - confirmed.
-         -- so only way is to make it when visit() is called
-
-         -- SequenceNode(self.inst.components.planholder.actionplan)
+         
          --if goal is same then dun come up with new plan?      
          -- need to clean action plan
       }, 5)

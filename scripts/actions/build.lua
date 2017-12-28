@@ -1,8 +1,8 @@
 require 'actions/action'
 
 Build = Class(Action, function (self, inst, item)
-		  self.item = item
-		  Action._ctor(self, inst, 'Build ' .. item)
+   self.item = item
+   Action._ctor(self, inst, 'Build ' .. item)
 end)
 
 function Build:Precondition()
