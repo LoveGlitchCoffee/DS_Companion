@@ -45,7 +45,7 @@ function PerformGather:Visit()
       if target then
          local pAction = BufferedAction(self.inst, target, ACTIONS.PICK)
          pAction:AddFailAction(function() self:OnFail() end)
-         pAction:AddSuccessAction(function() self:OnSucceed() end)         
+         pAction:AddSuccessAction(function() self:OnSucceed() end)
          self.action = pAction
          self.pendingstatus = nil
          self.inst.components.locomotor:PushAction(pAction, true)

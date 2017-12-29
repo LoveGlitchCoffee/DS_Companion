@@ -18,13 +18,19 @@ GetForPlayer = Class(Goal, function(self, inst, item)
          if self.urgency <= 0 then
             -- drop it
             self.inst:PushEvent('dropgoal', {goalname=self.name})
-            -- not sure if follow will remove ref and hence prevent memory leak
-            self.inst:RemoveEventCallback('clocktick', self.updateUrgency)
+            -- not sure if follow will remove ref and hence prevent memory leak            
          end
+      end      
+   end
+
+   self.dropSelf = function (inst, data)
+      if data.goalname == self.name then
+         self.inst:RemoveEventCallback('clocktick', self.updateUrgency)
       end      
    end
    
    self.inst:ListenForEvent('clocktick', self.updateUrgency)
+   self.inst:ListenForEvent('dropgoal', self.dropSelf)
    -- update urgency as time goes pass, goes down
    -- over certain level remove from list
    -- maybe down satisfaction as well

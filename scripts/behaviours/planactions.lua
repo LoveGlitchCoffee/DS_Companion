@@ -13,8 +13,7 @@ require 'general-utils/debugprint'
 PlanActions = Class(BehaviourNode, function(self, inst)
    BehaviourNode._ctor(self, 'PlanActions')
 	self.inst = inst			
-	local player = GetPlayer()
-	error('got player sucessfully')
+	local player = GetPlayer()	
    self.all_actions = {
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
