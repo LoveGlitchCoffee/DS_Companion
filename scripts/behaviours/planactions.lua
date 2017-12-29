@@ -103,7 +103,7 @@ function PlanActions:Visit()
    info('world state: ')
 	--printt(world_state)
 	info('.\n')
-	local goal_state = self.inst.components.planholder.currentgoal:GetGoalState()
+	local goal_state = self.inst.brain.currentgoal:GetGoalState()
    local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
    self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
 end

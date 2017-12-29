@@ -12,7 +12,9 @@ require 'general-utils/debugprint'
 
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
-	self.gwu_list = {}	
+   self.gwu_list = {}
+   self.currentgoal = nil
+   self.actionplan = {}
 end)
 
 
@@ -33,8 +35,8 @@ local function initialise_gwu(inst)
 end
 
 local function onNextGoalFound(inst, data)    
-   inst.components.planholder.currentgoal = data.goal
-   info('DECIDED ON GOAL ' .. tostring(inst.components.planholder.currentgoal) .. '\n')
+   inst.brain.currentgoal = data.goal
+   info('DECIDED ON GOAL ' .. tostring(inst.brain.currentgoal) .. '\n')
 end
 
 local function onActionPlanned(inst, data)   
@@ -46,7 +48,7 @@ local function onActionPlanned(inst, data)
          table.insert(plan, #plan+1, a_sequence[a]:Perform())
       end
       info('.\n')
-      inst.components.planholder.actionplan = plan
+      inst.brain.actionplan = plan
    end
 end
 
@@ -84,8 +86,8 @@ function GoalBasedBrain:OnStart()
          -- maybe put this in if node     
          SelectGoal(self.inst, function () return self.gwu_list end),
          PlanActions(self.inst),
-         IfNode(function() return self.inst.components.planholder.actionplan end, 'HasPlan',
-         GOAPSequenceNode(function() return self.inst.components.planholder.actionplan end))
+         IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
+         GOAPSequenceNode(function() return self.inst.brain.actionplan end))
          
          --if goal is same then dun come up with new plan?      
          -- need to clean action plan
