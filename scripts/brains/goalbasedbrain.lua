@@ -55,14 +55,15 @@ end
 local function onInsertGoal(inst, data)   
    local goal = data.goal      
    local g = goal_tuple(goal, 1) -- in proto following orders is important so 1
-   inst.brain.gwu_list[goal.name] = g   
+   inst.brain.gwu_list[goal.name] = g
+
    -- currently, this goal is first considered in the next iteration
 end
 
 local function onDropGoal(inst, data)
    local goalname = data.goalname
    error('GOAL DROPPED '..goalname)
-   inst.brain.gwu_list[goalname] = nil
+   inst.brain.gwu_list[goalname] = nil   
 end
 
 function GoalBasedBrain:OnStart()   
@@ -93,6 +94,17 @@ function GoalBasedBrain:OnStart()
          -- need to clean action plan
       }, 5)
    self.bt = BT(self.inst, root)
+end
+
+function GoalBasedBrain:OnStop()
+   self.inst:RemoveEventCallback('nextgoalfound', onNextGoalFound)
+   self.inst:RemoveEventCallback('actionplanned', onActionPlanned)   
+   self.inst:RemoveEventCallback('insertgoal', onInsertGoal)
+   self.inst:RemoveEventCallback('dropgoal', onDropGoal)
+
+   for _,v in pairs(self.gwu_list) do
+      v.goal:OnStop()
+   end
 end
 
 return GoalBasedBrain

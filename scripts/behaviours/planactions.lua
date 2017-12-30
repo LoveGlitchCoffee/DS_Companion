@@ -97,7 +97,7 @@ function PlanActions:generate_world_state()
    return state
 end
 
-function PlanActions:Visit()
+function PlanActions:Visit()	
 	local world_state = self:generate_world_state()
 	info('.\n')
    info('world state: ')

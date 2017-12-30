@@ -16,6 +16,10 @@ PerformGather = Class(BehaviourNode, function(self, inst, item)
    self.inst:ListenForEvent("actionfailed", self.locomotorFailed)
 end)
 
+function PerformGather:OnStop()
+   self.inst:RemoveEventCallback("actionfailed", self.locomotorFailed)
+end
+
 function PerformGather:OnFail()
    warning('\nfail to pick up\n')
    self.pendingstatus = FAILED

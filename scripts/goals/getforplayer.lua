@@ -26,6 +26,7 @@ GetForPlayer = Class(Goal, function(self, inst, item)
    self.dropSelf = function (inst, data)
       if data.goalname == self.name then
          self.inst:RemoveEventCallback('clocktick', self.updateUrgency)
+         self.inst:RemoveEventCallback('dropgoal', self.dropSelf)
       end      
    end
    

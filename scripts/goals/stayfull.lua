@@ -18,6 +18,10 @@ StayFull = Class(Goal, function(self, inst)
 		    -- could do for start starving event too
 end)
 
+function OnStop()
+	self.inst:RemoveEventCallback("hungerdelta", self.updateUrgency)
+end
+
 function StayFull:Satisfaction()
     -- body
     -- basically just inverse of hunger percentage

@@ -1,3 +1,5 @@
+require("general-utils/debugprint")
+
 Goal = Class(function(self, inst, name)
     -- constructor
     self.inst = inst
@@ -5,12 +7,16 @@ Goal = Class(function(self, inst, name)
     self.urgency = 0.1
 end)
 
+function OnStop()
+    error('OnStop() needs to be implemented')
+end
+
 function Goal:__tostring()
    return string.format("Goal: %s", self.name)
 end
 
 function Goal:Satisfaction()
-   print('error. This needs to be implemented')
+   print('Satisfaction() needs to be implemented')
 end
 
 function Goal:Urgency()
@@ -18,5 +24,5 @@ function Goal:Urgency()
 end
 
 function Goal:GetGoalState()
-    print('error. State needs to be implemented')
+    print('GetGoalState() needs to be implemented')
 end
