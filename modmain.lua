@@ -31,9 +31,11 @@ function SpawnSmartCompanion(player)
       companion:AddComponent('inventory')
       companion:AddComponent('trader')
       companion:SetStateGraph('SGperdcompanion')
+      companion.components.locomotor.runspeed = 7
+      companion.components.locomotor.walkspeed = 5
       -- companion:RemoveComponent('sleeper')
       companion:SetBrain(smart_brain)
-      companion.Transform:SetPosition(pos:Get())
+      companion.Transform:SetPosition(pos:Get())      
 
       -- try remove component follower and leader and player
       

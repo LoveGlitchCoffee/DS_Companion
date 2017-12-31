@@ -3,6 +3,7 @@ require 'behaviours/planactions'
 require 'behaviours/goapsequencenode'
 require 'goals/stayfull'
 require 'goals/stayhealthy'
+require("goals/followplayer")
 
 require 'brains/utils'
 require 'behaviours/debug'
@@ -20,17 +21,21 @@ end)
 
 local function initialise_gwu(inst)
    -- Add all goals to the list, for now weight is always 1 (most important)
+   local player = GetPlayer()
+
    local gwu_list = {}
    local stayhealthy = StayHealthy(inst)
    local stayfull = StayFull(inst)
+   local followPlayer = FollowPlayer(inst, player)
+
    local healthy = goal_tuple(stayhealthy, 1)
    local full = goal_tuple(stayfull, 1)
+   local follow = goal_tuple(followPlayer, 1)
       
    gwu_list[stayhealthy.name] = healthy
    gwu_list[stayfull.name] = full
-   -- table.insert(gwu_list, 1, healthy)
-   -- table.insert(gwu_list, 2, full)   
-   
+   gwu_list[followPlayer.name] = follow
+      
    return gwu_list
 end
 
@@ -92,7 +97,7 @@ function GoalBasedBrain:OnStart()
          
          --if goal is same then dun come up with new plan?      
          -- need to clean action plan
-      }, 5)
+      }, .5)
    self.bt = BT(self.inst, root)
 end
 

@@ -16,7 +16,7 @@ function Goal:__tostring()
 end
 
 function Goal:Satisfaction()
-   print('Satisfaction() needs to be implemented')
+   error('Satisfaction() needs to be implemented')
 end
 
 function Goal:Urgency()
@@ -24,5 +24,5 @@ function Goal:Urgency()
 end
 
 function Goal:GetGoalState()
-    print('GetGoalState() needs to be implemented')
+    error('GetGoalState() needs to be implemented')
 end

@@ -6,6 +6,7 @@ require 'actions/build'
 require 'actions/searchfor'
 require 'actions/eat'
 require 'actions/give'
+require("actions/followplayeraction")
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
@@ -15,10 +16,12 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 	self.inst = inst			
 	local player = GetPlayer()	
    self.all_actions = {
+      FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
       Gather(inst, 'carrot'),
-      GatherFood(inst, 'carrot'), -- special case
+		GatherFood(inst, 'carrot'), -- special case
+		GatherFood(inst, 'berries'),
       Give(inst, 'twigs', player),
       Give(inst, 'cutgrass', player),
       Give(inst, 'carrot', player),			  

@@ -6,7 +6,7 @@ GetForPlayer = Class(Goal, function(self, inst, item)
    Goal._ctor(self, inst, "GetForPlayer")
    self.item = item
    self.name = (self.name .. self.item)
-   self.urgency = 0.7 -- pretty high urgency, usually primary task
+   self.urgency = 0.8 -- pretty high urgency, usually primary task
    self.cur_time = os.clock()
    self.time_thres = 5 -- in seconds
 

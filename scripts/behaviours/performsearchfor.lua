@@ -47,13 +47,16 @@ function PerformSearchFor:SearchWithDirection()
    if self.status == READY then      
       info('searching for food now')
       local randomAngle = math.random() * 360 -- in degrees
-      info('random degrees ' .. tostring(randomAngle))
-      self.waittime = GetTime() + 4
+      error('random degrees ' .. tostring(randomAngle))
+      self.waittime = GetTime() + 100
+      error('start time '..tostring(GetTime()))
+      error('end time '..tostring(self.waittime))
       self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
-   elseif self.status == RUNNING then      
-      if GetTime() > self.waittime then     
-         info('finish searching. look around')
+   elseif self.status == RUNNING then
+      error('time '..tostring(GetTime()))      
+      if GetTime() > self.waittime then
+         error('finish searching. look around')
          local target = FindEntity(self.inst, 4, function(resource)
             if resource.components.pickable then -- might want to change at some point
                return resource.components.pickable.product == self.item
@@ -75,6 +78,6 @@ function PerformSearchFor:SearchWithDirection()
    end
 end
 
-function PerformSearchFor:Visit()   
+function PerformSearchFor:Visit()
    self:SearchWithDirection()
 end
