@@ -1,43 +1,73 @@
 require("general-utils/table_ops")
 require("general-utils/debugprint")
+require("actions")
 
 SelectGoal = Class(function (self, inst, gwulistfn)
    BehaviourNode._ctor(self, 'SelectGoal')
    self.inst = inst   
    self.gwulistfn = gwulistfn
+
+   self.selectgoalaction = Action()
+   self.selectgoalaction.fn = function(act)
+      print('SELECTING GOAL ACTION')
+      act.doer:PushEvent('nextgoalfound', {goal=self.next_goal})
+      return true
+   end   
 end)
 
-function SelectGoal:__tostring()
-    return 'Planning goal'
+function SelectGoal:OnFail()   
+   error('FAILED')
+   self.pendingstatus = FAILED
+end
+function SelectGoal:OnSucceed()   
+   error('SUCCEED')
+   self.pendingstatus = SUCCESS
 end
 
-function SelectGoal()
-   if self.status == READY and self.gwulistfn then
-      local weighted_goals = get_weighted_goals(self.gwulistfn())      
-      if not weighted_goals then
-          self.status = FAILED
-          return
+function SelectGoal:Visit()
+   if self.status == READY then
+
+      if self.gwulistfn  then
+         local weighted_goals = get_weighted_goals(self.gwulistfn())               
+         --if not weighted_goals then
+         --    self.status = FAILED
+         --    return
+         --end
+         self.next_goal = max_goal(weighted_goals)
+         --if not next_goal then
+         --    self.status = FAILED
+         --    return
+         --end      
+         -- Given a list of goals, along with their weighting and urgency
+         -- decide which goal to pursue
+         -- assume that all goals passed in are available goals, otherwise wouldn't be in goal list
+         --------------------------------------
+         -- @param goal_weight_urgency_list: list of goals, their weighting and urgency as a 3-tuple
+         -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction      
+                           
+         --local pAction = BufferedAction(self.inst, nil, ACTIONS.WALKTO)
+         --pAction:AddFailAction(function() self:OnFail() end)
+         --pAction:AddSuccessAction(function() self:OnSucceed() end)
+         --self.action = pAction
+         --self.pendingstatus = nil
+         --self.inst.components.locomotor:PushAction(pAction, true)
+         error('SELECTED GOAL')
+         self.inst:PushEvent('nextgoalfound', {goal=self.next_goal})
+         self.start = SUCCESS
+         --self.status = RUNNING
+      else
+        --self.status = FAILED
       end
-      local next_goal = max_goal(weighted_goals)
-      if not next_goal then
-          self.status = FAILED
-          return
-      end
-      --self.status = RUNNING
-   --elseif self.status == RUNING then
-      -- Given a list of goals, along with their weighting and urgency
-      -- decide which goal to pursue
-      -- assume that all goals passed in are available goals, otherwise wouldn't be in goal list
-      --------------------------------------
-      -- @param goal_weight_urgency_list: list of goals, their weighting and urgency as a 3-tuple
-      -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction      
-      
-      
-      -- return next goal somehow. seems like might have to push event
-      info('my next goal is '..tostring(next_goal))
-      self.inst:PushEvent('nextgoalfound', {goal=next_goal})      
-      self.status = SUCCESS      
-   end   
+   --elseif self.status == RUNNING then
+   --   if self.pendingstatus then
+   --      self.status = self.pendingstatus
+   --      warning('\nkeep running\n')
+   --   elseif not self.action:IsValid() then
+   --      warning('\nfail as action not valid\n')
+   --      self.status = FAILED
+   --   end
+   --end
+   end
 end
 
 function get_weighted_goals( gwu_list )

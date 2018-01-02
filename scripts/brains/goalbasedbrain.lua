@@ -87,12 +87,8 @@ function GoalBasedBrain:OnStart()
    -- end
    -- )))   
    
-   local root = GOAPPriorityNode(
-      function ()
-         return 
-      {
-      
-         -- maybe put this in if node
+   local root = SequenceNode(
+      {       
          SelectGoal(self.inst, function () return self.gwu_list end),
          PlanActions(self.inst),
          IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
@@ -100,7 +96,7 @@ function GoalBasedBrain:OnStart()
          
          --if goal is same then dun come up with new plan?      
          --need to clean action plan
-      } end, .5)            
+      })   
    self.bt = BT(self.inst, root)
 end
 
