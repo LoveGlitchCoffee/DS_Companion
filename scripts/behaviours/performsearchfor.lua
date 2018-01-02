@@ -48,7 +48,7 @@ function PerformSearchFor:SearchWithDirection()
       info('searching for food now')
       local randomAngle = math.random() * 360 -- in degrees
       error('random degrees ' .. tostring(randomAngle))
-      self.waittime = GetTime() + 100
+      self.waittime = GetTime() + 6
       error('start time '..tostring(GetTime()))
       error('end time '..tostring(self.waittime))
       self.inst.components.locomotor:WalkInDirection(randomAngle)

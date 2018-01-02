@@ -34,7 +34,7 @@ local function initialise_gwu(inst)
       
    gwu_list[stayhealthy.name] = healthy
    gwu_list[stayfull.name] = full
-   gwu_list[followPlayer.name] = follow
+   --gwu_list[followPlayer.name] = follow
       
    return gwu_list
 end
@@ -87,17 +87,20 @@ function GoalBasedBrain:OnStart()
    -- end
    -- )))   
    
-   local root = PriorityNode(
-      {         
-         -- maybe put this in if node     
+   local root = GOAPPriorityNode(
+      function ()
+         return 
+      {
+      
+         -- maybe put this in if node
          SelectGoal(self.inst, function () return self.gwu_list end),
          PlanActions(self.inst),
          IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
-         GOAPSequenceNode(function() return self.inst.brain.actionplan end))
+         GOAPPriorityNode(function() return self.inst.brain.actionplan end), .5)
          
          --if goal is same then dun come up with new plan?      
-         -- need to clean action plan
-      }, .5)
+         --need to clean action plan
+      } end, .5)            
    self.bt = BT(self.inst, root)
 end
 

@@ -100,13 +100,16 @@ function PlanActions:generate_world_state()
    return state
 end
 
-function PlanActions:Visit()	
-	local world_state = self:generate_world_state()
-	info('.\n')
-   info('world state: ')
-	--printt(world_state)
-	info('.\n')
-	local goal_state = self.inst.brain.currentgoal:GetGoalState()
-   local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
-   self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
+function PlanActions:Visit()
+	if self.status == READY then
+	   local world_state = self:generate_world_state()
+	   info('.\n')
+      info('world state: ')
+	   --printt(world_state)
+	   info('.\n')
+	   local goal_state = self.inst.brain.currentgoal:GetGoalState()
+      local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
+		self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})
+		self.status = SUCCESS
+	end
 end

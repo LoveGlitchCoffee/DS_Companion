@@ -9,7 +9,7 @@ function is_subset_key(set, superset)
    -- Only accounting for keys, not values   
    local is_subset = true
    for k, _ in pairs(set) do
-      if superset[k] == nil then   
+      if superset[k] == nil then
          is_subset = false
          break
       end      

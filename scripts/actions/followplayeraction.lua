@@ -1,6 +1,6 @@
 require 'actions/action'
 require 'behaviours/follow'
-require("behaviours/wander")
+require 'behaviours/wander'
 require 'general-utils/debugprint'
 require 'general-utils/table_ops'
 
@@ -30,7 +30,7 @@ function FollowPlayerAction:Perform()
 
    if dist_sq < self.CLOSE_DIST*self.CLOSE_DIST then
       error('WANDER INTEAD')
-      return Wander(self.inst, target_pos, 10)      
+      return Wander(self.inst, target_pos, 5, {minwalktime=2, randwalktime=2.5, minwaittime=0, randwaittime=0.5})
    end
    if dist_sq < self.MED_DIST*self.MED_DIST then
       error('FOLLOW QUICKLY')

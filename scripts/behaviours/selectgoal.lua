@@ -1,26 +1,42 @@
 require("general-utils/table_ops")
 require("general-utils/debugprint")
 
-SelectGoal = Class(BehaviourNode, function (self, inst, gwulistfn)
+SelectGoal = Class(function (self, inst, gwulistfn)
    BehaviourNode._ctor(self, 'SelectGoal')
    self.inst = inst   
    self.gwulistfn = gwulistfn
 end)
 
-function SelectGoal:Visit()   
+function SelectGoal:__tostring()
+    return 'Planning goal'
+end
+
+function SelectGoal()
    if self.status == READY and self.gwulistfn then
+      local weighted_goals = get_weighted_goals(self.gwulistfn())      
+      if not weighted_goals then
+          self.status = FAILED
+          return
+      end
+      local next_goal = max_goal(weighted_goals)
+      if not next_goal then
+          self.status = FAILED
+          return
+      end
+      --self.status = RUNNING
+   --elseif self.status == RUNING then
       -- Given a list of goals, along with their weighting and urgency
       -- decide which goal to pursue
       -- assume that all goals passed in are available goals, otherwise wouldn't be in goal list
       --------------------------------------
       -- @param goal_weight_urgency_list: list of goals, their weighting and urgency as a 3-tuple
       -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction      
-      local weighted_goals = get_weighted_goals(self.gwulistfn())      
-      local next_goal = max_goal(weighted_goals)
+      
       
       -- return next goal somehow. seems like might have to push event
       info('my next goal is '..tostring(next_goal))
       self.inst:PushEvent('nextgoalfound', {goal=next_goal})      
+      self.status = SUCCESS      
    end   
 end
 
