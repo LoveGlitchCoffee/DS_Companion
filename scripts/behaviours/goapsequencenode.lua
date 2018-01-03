@@ -7,8 +7,7 @@ GOAPPriorityNode = Class(BehaviourNode, function(self, planfn, period)
 end)
 
 function GOAPPriorityNode:GetSleepTime()
-    if self.status == RUNNING then
-        error('SLEEPING')
+    if self.status == RUNNING then        
         if not self.period then
             return 0
         end
@@ -48,11 +47,11 @@ function GOAPPriorityNode:Reset()
 end
 
 function GOAPPriorityNode:Visit()
-    error('current status: '..tostring(self.status))    
+    
     local time = GetTime()
     local do_eval = not self.lasttime or not self.period or self.lasttime + self.period < time 
     local oldidx = self.idx
-    error('do_eval '..tostring(do_eval))
+
 
     local plan = self.planfn()
     if do_eval then
@@ -69,26 +68,20 @@ function GOAPPriorityNode:Visit()
         
             local should_test_anyway = old_event and child:is_a(EventNode) and old_event.priority <= child.priority
             if not found or should_test_anyway then
-                error ('should test bheaviour anyway: '..tostring(child.name))
-                if child.status == FAILED or child.status == SUCCESS then
-                    error('FINISH BEHAVIOUR')
+                if child.status == FAILED or child.status == SUCCESS then                    
                     child:Reset()
                 end
-                error('visiting child')
                 child:Visit()
                 local cs = child.status
                 if cs == SUCCESS or cs == RUNNING then
-                    if should_test_anyway and self.idx ~= idx then
-                        error('reset current behaviour: '..plan[self.idx].name)
+                    if should_test_anyway and self.idx ~= idx then                        
                         plan[self.idx]:Reset()
-                    end
-                    error('behaviour running: '..tostring(child.name))
+                    end                    
                     self.status = cs
                     found = true
                     self.idx = idx
                 end
-            else
-                error('skip behaviour: '..tostring(child.name))
+            else                
                 child:Reset()
             end
         end

@@ -32,9 +32,9 @@ local function initialise_gwu(inst)
    local full = goal_tuple(stayfull, 1)
    local follow = goal_tuple(followPlayer, 1)
       
-   gwu_list[stayhealthy.name] = healthy
-   gwu_list[stayfull.name] = full
-   --gwu_list[followPlayer.name] = follow
+   --gwu_list[stayhealthy.name] = healthy
+   --gwu_list[stayfull.name] = full
+   gwu_list[followPlayer.name] = follow
       
    return gwu_list
 end

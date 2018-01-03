@@ -29,11 +29,15 @@ function PerformGather:OnSucceed()
    self.pendingstatus = SUCCESS
 end
 
+function PerformGather:PushBufferedAction()
+   -- body
+end
+
 function PerformGather:Visit()   
    -- body
    if self.status == READY then
 
-      local target = FindEntity(self.inst, 4, function(resource)         
+      local target = FindEntity(self.inst, 5, function(resource)
          if resource.components.pickable then
             warning('FOUND THIS: ' .. tostring(resource.components.pickable.product))
             warning('finding: ' .. self.item .. '\n')
@@ -42,7 +46,7 @@ function PerformGather:Visit()
          and resource.components.pickable.product == self.item
          and resource.components.pickable:CanBePicked()
          and resource.components.pickable.caninteractwith
-      end)
+      end)      
 
       warning('target: ' .. tostring(target))
 
@@ -54,9 +58,23 @@ function PerformGather:Visit()
          self.pendingstatus = nil
          self.inst.components.locomotor:PushAction(pAction, true)
          self.status = RUNNING
-      else                  
-         self.status = FAILED -- can't find anything then fail
-      end      
+      else         
+         target = FindEntity(self.inst, 5, function(item)
+            return item == self.item   
+         end)
+         if target then
+            local pAction = BufferedAction(self.inst, target, ACTIONS.PICKUP)
+            pAction:AddFailAction(function() self:OnFail() end)
+            pAction:AddSuccessAction(function() self:OnSucceed() end)
+            self.action = pAction
+            self.pendingstatus = nil
+            self.inst.components.locomotor:PushAction(pAction, true)            
+            self.status = RUNNING
+         else
+            self.status = FAILED
+         end
+      end
+      self.status = FAILED -- can't find anything then fail
    elseif self.status == RUNNING then
       if self.pendingstatus then
          self.status = self.pendingstatus

@@ -19,7 +19,8 @@ PlanActions = Class(BehaviourNode, function(self, inst)
       FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
-      Gather(inst, 'carrot'),
+		Gather(inst, 'carrot'),
+		Gather(inst, 'log'),
 		GatherFood(inst, 'carrot'), -- special case
 		GatherFood(inst, 'berries'),
       Give(inst, 'twigs', player),
