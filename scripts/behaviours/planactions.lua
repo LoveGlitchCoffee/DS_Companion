@@ -10,7 +10,6 @@ require("actions/followplayeraction")
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
-require("actions")
 
 PlanActions = Class(BehaviourNode, function(self, inst)
    BehaviourNode._ctor(self, 'PlanActions')
@@ -31,13 +30,7 @@ PlanActions = Class(BehaviourNode, function(self, inst)
       SearchFor(inst, 'carrot'),
       Build(inst, 'trap'),
       Eat(inst)
-	}
-	
-	self.planaction = Action()
-   self.planaction.fn = function(act)      
-      act.doer:PushEvent('actionplanned', {a_sequence=self.action_sequence})
-      return true
-   end
+	}	
 end)
 
 function PlanActions:generate_inv_state(inventory, state)	
@@ -115,25 +108,8 @@ function PlanActions:Visit()
 	   --printt(world_state)
 	   info('.\n')
 	   local goal_state = self.inst.brain.currentgoal:GetGoalState()
-		self.action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
-		
-		--local pAction = BufferedAction(self.inst, nil, ACTIONS.WALKTO)
-		--pAction:AddFailAction(function() self:OnFail() end)
-		--pAction:AddSuccessAction(function() self:OnSucceed() end)
-		--self.action = pAction
-		--self.pendingstatus = nil
-		--self.inst.components.locomotor:PushAction(pAction, true)
-		self.inst:PushEvent('actionplanned', {a_sequence=self.action_sequence})
-		--self.status = RUNNING
-		error('ACTION PLANNED')
+		local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
+		self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})		
 		self.status = SUCCESS
-	-- elseif self.status == RUNNING then
-   --    if self.pendingstatus then
-   --       self.status = self.pendingstatus
-   --       warning('\nkeep running\n')
-   --    elseif not self.action:IsValid() then
-   --       warning('\nfail as action not valid\n')
-   --       self.status = FAILED
-   --    end   
 	 end
 end

@@ -2,9 +2,9 @@ require 'actions/action'
 require 'general-utils/debugprint'
 require 'general-utils/table_ops'
 
-local FOOD_LIST = {
-   'carrot',
-   'berries'
+local FOOD_COST = {
+   carrot=1,
+   berries=1
 }
 
 GatherFood = Class(Gather, function (self, inst, item)   
@@ -13,5 +13,12 @@ GatherFood = Class(Gather, function (self, inst, item)
 end)
 
 function GatherFood:PostEffect()
-   return {have_food=true}
+   local pred = {}
+   --pred[self.item] = 1
+   pred['have_food'] = true
+   return pred
+end
+
+function GatherFood:Cost()
+   return FOOD_COST[self.item]
 end

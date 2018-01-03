@@ -16,7 +16,7 @@ end
 
 function Give:PostEffect()
    local post = {}
-   local key = 'giving_'..self.item
+   local key = 'gave_'..self.item
    post[key] = true
    return post
 end

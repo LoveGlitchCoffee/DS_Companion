@@ -46,7 +46,7 @@ end
 
 function GetForPlayer:GetGoalState()
    local state = {}
-   local key = 'giving_'..self.item
+   local key = 'gave_'..self.item
    state[key] = true      
 	return state
 end

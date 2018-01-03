@@ -7,7 +7,7 @@ KeepPlayerFull = Class(Goal, function(self, inst, player)
    self.updateUrgency = function (inst, data)
       local new_percent = data.newpercent   
       if new_percent < 0.10 then      
-         self.urgency = 0.8      
+         self.urgency = 0.8
       elseif new_percent > 0.15 then
          self.urgency = 0.2
       end      
@@ -26,5 +26,9 @@ function KeepPlayerFull:Satisfaction()
 end
 
 function KeepPlayerFull:GetGoalState()
-   return {player_has_food=true}
+   -- design decision
+   -- give food generally, which food to give is decided by cost down the line
+   -- OR do some sort of calculation here as to which food to give
+   -- former is better
+   return {gave_player_food=true}
 end
