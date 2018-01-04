@@ -1,4 +1,5 @@
 require 'actions/action'
+require("behaviours/performbuild")
 
 Build = Class(Action, function (self, inst, item)
    self.item = item
@@ -29,4 +30,8 @@ end
 function Build:Cost()
    -- body
    return 2
+end
+
+function Build:Perform()
+   return PerformBuild(self.inst, self.item)
 end

@@ -14,7 +14,6 @@ require 'general-utils/debugprint'
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
    self.gwu_list = {}
-   self.currentgoal = nil
    self.actionplan = {}
 end)
 
@@ -31,11 +30,11 @@ local function initialise_gwu(inst)
    local healthy = goal_tuple(stayhealthy, 1)
    local full = goal_tuple(stayfull, 1)
    local follow = goal_tuple(followPlayer, 1)
-      
+
    --gwu_list[stayhealthy.name] = healthy
    --gwu_list[stayfull.name] = full
    gwu_list[followPlayer.name] = follow
-      
+
    return gwu_list
 end
 
@@ -44,7 +43,7 @@ local function onNextGoalFound(inst, data)
    info('DECIDED ON GOAL ' .. tostring(inst.brain.currentgoal) .. '\n')
 end
 
-local function onActionPlanned(inst, data)   
+local function onActionPlanned(inst, data)
    if data.a_sequence ~= nil then
       local a_sequence = data.a_sequence
       local plan = {}
@@ -57,8 +56,8 @@ local function onActionPlanned(inst, data)
    end
 end
 
-local function onInsertGoal(inst, data)   
-   local goal = data.goal      
+local function onInsertGoal(inst, data)
+   local goal = data.goal
    local g = goal_tuple(goal, 1) -- in proto following orders is important so 1
    inst.brain.gwu_list[goal.name] = g
 
@@ -68,41 +67,46 @@ end
 local function onDropGoal(inst, data)
    local goalname = data.goalname
    error('GOAL DROPPED '..goalname)
-   inst.brain.gwu_list[goalname] = nil   
+   inst.brain.gwu_list[goalname] = nil
 end
 
-function GoalBasedBrain:OnStart()   
+function GoalBasedBrain:OnStart()
    self.gwu_list = initialise_gwu(self.inst)
-   
+
    self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)
-   self.inst:ListenForEvent('actionplanned', onActionPlanned)   
+   self.inst:ListenForEvent('actionplanned', onActionPlanned)
    self.inst:ListenForEvent('insertgoal', onInsertGoal)
    self.inst:ListenForEvent('dropgoal', onDropGoal)
-   
+
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    --print(tostring(self.inst.components.inventory:FindItem(function(item)
    --     return true
    -- end
-   -- )))   
-   
-   local root = SequenceNode(
-      {       
-         SelectGoal(self.inst, function () return self.gwu_list end),
-         PlanActions(self.inst),
-         IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
-         GOAPPriorityNode(function() return self.inst.brain.actionplan end), .5)
-         
-         --if goal is same then dun come up with new plan?      
-         --need to clean action plan
-      })   
+   -- )))
+
+   --local root = GOAPSequenceNode(
+   --   function () return
+   --   {
+   --      SelectGoal(self.inst, function () return self.gwu_list end),
+   --      PlanActions(self.inst),
+   --      IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
+   --      GOAPSequenceNode(function() return self.inst.brain.actionplan end))
+
+   --      --if goal is same then dun come up with new plan?
+   --      --need to clean action plan
+   --   } end)
+
+   local root = ResponsiveGOAPNode(self.inst, .25, function ()
+      return self.gwu_list
+   end)
    self.bt = BT(self.inst, root)
 end
 
 function GoalBasedBrain:OnStop()
    self.inst:RemoveEventCallback('nextgoalfound', onNextGoalFound)
-   self.inst:RemoveEventCallback('actionplanned', onActionPlanned)   
+   self.inst:RemoveEventCallback('actionplanned', onActionPlanned)
    self.inst:RemoveEventCallback('insertgoal', onInsertGoal)
    self.inst:RemoveEventCallback('dropgoal', onDropGoal)
 

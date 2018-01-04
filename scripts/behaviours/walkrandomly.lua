@@ -15,16 +15,16 @@ end
 
 function WalkRandomly:Visit()
    if self.status == READY then      
-      error('READY NOW')
+      --error('READY NOW')
       local randomAngle = math.random() * 360 -- in degrees      
-      self.waittime = GetTime() + 2
+      self.waittime = GetTime() + 2.4
       self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
    elseif self.status == RUNNING then
-      error('time now: '..tostring(GetTime()))
-      error('end time: '..tostring(self.waittime))
+      --error('time now: '..tostring(GetTime()))
+      --error('end time: '..tostring(self.waittime))
       if GetTime() > self.waittime then
-         error('success')
+         --error('success')
          self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success
          self.status = SUCCESS
          return

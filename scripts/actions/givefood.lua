@@ -1,7 +1,7 @@
 require("actions/action")
 
-GiveFood = Class(Give, function(self, inst, item)
-   Give._ctor(self, inst, item)
+GiveFood = Class(Give, function(self, inst, item, player)
+   Give._ctor(self, inst, item, player)
 end)
 
 function GiveFood:Precondition()

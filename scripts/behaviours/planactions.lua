@@ -7,15 +7,16 @@ require 'actions/searchfor'
 require 'actions/eat'
 require 'actions/give'
 require("actions/followplayeraction")
+require 'actions/givefood'
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
-PlanActions = Class(BehaviourNode, function(self, inst)
-   BehaviourNode._ctor(self, 'PlanActions')
-	self.inst = inst			
+local ALL_ACTIONS = {}
+
+function populate_actions(inst)
 	local player = GetPlayer()	
-   self.all_actions = {
+	ALL_ACTIONS = {
       FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
@@ -25,16 +26,24 @@ PlanActions = Class(BehaviourNode, function(self, inst)
 		GatherFood(inst, 'berries'),
       Give(inst, 'twigs', player),
       Give(inst, 'cutgrass', player),
-      Give(inst, 'carrot', player),			  
+		Give(inst, 'carrot', player),
+		GiveFood(inst, 'carrot', player),
+		GiveFood(inst, 'berries', player),
       SearchFor(inst, 'twigs'),
       SearchFor(inst, 'grass'),
       SearchFor(inst, 'carrot'),
       Build(inst, 'trap'),
       Eat(inst)
-	}	
+	}
+end
+
+PlanActions = Class(BehaviourNode, function(self, inst)
+   BehaviourNode._ctor(self, 'PlanActions')
+	self.inst = inst				
+	populate_actions(inst)   
 end)
 
-function PlanActions:generate_inv_state(inventory, state)	
+function generate_inv_state(inventory, state)	
    if not inventory:IsFull() then
       state['has_inv_spc'] = true
    end
@@ -67,13 +76,13 @@ function PlanActions:generate_inv_state(inventory, state)
    end
 end
 
-function PlanActions:generate_items_in_view(state, inventory)
+function generate_items_in_view(inventory, state, inst)
 	-- problem is see items in inventory
-	local pt = self.inst:GetPosition()
+	local pt = inst:GetPosition()
 	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 4) -- make distance config		
 	for k,entity in pairs(ents) do
 		if entity then
-         if entity ~= self.inst then
+         if entity ~= inst then
             info('see ' .. tostring(entity))
 				local entityname = entity.prefab
 				
@@ -93,24 +102,49 @@ function PlanActions:generate_items_in_view(state, inventory)
 	end	
 end
 
-function PlanActions:generate_world_state()	
+function generate_world_state(inst)	
    local state = {}
-	local inventory = self.inst.components.inventory
-	self:generate_inv_state(inventory, state)
-	self:generate_items_in_view(state, inventory)
+	local inventory = inst.components.inventory
+	generate_inv_state(inventory, state)
+	generate_items_in_view(inventory, state, inst)
    return state
 end
 
-function PlanActions:Visit()
+function PlanActions:Visit()	
 	if self.status == READY then
-	   local world_state = self:generate_world_state()
+	   local world_state = generate_world_state(self.inst)
 	   info('.\n')
       info('world state: ')
 	   --printt(world_state)
 	   info('.\n')
 	   local goal_state = self.inst.brain.currentgoal:GetGoalState()
-		local action_sequence = goap_backward_plan_action(world_state, goal_state, self.all_actions)
-		self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})		
-		self.status = SUCCESS
+		local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
+		
+		if #action_sequence > 0 then
+			error('succeed')
+         self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})		
+			self.status = SUCCESS
+			return
+		else
+			error('fail')
+			self.status = FAILED
+			return
+		end
 	 end
+end
+
+function planactions(inst, goal)
+	local world_state = generate_world_state(inst)
+	info('.\n')
+   info('world state: ')
+	--printt(world_state)
+	info('.\n')
+	local goal_state = goal:GetGoalState()
+	local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
+	
+	if #action_sequence > 0 then
+		--error('succeed')
+		return action_sequence
+	end
+	return nil
 end
