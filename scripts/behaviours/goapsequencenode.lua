@@ -1,6 +1,7 @@
 require("general-utils/debugprint")
 require("behaviours/selectgoal") -- migh wanna place this somewhere else
 require("behaviours/planactions")
+require("general-utils/table_ops")
 
 require 'actions/gather'
 require 'actions/gatherfood'
@@ -180,8 +181,7 @@ function ResponsiveGOAPNode:Visit()
    local time = GetTime()
    local do_eval = not self.lasttime or not self.period or self.lasttime + self.period < time
 
-   if do_eval then
-      error('eval')
+   if do_eval then      
       self.lasttime = time
       if self.finish then
          error('RESETINNG')
@@ -191,7 +191,7 @@ function ResponsiveGOAPNode:Visit()
 
       -- select goal
       local newgoal = selectgoal(self.gwulistfn)
-      error('new goal: '..tostring(newgoal))
+      -- error('new goal: '..tostring(newgoal))
       -- error(tostring(not self.oldgoal))
       -- error(tostring(not self.oldgoal == newgoal))
       local replan = not self.oldgoal or not self.oldgoal == newgoal
@@ -208,6 +208,7 @@ function ResponsiveGOAPNode:Visit()
          end
          -- new plan
          local plan = planactions(self.inst, newgoal)
+         printt(plan)
          self.plan = self:generateActionSequence(plan)
          -- reset idx
          self.idx = 1
@@ -223,7 +224,7 @@ function ResponsiveGOAPNode:Visit()
                return
             elseif child.status == FAILED then
                self.finish = true
-               error('FAILED< REPLAN')
+               error('FAILED. REPLAN')
                return
             end
             -- if child succeeds
@@ -234,8 +235,7 @@ function ResponsiveGOAPNode:Visit()
          self.finish = true
          --self.status = SUCCESS
       end
-   else
-      error('not eval')
+   else      
       if self.idx then
          local child = self.plan[self.idx]
          child:Visit()         

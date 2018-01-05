@@ -2,7 +2,7 @@ require("goals/goal")
 
 FollowPlayer = Class(Goal, function(self, inst, player)
    Goal._ctor(self, inst, "FollowPlayer")
-   self.urgency = 0.4 -- primary task unless extremely important one   
+   self.urgency = 0.3 -- primary task unless extremely important one   
    self.player = player   
 end)
 
@@ -17,9 +17,8 @@ function FollowPlayer:Satisfaction()
    local dist_sq = distsq(pos, target_pos)
 
    -- 4, 6, 10
-
-   local normalised_dist = dist_sq % 10
-   local satisfaction = normalised_dist / 10
+   
+   local satisfaction = dist_sq / (11*11)
    return satisfaction
 end
 

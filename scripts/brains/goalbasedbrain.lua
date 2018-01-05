@@ -4,6 +4,7 @@ require 'behaviours/goapsequencenode'
 require 'goals/stayfull'
 require 'goals/stayhealthy'
 require("goals/followplayer")
+require("goals/keepplayerfull")
 
 require 'brains/utils'
 require 'behaviours/debug'
@@ -23,17 +24,20 @@ local function initialise_gwu(inst)
    local player = GetPlayer()
 
    local gwu_list = {}
-   local stayhealthy = StayHealthy(inst)
-   local stayfull = StayFull(inst)
+   --local stayhealthy = StayHealthy(inst)
+   --local stayfull = StayFull(inst)
    local followPlayer = FollowPlayer(inst, player)
-
-   local healthy = goal_tuple(stayhealthy, 1)
-   local full = goal_tuple(stayfull, 1)
+   local keepplayerfull = KeepPlayerFull(inst, player)
+   
+   --local healthy = goal_tuple(stayhealthy, 1)
+   --local full = goal_tuple(stayfull, 1)
    local follow = goal_tuple(followPlayer, 1)
+   local keepfull = goal_tuple(keepplayerfull, 1)
 
    --gwu_list[stayhealthy.name] = healthy
    --gwu_list[stayfull.name] = full
    gwu_list[followPlayer.name] = follow
+   gwu_list[keepplayerfull.name] = keepfull
 
    return gwu_list
 end

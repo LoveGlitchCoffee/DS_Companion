@@ -57,8 +57,8 @@ function PerformGather:Visit()
          self.action = pAction
          self.pendingstatus = nil
          self.inst.components.locomotor:PushAction(pAction, true)
-         self.status = RUNNING
-      else         
+         self.status = RUNNING         
+      else
          target = FindEntity(self.inst, 5, function(item)
             return item == self.item   
          end)
@@ -72,15 +72,14 @@ function PerformGather:Visit()
             self.status = RUNNING
          else
             self.status = FAILED
-         end
-      end
-      self.status = FAILED -- can't find anything then fail
+         end         
+      end      
    elseif self.status == RUNNING then
       if self.pendingstatus then
          self.status = self.pendingstatus
          warning('\nkeep running\n')
       elseif not self.action:IsValid() then
-         warning('\nfail as action not valid\n')
+         warning('\nfail as action not valid\n')         
          self.status = FAILED
       end
    end

@@ -12,13 +12,6 @@ GatherFood = Class(Gather, function (self, inst, item)
    Gather._ctor(self, inst, item)
 end)
 
-function GatherFood:PostEffect()
-   local pred = {}
-   --pred[self.item] = 1
-   pred['have_food'] = true
-   return pred
-end
-
 function GatherFood:Cost()
    return FOOD_COST[self.item]
 end

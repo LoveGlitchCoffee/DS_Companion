@@ -17,7 +17,7 @@ function WalkRandomly:Visit()
    if self.status == READY then      
       --error('READY NOW')
       local randomAngle = math.random() * 360 -- in degrees      
-      self.waittime = GetTime() + 2.4
+      self.waittime = GetTime() + 1.5
       self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
    elseif self.status == RUNNING then
