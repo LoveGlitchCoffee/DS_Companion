@@ -2,6 +2,7 @@ GLOBAL.CHEATS_ENABLED = true
 GLOBAL.require( 'debugkeys' ) -- for debugging, ctrl+r to reload all scripts
 local Vector3 = GLOBAL.Vector3
 local ACTIONS = GLOBAL.ACTIONS
+local COLLISION = GLOBAL.COLLISION
 -- local GetPlayer = GLOBAL.GetPlayer
 
 -- set Gathering ----------------------------------------
@@ -31,6 +32,10 @@ function SpawnSmartCompanion(player)
       companion:AddComponent('inventory')
       companion:AddComponent('trader')
       companion:SetStateGraph('SGperdcompanion')
+      companion.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
+      companion.Physics:ClearCollisionMask()
+      companion.Physics:CollidesWith(COLLISION.WORLD)
+      companion.Physics:CollidesWith(COLLISION.OBSTACLES)
       companion.components.locomotor.runspeed = 7
       companion.components.locomotor.walkspeed = 5
       -- companion:RemoveComponent('sleeper')
