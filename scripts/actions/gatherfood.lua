@@ -4,7 +4,8 @@ require 'general-utils/table_ops'
 
 local FOOD_COST = {
    carrot=1,
-   berries=1
+   berries=1,
+   meat=2
 }
 
 GatherFood = Class(Gather, function (self, inst, item)   

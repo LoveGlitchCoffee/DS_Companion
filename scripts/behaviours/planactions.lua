@@ -20,18 +20,20 @@ function populate_actions(inst)
       FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
-		Gather(inst, 'carrot'),
-		Gather(inst, 'log'),
+		Gather(inst, 'carrot'),		
 		GatherFood(inst, 'carrot'), -- special case
 		GatherFood(inst, 'berries'),
+		GatherFood(inst, 'meat'),
       Give(inst, 'twigs', player),
       Give(inst, 'cutgrass', player),
 		Give(inst, 'carrot', player),
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
+		GiveFood(inst, 'meat', player),
       SearchFor(inst, 'twigs'),
       SearchFor(inst, 'grass'),
-      SearchFor(inst, 'carrot'),
+		SearchFor(inst, 'carrot'),
+		SearchFor(inst, 'meat'),
       Build(inst, 'trap'),
       Eat(inst)
 	}

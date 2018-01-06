@@ -60,9 +60,15 @@ function PerformGather:Visit()
          self.status = RUNNING         
       else
          target = FindEntity(self.inst, 5, function(item)
-            return item == self.item   
+            return item.prefab == self.item   
          end)
-         if target then
+         if target 
+         and target.components.inventoryitem
+         and target.components.inventoryitem.canbepickedup
+         and target:IsOnValidGround()
+         and not target.components.inventoryitem:IsHeld()
+         then
+            error('found '..tostring(target))
             local pAction = BufferedAction(self.inst, target, ACTIONS.PICKUP)
             pAction:AddFailAction(function() self:OnFail() end)
             pAction:AddSuccessAction(function() self:OnSucceed() end)

@@ -68,7 +68,7 @@ function GOAPPriorityNode:Visit()
     if do_eval then
         self.lasttime = time
         local found = false
-        error('current idx: '..tostring(self.idx))
+        info('current idx: '..tostring(self.idx))
         for idx, child in ipairs(plan) do
 
             if not found then
@@ -77,7 +77,7 @@ function GOAPPriorityNode:Visit()
                     child:Reset() -- if alread finish then do them again
                 end
                 child:Visit()
-                error('visit: '..tostring(child.name))
+                info('visit: '..tostring(child.name))
                 local cs = child.status
                 if cs == SUCCESS or cs == RUNNING then
                     self.status = cs
@@ -85,7 +85,7 @@ function GOAPPriorityNode:Visit()
                     self.idx = idx
                 end
             else
-                error('skip: '..tostring(child.name))
+                info('skip: '..tostring(child.name))
                 child:Reset()
             end
         end
@@ -184,20 +184,20 @@ function ResponsiveGOAPNode:Visit()
    if do_eval then      
       self.lasttime = time
       if self.finish then
-         error('RESETINNG')
+         info('RESETINNG')
          self.oldgoal = nil
          self.finish = false
       end
 
       -- select goal
       local newgoal = selectgoal(self.gwulistfn)
-      -- error('new goal: '..tostring(newgoal))
-      -- error(tostring(not self.oldgoal))
-      -- error(tostring(not self.oldgoal == newgoal))
+      -- info('new goal: '..tostring(newgoal))
+      -- info(tostring(not self.oldgoal))
+      -- info(tostring(not self.oldgoal == newgoal))
       local replan = not self.oldgoal or not self.oldgoal == newgoal
 
       if replan then
-         error('HAVING TO REPLAN')
+         info('HAVING TO REPLAN')
          self.oldgoal = newgoal
          -- reset all actions for good measure
          -- even though perform makes anew one each time, could store them
@@ -228,17 +228,19 @@ function ResponsiveGOAPNode:Visit()
                return
             end
             -- if child succeeds
-            error("child suceed, move on")
+            info("child suceed, move on")
             self.idx = self.idx + 1
          end
-         error('FINISH Sequence')
+         info('FINISH Sequence')
          self.finish = true
          --self.status = SUCCESS
       end
    else      
       if self.idx then
          local child = self.plan[self.idx]
-         child:Visit()         
+         if child then
+            child:Visit()
+         end
          if self.status ~= RUNNING then
             self.lasttime = nil
          end
