@@ -218,7 +218,7 @@ function ResponsiveGOAPNode:Visit()
          while self.idx <= #self.plan do            
             local child = self.plan[self.idx]
             child:Visit()
-            error('child: '..tostring(child.name)..'. status: '..tostring(child.status))
+            info('child: '..tostring(child.name)..'. status: '..tostring(child.status))
             if child.status == RUNNING then
                self.status = child.status               
                return

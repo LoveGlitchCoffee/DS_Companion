@@ -31,7 +31,7 @@ function populate_actions(inst)
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
       SearchFor(inst, 'twigs'),
-      SearchFor(inst, 'grass'),
+      SearchFor(inst, 'cutgrass'),
 		SearchFor(inst, 'carrot'),
 		SearchFor(inst, 'meat'),
       Build(inst, 'trap'),
@@ -50,7 +50,7 @@ function generate_inv_state(inventory, state)
       state['has_inv_spc'] = true
    end
 
-   info('inventory item number start over ' .. tostring(inventory:GetNumSlots()))
+   -- info('inventory item number start over ' .. tostring(inventory:GetNumSlots()))
    
    -- goal precond + not have enough or not have, need
    -- can get goal and calculate how many times to repeat
@@ -141,7 +141,8 @@ function planactions(inst, goal)
    info('world state: ')
 	--printt(world_state)
 	info('.\n')
-	local goal_state = goal:GetGoalState()
+	--local goal_state = goal:GetGoalState()
+	local goal_state = {trap=1}
 	local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
 	
 	if #action_sequence > 0 then

@@ -4,20 +4,20 @@ ERROR = true
 
 function info(string)
    if INFO then
-      print(string)   
+      print('INFO: '..string)
    end
 end
 
 function warning(string)
    -- body
    if WARNING then
-      print(string)   
+      print('WARNING: '..string)
    end
 end
 
 function error(string)
    -- body
    if ERROR then
-      print('ERROR: '..string)   
+      print('ERROR: '..string)
    end
 end

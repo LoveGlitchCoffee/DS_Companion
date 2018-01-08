@@ -2,6 +2,7 @@ require 'general-utils/sets'
 require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 require 'general-utils/debugprint'
+require("general-utils/mathutils")
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}
@@ -9,7 +10,7 @@ action_taken = {}
 
 local function reset_all_tables(all_actions)
    for _, a in ipairs(all_actions) do
-      distance[a] = 0;
+      distance[a] = intlimit();
    end
    predecessor = {}
    action_taken = {}
@@ -19,13 +20,10 @@ local function generate_valid_actions(all_actions, world_state)
    -- from all actions, which actions has precondition matching world state
    local available_a = {}
 
-   for _, a in ipairs(all_actions) do
-      info('can generate this action: ' .. tostring(a))
-      if is_subset_key(a:PostEffect(), world_state) then
-         info('yes\n')
+   for _, a in ipairs(all_actions) do      
+      if is_subset_key(a:PostEffect(), world_state) then         
+         info('can generate this action: ' .. tostring(a))
          table.insert(available_a, a)
-      else
-         info('no\n')
       end
    end
    return available_a
@@ -85,10 +83,14 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       -- for a single node
       local node = pending_actions:pop()
        info('.' .. '\n')
-       info('looking at ' .. tostring(node.next_action))
+       local predtest = nil
+       if predecessor[node] then
+          predtest = predecessor[node].next_action
+       end
+       info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
 
       -- backwards so check if satisfy world state
-      if is_subset(node.world_state, world_state) then
+      if is_subset(node.world_state, world_state) then         
          info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
@@ -103,24 +105,23 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       else
          info('not world state')
          table.insert(action_taken, node.next_action)
-         info('current world state')
-         -- printt(node.world_state)
+         info('Precondition when at '..tostring(node.next_action))
+         printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
          -- printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
-               info('never tried this action: ', action.name)
-
                local repeats = calc_repeats_needed(node.world_state, world_state, action)
                info('repeating this action ' .. tostring(repeats))
-               info('previous node: '..tostring(node.next_action))
-               info('cost '..tostring(distance[node.next_action]))
-               info('current action: '..tostring(action))
-               info('cost '..tostring(action:Cost()))
+               --info('previous node: '..tostring(node.next_action))
+               --info('cost '..tostring(distance[node.next_action]))
+               --info('current action: '..tostring(action))
+               
                local cost = 0
                local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
-
+               info('cost '..tostring(cost))
+               info('cost of action so far: '..tostring(distance[action]))
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
                   local precond = Set.new(action:Precondition())
                   local posteffect = Set.new(action:PostEffect())
@@ -148,7 +149,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                   pending_actions:push(next_node, cost)
                end
             else
-               info('aciton already taken')
+               info('action already taken')
             end
          end
       end

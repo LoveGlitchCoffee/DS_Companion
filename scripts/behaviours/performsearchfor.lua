@@ -54,7 +54,7 @@ function PerformSearchFor:SearchWithDirection()
       self.inst.components.locomotor:WalkInDirection(randomAngle)
       self.status = RUNNING
    elseif self.status == RUNNING then
-      error('time '..tostring(GetTime()))      
+      info('time '..tostring(GetTime()))      
       if GetTime() > self.waittime then
          error('finish searching. look around')
          local target = FindEntity(self.inst, 4, function(resource)

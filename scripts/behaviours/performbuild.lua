@@ -1,55 +1,129 @@
 require 'general-utils/gameutils'
+require("general-utils/debugprint")
+require("general-utils/table_ops")
 
 PerformBuild = Class(BehaviourNode, function(self, inst, item)
    BehaviourNode._ctor(self, "PerformBuild")
    self.inst = inst
    self.item = item
-   self.action = nil
-
-   self.locomotorFailed = function(inst, data)
-		local theAction = data.action or "[Unknown]"
-		local theReason = data.reason or "[Unknown]"
-		print("\nPerformGather: Action: " .. theAction:__tostring() .. " failed. Reason: " .. tostring(theReason) .. '\n')
-		self:OnFail()
-   end
-
-   self.inst:ListenForEvent("actionfailed", self.locomotorFailed)
 end)
 
 function PerformBuild:OnStop()
-   self.inst:RemoveEventCallback("actionfailed", self.locomotorFailed)
+
 end
 
-function PerformBuild:OnFail()   
-   self.pendingstatus = FAILED
-end
-function PerformBuild:OnSucceed()   
-   self.pendingstatus = SUCCESS
+function PerformBuild:CanBuild(recname)
+   -- straight copy of CanBuild from builder component
+   local recipe = GetRecipe(recname)      
+   error('in inventory:')
+   printt(self.inst.components.inventory.itemslots)
+    if recipe then
+        for ik, iv in pairs(recipe.ingredients) do
+            local amt = math.max(1, RoundUp(iv.amount))
+            error('item '..iv.type)
+            if not self.inst.components.inventory:Has(iv.type, amt) then
+                error('dont have that')
+                return false
+            end
+        end
+        print 'have all ingredient'
+        return true
+    end
+
+    return false
 end
 
-function PerformBuild:Visit()      
+function PerformBuild:RemoveIngredients(recname)
+    error('removig ingredient')
+    local recipe = GetRecipe(recname)
+    self.inst:PushEvent("consumeingredients", {recipe = recipe})
+    if recipe then
+        error('consuming')
+        for k, v in pairs(recipe.ingredients) do
+            local amt = math.max(1, RoundUp(v.amount))
+            error('amount '..tostring(amt))
+            self.inst.components.inventory:ConsumeByName(v.type, amt)
+            error('consumed')
+        end
+    end
+end
+
+function PerformBuild:Visit()
+
+   -- currently instantaneous
+
    if self.status == READY then
-      
-      
-      warning('target: ' .. tostring(target))
+      self.inst.components.locomotor:Stop()
+      error('IN BUILD')
+      local recipe = GetRecipe(self.item)
+      -- local buffered = self:IsBuildBuffered(recname)
+      error('Got recipe' .. tostring(recipe))
+      if recipe and self:CanBuild(self.item) then        
+         error('Can Build')
+         self:RemoveIngredients(self.item)
+         
+         local prod = SpawnPrefab(recipe.product)
+         if prod then
+            if prod.components.inventoryitem then
+               if self.inst.components.inventory then
+                  --self.inst.components.inventory:GiveItem(prod)
+                  self.inst:PushEvent("builditem", {item=prod, recipe = recipe})
+                  if prod.components.equippable and not self.inst.components.inventory:GetEquippedItem(prod.components.equippable.equipslot) then
+                     --The item is equippable. Equip it.
+                     self.inst.components.inventory:Equip(prod)
+             			if recipe.numtogive > 1 then
+             				--Looks like the recipe gave more than one item! Spawn in the rest and give them to the player.
+             				for i = 2, recipe.numtogive do
+                				local addt_prod = SpawnPrefab(recipe.product)                				
+                				self.inst.components.inventory:GiveItem(addt_prod, nil, TheInput:GetScreenPosition())
+		   				   end
+                     end
+                  else
+                     if recipe.numtogive > 1 and prod.components.stackable then
+                        --The item is stackable. Just increase the stack size of the original item.
+                        prod.components.stackable:SetStackSize(recipe.numtogive)
+		   			   	self.inst.components.inventory:GiveItem(prod, nil, TheInput:GetScreenPosition())
+                     elseif recipe.numtogive > 1 and not prod.components.stackable then
+                        --We still need to give the player the original product that was spawned, so do that.
+		   			   	self.inst.components.inventory:GiveItem(prod, nil, TheInput:GetScreenPosition())
+		   			   	--Now spawn in the rest of the items and give them to the player.
+		   			   	for i = 2, recipe.numtogive do
+		   			   		local addt_prod = SpawnPrefab(recipe.product)
+		   			   		self.inst.components.inventory:GiveItem(addt_prod, nil, TheInput:GetScreenPosition())
+		   			   	end
+                     else
+                        --Only the original item is being received.
+		   			   	self.inst.components.inventory:GiveItem(prod, nil, TheInput:GetScreenPosition())
+                     end
+                  end
 
-      if target then
-         local pAction = BufferedAction(self.inst, target, ACTIONS.PICK)
-         pAction:AddFailAction(function() self:OnFail() end)
-         pAction:AddSuccessAction(function() self:OnSucceed() end)
-         self.action = pAction
-         self.pendingstatus = nil
-         self.inst.components.locomotor:PushAction(pAction, true)
-         self.status = RUNNING
-      end
-      self.status = FAILED -- can't find anything then fail
-   elseif self.status == RUNNING then
-      if self.pendingstatus then
-         self.status = self.pendingstatus
-         warning('\nkeep running\n')
-      elseif not self.action:IsValid() then
-         warning('\nfail as action not valid\n')
+		   		--if self.onBuild then
+		   		--	self.onBuild(self.inst, prod)
+		   		--end
+                  prod:OnBuilt(self.inst) -- leave here for now
+                  
+                  self.status = SUCCESS
+                  error(('success'))
+                  error('in inventory:')
+                  printt(self.inst.components.inventory.itemslots)
+               end
+            else
+               pt = pt or Point(self.inst.Transform:GetWorldPosition())
+		   	   prod.Transform:SetPosition(pt.x,pt.y,pt.z)
+                    self.inst:PushEvent("buildstructure", {item=prod, recipe = recipe})
+                    prod:PushEvent("onbuilt")
+   
+		   	   --if self.onBuild then
+		   	   --	self.onBuild(self.inst, prod)
+		   	   --end
+               prod:OnBuilt(self.inst)
+               
+               self.status = SUCCESS
+            end
+         end
+      else
+         error('Cannot find recipe for '..self.item..'or dont have resource for it')
          self.status = FAILED
-      end
+      end      
    end
 end
