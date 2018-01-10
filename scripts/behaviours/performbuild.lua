@@ -14,36 +14,27 @@ end
 
 function PerformBuild:CanBuild(recname)
    -- straight copy of CanBuild from builder component
-   local recipe = GetRecipe(recname)      
-   error('in inventory:')
-   printt(self.inst.components.inventory.itemslots)
+   local recipe = GetRecipe(recname)         
     if recipe then
         for ik, iv in pairs(recipe.ingredients) do
-            local amt = math.max(1, RoundUp(iv.amount))
-            error('item '..iv.type)
-            if not self.inst.components.inventory:Has(iv.type, amt) then
-                error('dont have that')
+            local amt = math.max(1, RoundUp(iv.amount))            
+            if not self.inst.components.inventory:Has(iv.type, amt) then                
                 return false
             end
-        end
-        print 'have all ingredient'
+        end        
         return true
     end
 
     return false
 end
 
-function PerformBuild:RemoveIngredients(recname)
-    error('removig ingredient')
+function PerformBuild:RemoveIngredients(recname)    
     local recipe = GetRecipe(recname)
     self.inst:PushEvent("consumeingredients", {recipe = recipe})
-    if recipe then
-        error('consuming')
+    if recipe then        
         for k, v in pairs(recipe.ingredients) do
-            local amt = math.max(1, RoundUp(v.amount))
-            error('amount '..tostring(amt))
-            self.inst.components.inventory:ConsumeByName(v.type, amt)
-            error('consumed')
+            local amt = math.max(1, RoundUp(v.amount))            
+            self.inst.components.inventory:ConsumeByName(v.type, amt)            
         end
     end
 end
@@ -53,13 +44,10 @@ function PerformBuild:Visit()
    -- currently instantaneous
 
    if self.status == READY then
-      self.inst.components.locomotor:Stop()
-      error('IN BUILD')
+      self.inst.components.locomotor:Stop()      
       local recipe = GetRecipe(self.item)
-      -- local buffered = self:IsBuildBuffered(recname)
-      error('Got recipe' .. tostring(recipe))
-      if recipe and self:CanBuild(self.item) then        
-         error('Can Build')
+      -- local buffered = self:IsBuildBuffered(recname)      
+      if recipe and self:CanBuild(self.item) then                 
          self:RemoveIngredients(self.item)
          
          local prod = SpawnPrefab(recipe.product)
@@ -103,8 +91,7 @@ function PerformBuild:Visit()
                   prod:OnBuilt(self.inst) -- leave here for now
                   
                   self.status = SUCCESS
-                  error(('success'))
-                  error('in inventory:')
+                  error('Built'..self.item)
                   printt(self.inst.components.inventory.itemslots)
                end
             else
@@ -118,11 +105,11 @@ function PerformBuild:Visit()
 		   	   --end
                prod:OnBuilt(self.inst)
                
-               self.status = SUCCESS
+               self.status = SUCCESS               
             end
          end
       else
-         error('Cannot find recipe for '..self.item..'or dont have resource for it')
+         info('Cannot find recipe for '..self.item..'or dont have resource for it')
          self.status = FAILED
       end      
    end

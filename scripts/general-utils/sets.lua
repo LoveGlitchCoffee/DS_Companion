@@ -43,8 +43,8 @@ end
 
 function Set.printset(t)
    for k, v in pairs(t) do
-      print('key ', tostring(k))
-      print('value ', tostring(v))
+      print('set key ', tostring(k))
+      print('set value ', tostring(v))
    end
 end
 

@@ -29,20 +29,20 @@ function FollowPlayerAction:Perform()
    local dist_sq = distsq(pos, target_pos)
 
    --if dist_sq < self.CLOSE_DIST*self.CLOSE_DIST then
-   --   error('WANDER INTEAD')
+   --   warning('WANDER INTEAD')
    --   return Wander(self.inst, target_pos, 5, {minwalktime=2, randwalktime=2.5, minwaittime=0, randwaittime=0.5})
    --end
-   error('DISTANCE: '..tostring(dist_sq))
+   warning('DISTANCE: '..tostring(dist_sq))
    if dist_sq < self.TARGET_DIST*self.TARGET_DIST then
-      error('WANDER')
+      warning('WANDER')
       -- very close to player
       return WalkRandomly(self.inst)
    elseif dist_sq > self.TARGET_DIST*self.TARGET_DIST 
    and dist_sq < self.FAR_DIST*self.FAR_DIST then
-      error('follow slowting')
-      return Follow(self.inst, self.player, 4, 6, 8, false)
+      warning('follow slowting')
+      return Follow(self.inst, self.player, 4, 6, 8, true) -- want to be false but no SG for now
    elseif dist_sq > self.FAR_DIST * self.FAR_DIST then
-      error('follow quickly')
+      warning('follow quickly')
       return Follow(self.inst, self.player, 5, 6, 8, true)
    else
       

@@ -22,16 +22,16 @@ function SpawnSmartCompanion(player)
    local smart_brain = GLOBAL.require 'brains/goalbasedbrain'
 
    local pos = Vector3(player.Transform:GetWorldPosition()) -- : is oo syntatic sugar to pass self
-   local companion = GLOBAL.SpawnPrefab("forest/animals/perd")
+   local companion = GLOBAL.SpawnPrefab("wx78")
    if companion and pos then
       print('dst smart companion is now running')
-      companion:AddComponent('hunger')      
+      --companion:RemoveComponent('hunger') -- don't die
       companion:AddComponent('gatherminion')
-      companion:RemoveComponent('inspectable')
+      -- companion:RemoveComponent('inspectable')
       companion:AddComponent('clock')      
-      companion:AddComponent('inventory')      
-      companion:AddComponent('trader')
-      companion:SetStateGraph('SGperdcompanion')
+      --companion:SetStateGraph('SGperdcompanion')
+      --companion:RemoveTag('player')
+      --companion:RemoveComponent
       companion.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
       companion.Physics:ClearCollisionMask()
       companion.Physics:CollidesWith(COLLISION.WORLD)

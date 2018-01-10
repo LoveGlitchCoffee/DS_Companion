@@ -18,7 +18,7 @@ function WalkRandomly:Visit()
       --error('READY NOW')
       local randomAngle = math.random() * 360 -- in degrees      
       self.waittime = GetTime() + 1.5
-      self.inst.components.locomotor:WalkInDirection(randomAngle)
+      self.inst.components.locomotor:RunInDirection(randomAngle) -- can't do walk for now cuz no SG
       self.status = RUNNING
    elseif self.status == RUNNING then
       --error('time now: '..tostring(GetTime()))

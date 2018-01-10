@@ -1,9 +1,11 @@
+require("general-utils/debugprint")
+
 function printt(t)
    if not t then
       return
    end
    for k, v in pairs(t) do
-      print(tostring(k) .. ': ' .. tostring(v))
+      error(tostring(k) .. ': ' .. tostring(v))
    end
 end
 
@@ -24,21 +26,21 @@ function is_subset(set, superset)
    local is_subset = true   
    for k, v in pairs(set) do      
       if superset[k] == nil then
-         print 'not in world state'
+         info('not in world state')
          is_subset = false
          break
       end
       if type(set[k]) == type(superset[k]) then         
          if type(set[k]) == 'number' 
          and superset[k] < set[k] then
-            print 'values is more'
+            info('values is more')
             is_subset = false
             break         
          end
          -- handle other types
       else
          if superset[k] ~= set[k] then
-            print 'value not the same'
+            error('value not the same')
             is_subset = false
             break
          end

@@ -9,20 +9,16 @@ PlaceTrap = Class(Action, function (self, inst, trap)
 end)
 
 function PlaceTrap:Precondition()
-   local seenkey = ('seen_' .. self.trap)
    local pred = {}
-   pred['has_inv_spc'] = true
-   pred[seenkey] = true
+   pred[self.trap] = 1
    return pred
 end
 
 function PlaceTrap:PostEffect()   
-   -- dun care for value of post effect really
-   -- because calculations are done based on world state and precondition
-   -- may want to make it real value later based on inventory but not needed   
-   local res = {}
-   res[self.trap] = 1
-   return res
+   -- imaginary
+   local post = {}
+   
+   return post
 end
 
 function PlaceTrap:Cost()
@@ -30,5 +26,5 @@ function PlaceTrap:Cost()
 end
 
 function PlaceTrap:Perform()
-   return PerformGather(self.inst, self.trap)
+   
 end

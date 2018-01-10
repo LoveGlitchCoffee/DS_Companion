@@ -4,6 +4,9 @@ require("behaviours/performbuild")
 Build = Class(Action, function (self, inst, item)
    self.item = item
    Action._ctor(self, inst, 'Build ' .. item)
+   self.weaponlist = {
+      'spear'
+   }
 end)
 
 function Build:Precondition()
@@ -24,6 +27,9 @@ function Build:PostEffect()
    -- body   
    local res = {}
    res[self.item] = 1
+   if self.weaponlist[self.item] then
+      
+   end
    return res
 end
 

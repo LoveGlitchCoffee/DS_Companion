@@ -90,6 +90,7 @@ function GoalBasedBrain:OnStart()
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('twigs'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('twigs'))
+   self.inst.components.inventory:GiveItem(SpawnPrefab('flint'))
    --print(tostring(self.inst.components.inventory:FindItem(function(item)
    --     return true
    -- end
