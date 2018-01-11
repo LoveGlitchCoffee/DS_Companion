@@ -15,7 +15,7 @@ function Set.union (a,b)
    -- not regular union, also adds value
    local res = {}
    for k, v in pairs(a) do 
-      res[k] = v 
+      res[k] = v
    end
    for k, v in pairs(b) do
       if res[k] then

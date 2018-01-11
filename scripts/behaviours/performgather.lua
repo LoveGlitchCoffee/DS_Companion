@@ -78,7 +78,7 @@ function PerformGather:Visit()
             self.status = RUNNING
          else
             self.status = FAILED
-         end         
+         end      
       end      
    elseif self.status == RUNNING then
       if self.pendingstatus then

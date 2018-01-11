@@ -1,12 +1,13 @@
 require 'general-utils/debugprint'
 
-PerformSearchFor = Class(BehaviourNode, function(self, inst, item)
+PerformSearchFor = Class(BehaviourNode, function(self, inst, entity)
    -- search for is travelling in a random direction
-   -- then do another check to see if item wanted is in view
-   -- fail if no item is in view then
+   -- then do another check to see if entity wanted is in view
+   -- fail if no entity is in view then
    BehaviourNode._ctor(self, "PerformSearchFor")
    self.inst = inst
-   self.item = item
+   self.entity = entity
+   self.comparefn = comparefn
    self.waittime = 0
 end)
 
@@ -43,6 +44,12 @@ function PerformSearchFor:SearchWithPoint()
    end
 end
 
+function PerformSearchFor:CheckTarget()
+   return FindEntity(self.inst, 6, function(ent)
+               return ent.prefab == self.entity         
+            )
+end
+
 function PerformSearchFor:SearchWithDirection()
    if self.status == READY then      
       info('searching for food now')
@@ -56,14 +63,8 @@ function PerformSearchFor:SearchWithDirection()
    elseif self.status == RUNNING then
       info('time '..tostring(GetTime()))
       if GetTime() > self.waittime then
-         info('finish searching. look around')
-         local target = FindEntity(self.inst, 4, function(resource)
-            if resource.components.pickable then -- might want to change at some point
-               return resource.components.pickable.product == self.item
-            else
-               return resource.prefab == self.item
-            end            
-         end)
+         info('finish searching. look around')         
+         local target = self:CheckTarget()
 
          if target then
             -- found something after searching

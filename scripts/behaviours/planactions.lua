@@ -8,6 +8,7 @@ require 'actions/eat'
 require 'actions/give'
 require("actions/followplayeraction")
 require 'actions/givefood'
+require("actions/attack")
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
@@ -32,14 +33,16 @@ function populate_actions(inst)
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
-      SearchFor(inst, 'twigs'),
-      SearchFor(inst, 'cutgrass'),
+      SearchFor(inst, 'twigs', ),
+      SearchFor(inst, 'cutgrass'), -- need to make SearchForResource
 		SearchFor(inst, 'carrot'),
-		SearchFor(inst, 'meat'),
+		SearchFor(inst, 'pigman')
+		-- SearchFor(inst, 'meat'), -- for testing
 		SearchFor(inst, 'flint'),
 		Build(inst, 'trap'),
 		Build(inst, 'rope'),
 		Build(inst, 'spear'),
+		Attack(inst, 'pigman'),
       Eat(inst)
 	}
 end
@@ -86,7 +89,7 @@ end
 function generate_items_in_view(inventory, state, inst)
 	-- problem is see items in inventory
 	local pt = inst:GetPosition()
-	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 4) -- make distance config		
+	local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 7) -- make distance config		
 	for k,entity in pairs(ents) do
 		if entity then
          if entity ~= inst then
@@ -147,7 +150,7 @@ function planactions(inst, goal)
 	--printt(world_state)
 	info('.\n')
 	local goal_state = goal:GetGoalState()
-	--local goal_state = {spear=1}
+	local goal_state = {meat=1}
 	local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
 	
 	if #action_sequence > 0 then

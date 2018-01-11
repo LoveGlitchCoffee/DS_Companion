@@ -28,7 +28,7 @@ function Build:PostEffect()
    local res = {}
    res[self.item] = 1
    if self.weaponlist[self.item] then
-      
+      res['has_weapon'] = true
    end
    return res
 end
