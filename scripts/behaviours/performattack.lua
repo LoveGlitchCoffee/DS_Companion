@@ -7,6 +7,7 @@ end)
 function PerformAttack:Visit()
    if self.status == READY then
       local target = nil
+      local pt = self.inst:GetPosition()
       local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 7)
       for k,entity in pairs(ents) do
          if entity.prefab = self.enemytype then

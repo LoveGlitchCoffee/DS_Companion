@@ -38,6 +38,7 @@ end
 function Attack:Perform()   
    return ChaseAndAttack(self.inst, nil, nil, nil,    
    function ()
+      local pt = self.inst:GetPosition()
       local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 7)
       for k,entity in pairs(ents) do
          if entity.prefab == self.enemy then
