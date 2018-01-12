@@ -11,19 +11,21 @@ end
 
 function is_subset_key(actionpost, desiredpred)   
    local needseen = false
+   local needhasweapon = false
 
    for k,v in pairs(desiredpred) do
       if string.find(k, 'seen_') then
          -- the idea is if there is this pred
          -- get rid of it first
          -- a nice heuristic I guess
-         needseen = true         
-         break
+         needseen = true                  
+      end
+      if string.find(k, 'has_weapon') then
+         needhasweapon = true
       end
    end
 
-   if needseen then
-      error('NEED SEEN')
+   if needseen then      
       -- basically for pred requiring 'seen'
       -- but post has multiple 'seen'
       -- only 1 needs to satisfy
@@ -44,20 +46,15 @@ function is_subset_key(actionpost, desiredpred)
          end
       end      
             
-      if post_has_seen then
-         error('LOOKING AT POST SEEN')
-         for k,v in pairs(seenpost) do
-            error('key '..tostring(k))
-            printt(desiredpred)
+      if post_has_seen then         
+         for k,v in pairs(seenpost) do            
             if desiredpred[k] then
-               seen_one = true
-               error('SEEN ONE')
+               seen_one = true               
                break
             end
          end
          for k,v in pairs(otherpost) do
-            if not desiredpred[k] then
-               error('NOT SATISFY OTHER')
+            if not desiredpred[k] then               
                satisfyother = false
                break
             end
@@ -67,8 +64,15 @@ function is_subset_key(actionpost, desiredpred)
       else
          return false
       end
-   else
-      error('NORMAL CASE')
+   elseif needhasweapon then
+      -- case need weapon
+      -- when build weapon, also build item so need to say can skip that
+      for k,v in pairs(actionpost) do
+         if k == 'has_weapon' then
+            return true
+         end
+      end
+   else      
       -- handle 'normal' cases
       for k,v in pairs(actionpost) do
          if not desiredpred[k] then

@@ -6,8 +6,7 @@ PerformSearchFor = Class(BehaviourNode, function(self, inst, entity)
    -- fail if no entity is in view then
    BehaviourNode._ctor(self, "PerformSearchFor")
    self.inst = inst
-   self.entity = entity
-   self.comparefn = comparefn
+   self.entity = entity   
    self.waittime = 0
 end)
 
@@ -46,13 +45,12 @@ end
 
 function PerformSearchFor:CheckTarget()
    return FindEntity(self.inst, 6, function(ent)
-               return ent.prefab == self.entity         
-            )
+               return ent.prefab == self.entity       
+            end )
 end
 
 function PerformSearchFor:SearchWithDirection()
-   if self.status == READY then      
-      info('searching for food now')
+   if self.status == READY then            
       local randomAngle = math.random() * 360 -- in degrees
       info('random degrees ' .. tostring(randomAngle))
       self.waittime = GetTime() + 6

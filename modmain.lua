@@ -36,8 +36,8 @@ function SpawnSmartCompanion(player)
       companion.Physics:ClearCollisionMask()
       companion.Physics:CollidesWith(COLLISION.WORLD)
       companion.Physics:CollidesWith(COLLISION.OBSTACLES)
-      companion.components.locomotor.runspeed = 7
-      companion.components.locomotor.walkspeed = 5
+      companion.components.locomotor.runspeed = 4
+      companion.components.locomotor.walkspeed = 3
       -- companion:RemoveComponent('sleeper')
       companion:SetBrain(smart_brain)
       companion.Transform:SetPosition(pos:Get())      

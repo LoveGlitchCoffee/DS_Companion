@@ -1,12 +1,15 @@
 require 'actions/action'
 require("behaviours/performbuild")
+require("general-utils/debugprint")
+require("general-utils/table_ops")
+
+WEAPONS = {
+      'spear'
+   }
 
 Build = Class(Action, function (self, inst, item)
    self.item = item
-   Action._ctor(self, inst, 'Build ' .. item)
-   self.weaponlist = {
-      'spear'
-   }
+   Action._ctor(self, inst, 'Build ' .. item)   
 end)
 
 function Build:Precondition()
@@ -26,8 +29,8 @@ end
 function Build:PostEffect()
    -- body   
    local res = {}
-   res[self.item] = 1
-   if self.weaponlist[self.item] then
+   res[self.item] = 1   
+   if has_v(self.item, WEAPONS) then      
       res['has_weapon'] = true
    end
    return res

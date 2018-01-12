@@ -105,7 +105,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       else
          info('not world state')
          table.insert(action_taken, node.next_action)
-         info('Precondition when at '..tostring(node.next_action))
+         error('Precondition when at '..tostring(node.next_action))
          printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')

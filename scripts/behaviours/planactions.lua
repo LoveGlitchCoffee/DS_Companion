@@ -4,6 +4,7 @@ require 'actions/gather'
 require 'actions/gatherfood'
 require 'actions/build'
 require 'actions/searchfor'
+require 'actions/searchforresource'
 require 'actions/eat'
 require 'actions/give'
 require("actions/followplayeraction")
@@ -33,10 +34,10 @@ function populate_actions(inst)
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
-      SearchFor(inst, 'twigs', ),
-      SearchFor(inst, 'cutgrass'), -- need to make SearchForResource
-		SearchFor(inst, 'carrot'),
-		SearchFor(inst, 'pigman')
+      SearchForResource(inst, 'twigs'),
+      SearchForResource(inst, 'cutgrass'), -- need to make SearchForResource
+		SearchForResource(inst, 'carrot'),
+		SearchFor(inst, 'pigman'),
 		-- SearchFor(inst, 'meat'), -- for testing
 		SearchFor(inst, 'flint'),
 		Build(inst, 'trap'),
@@ -65,7 +66,7 @@ function generate_inv_state(inventory, state)
    for i=1,inventory:GetNumSlots() do
 	  	local item = inventory:GetItemInSlot(i)
 		if item then
-			info(tostring(item))			
+			info(tostring(item))
 			if state[item.prefab] then
 				info('item exist in state')
 	 			-- total stack size, not restricted by in-game
@@ -80,10 +81,19 @@ function generate_inv_state(inventory, state)
 		 		else					
 	    			state[item.prefab] = 1
 	 	 		end	
-         end
-			local has_key = 'has' .. tostring(item.prefab)			
+			end
+			if has_v(item.prefab, WEAPONS) then
+				state['has_weapon'] = true -- but not equipped
+			end			
+			--local has_key = 'has' .. tostring(item.prefab)			
       end	 
-   end
+	end
+	
+	for k,v in pairs(inventory.equipslots) do
+		if has_v(v.prefab, WEAPONS) then
+         state['has_weapon'] = true -- only valid way rn (hacky)
+		end
+	end
 end
 
 function generate_items_in_view(inventory, state, inst)
