@@ -5,7 +5,7 @@ PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity)
    -- search for is travelling in a random direction
    -- then do another check to see if entity wanted is in view
    -- fail if no entity is in view then
-   BehaviourNode._ctor(self, inst, entity)   
+   PerformSearchFor._ctor(self, inst, entity)   
 end)
 
 function PerformSearchForResource:CheckTarget()

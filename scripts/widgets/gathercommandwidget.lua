@@ -83,7 +83,7 @@ end
 function GatherCommandWidget:OnUpdate(dt)
    if self.isopen and self.owner then      
 	   local distsq = self.owner:GetDistanceSqToInst(self.target)
-	   if distsq > 4*4 then	
+	   if distsq > 7*7 then	
 	      self:Close()	
       end	
    end

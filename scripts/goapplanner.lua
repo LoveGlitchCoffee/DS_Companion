@@ -10,6 +10,7 @@ action_taken = {}
 
 local function reset_all_tables(all_actions)
    for _, a in ipairs(all_actions) do
+      error('reseting for '..tostring(a))
       distance[a] = intlimit();
    end
    predecessor = {}
@@ -20,8 +21,8 @@ local function generate_valid_actions(all_actions, world_state)
    -- from all actions, which actions has precondition matching world state
    local available_a = {}
 
-   for _, a in ipairs(all_actions) do      
-      if is_subset_key(a:PostEffect(), world_state) then         
+   for _, a in ipairs(all_actions) do
+      if is_subset_key(a:PostEffect(), world_state) then
          info('can generate this action: ' .. tostring(a))
          table.insert(available_a, a)
       end
@@ -57,9 +58,9 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
    local pending_actions = Peaque:new()
    local valid_actions = generate_valid_actions(all_actions, goal_state)
    local goal_set = Set.new(goal_state)
-   
+
    --info('GOAL')
-   --info(tostring(goal_set))         
+   --info(tostring(goal_set))
    --info('GOAL')
 
    for _, a in ipairs(valid_actions) do
@@ -68,6 +69,8 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       local node_state = goal_set - posteff_set + precond_set
       local a_node = Node(a, a:Cost(), node_state)
       distance[a] = a:Cost() -- pass world state and goal to calc heuristic
+      error('SETTING HERE')
+      error(tostring(distance[a]))
       predecessor[a] = nil
       pending_actions:push(a_node, a:Cost())
    end
@@ -90,7 +93,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
        info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
 
       -- backwards so check if satisfy world state
-      if is_subset(node.world_state, world_state) then         
+      if is_subset(node.world_state, world_state) then
          info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
@@ -117,11 +120,15 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                --info('previous node: '..tostring(node.next_action))
                --info('cost '..tostring(distance[node.next_action]))
                --info('current action: '..tostring(action))
-               
+
                local cost = 0
+               error(tostring(node.next_action))
+               --printt(distance)
                local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
+               error('HERE')
                info('cost '..tostring(cost))
                info('cost of action so far: '..tostring(distance[action]))
+
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
                   local precond = Set.new(action:Precondition())
                   local posteffect = Set.new(action:PostEffect())
@@ -145,6 +152,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                      -- REMEMBER its the no of times, not actual test, cba to make it nice rn
                   end
 
+
                   distance[next_node.next_action] = cost
                   pending_actions:push(next_node, cost)
                end
@@ -153,7 +161,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
             end
          end
       end
-   end   
+   end
    return {} -- no plan found
 end
 

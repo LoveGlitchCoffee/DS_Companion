@@ -25,9 +25,12 @@ function SpawnSmartCompanion(player)
    local companion = GLOBAL.SpawnPrefab("wx78")
    if companion and pos then
       print('dst smart companion is now running')
+      companion:AddTag('companion')
+      --companion:RemoveComponent('leader')
+      companion:RemoveTag('player')
       --companion:RemoveComponent('hunger') -- don't die
       companion:AddComponent('gatherminion')
-      -- companion:RemoveComponent('inspectable')
+      companion:AddComponent('inspectable')
       companion:AddComponent('clock')      
       --companion:SetStateGraph('SGperdcompanion')
       --companion:RemoveTag('player')

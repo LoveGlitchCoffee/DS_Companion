@@ -10,6 +10,7 @@ end)
 ENEMY_LOOT = {}
 ENEMY_LOOT['pigman']={'meat', 'pigskin'}
 ENEMY_LOOT['perd']={'drumstick'}
+ENEMY_LOOT['frog']={'froglegs'}
 
 function Attack:Precondition()
    local seenkey = ('seen_'..self.enemy)

@@ -27,23 +27,27 @@ function populate_actions(inst)
 		GatherFood(inst, 'carrot'), -- special case
 		GatherFood(inst, 'berries'),
 		GatherFood(inst, 'meat'),
+		GatherFood(inst, 'froglegs'),
       Give(inst, 'twigs', player),
       Give(inst, 'cutgrass', player),
 		Give(inst, 'carrot', player),
-		Give(inst, 'flint'),
+		Give(inst, 'flint'),	
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
+		GiveFood(inst, 'froglegs', player),
       SearchForResource(inst, 'twigs'),
       SearchForResource(inst, 'cutgrass'), -- need to make SearchForResource
 		SearchForResource(inst, 'carrot'),
 		SearchFor(inst, 'pigman'),
-		-- SearchFor(inst, 'meat'), -- for testing
+		SearchFor(inst, 'frog'),
+		-- SearchFor(inst, 'meat'), -- for testing. rn wnat to kill to get it
 		SearchFor(inst, 'flint'),
 		Build(inst, 'trap'),
 		Build(inst, 'rope'),
 		Build(inst, 'spear'),
 		Attack(inst, 'pigman'),
+		Attack(inst, 'frog'),		
       Eat(inst)
 	}
 end
@@ -159,8 +163,8 @@ function planactions(inst, goal)
    info('world state: ')
 	--printt(world_state)
 	info('.\n')
-	local goal_state = goal:GetGoalState()
-	local goal_state = {meat=1}
+	--local goal_state = goal:GetGoalState()
+	local goal_state = {froglegs=1}
 	local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
 	
 	if #action_sequence > 0 then
