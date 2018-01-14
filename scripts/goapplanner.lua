@@ -125,7 +125,7 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                error(tostring(node.next_action))
                --printt(distance)
                local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
-               error('HERE')
+                  error('HERE')
                info('cost '..tostring(cost))
                info('cost of action so far: '..tostring(distance[action]))
 

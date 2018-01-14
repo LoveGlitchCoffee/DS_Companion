@@ -37,7 +37,7 @@ function PerformGather:Visit()
    -- body
    if self.status == READY then
 
-      local target = FindEntity(self.inst, 5, function(resource)
+      local target = FindEntity(self.inst, 6, function(resource)
          if resource.components.pickable then
             warning('FOUND THIS: ' .. tostring(resource.components.pickable.product))
             warning('finding: ' .. self.item .. '\n')
@@ -59,7 +59,7 @@ function PerformGather:Visit()
          self.inst.components.locomotor:PushAction(pAction, true)
          self.status = RUNNING         
       else
-         target = FindEntity(self.inst, 5, function(item)
+         target = FindEntity(self.inst, 6, function(item)
             return item.prefab == self.item   
          end)
          if target 

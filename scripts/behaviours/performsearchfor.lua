@@ -1,6 +1,6 @@
 require 'general-utils/debugprint'
 
-PerformSearchFor = Class(BehaviourNode, function(self, inst, entity)
+PerformSearchFor = Class(BehaviourNode, function(self, inst, entity, period)
    -- search for is travelling in a random direction
    -- then do another check to see if entity wanted is in view
    -- fail if no entity is in view then
@@ -8,6 +8,8 @@ PerformSearchFor = Class(BehaviourNode, function(self, inst, entity)
    self.inst = inst
    self.entity = entity   
    self.waittime = 0
+   self.period = period
+   self.lasttime = nil
 end)
 
 function PerformSearchFor:OnFail()
@@ -54,23 +56,30 @@ function PerformSearchFor:SearchWithDirection()
       local randomAngle = math.random() * 360 -- in degrees
       info('random degrees ' .. tostring(randomAngle))
       self.waittime = GetTime() + 6
+      self.lasttime = GetTime()
       info('start time '..tostring(GetTime()))
       info('end time '..tostring(self.waittime))
       self.inst.components.locomotor:RunInDirection(randomAngle) -- want walk but not SG
       self.status = RUNNING
    elseif self.status == RUNNING then
-      info('time '..tostring(GetTime()))
-      if GetTime() > self.waittime then
-         info('finish searching. look around')         
+      info('time '..tostring(GetTime()))      
+      local eval = self.lasttime and self.period and GetTime() > self.lasttime + self.period
+      -- error('lasttime + period '..tostring(self.lasttime + self.period))
+      -- error('time'..tostring(GetTime()))
+      if GetTime() > self.waittime or eval then
+         error('look around')         
          local target = self:CheckTarget()
+         self.lasttime = GetTime()
 
-         if target then
+         if target then -- regarldess of eval
             -- found something after searching
             self.status = SUCCESS
-         else
+            self.inst.components.locomotor:Stop()
+         elseif not eval then -- and not target
+            error('compelte search found nothing')
             self.status = FAILED -- for now only try once            
+            self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success               
          end
-         self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success         
       end
 
       self:Sleep(self.waittime - GetTime()) -- sleep until wake

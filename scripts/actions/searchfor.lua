@@ -28,5 +28,5 @@ function SearchFor:Cost()
 end
 
 function SearchFor:Perform()
-   return PerformSearchFor(self.inst, self.item_to_search)
+   return PerformSearchFor(self.inst, self.item_to_search, 0.5)
 end
