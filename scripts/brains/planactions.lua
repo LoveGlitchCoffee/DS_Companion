@@ -14,7 +14,7 @@ require("actions/attack")
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
-local ALL_ACTIONS = {}
+local ALL_ACTIONS = nil
 
 function populate_actions(inst)
 	local player = GetPlayer()	
@@ -47,16 +47,64 @@ function populate_actions(inst)
 		Build(inst, 'rope'),
 		Build(inst, 'spear'),
 		Attack(inst, 'pigman'),
-		Attack(inst, 'frog'),		
-      Eat(inst)
+		Attack(inst, 'frog')
+      --Eat(inst)
 	}
 end
 
-PlanActions = Class(BehaviourNode, function(self, inst)
-   BehaviourNode._ctor(self, 'PlanActions')
-	self.inst = inst				
-	populate_actions(inst)   
-end)
+Q_MATRICES = 
+{
+	-- these should be exact name of goals
+	'KeepPlayerFull'={},
+	'FollowPlayer'={},
+	'GetForPlayerlog'={},
+	'GetForPlayertwigs'={},
+	'GetForPlayercutgrass'={},
+	'GetForPlayerrocks'={},
+	'GetForPlayercarrot'={},
+	'GetForPlayerberries'={},
+	'GetForPlayersilk'={},
+	'GetForPlayergoldnugget'={},
+	'GetForPlayerflint'={}
+}
+
+R_MATRICES = 
+{
+	-- these should be exact name of goals
+	'KeepPlayerFull'={},
+	'FollowPlayer'={},
+	'GetForPlayerlog'={},
+	'GetForPlayertwigs'={},
+	'GetForPlayercutgrass'={},
+	'GetForPlayerrocks'={},
+	'GetForPlayercarrot'={},
+	'GetForPlayerberries'={},
+	'GetForPlayersilk'={},
+	'GetForPlayergoldnugget'={},
+	'GetForPlayerflint'={}
+}
+
+function populatematrices(matrices)
+	-- populate each goal matrix with
+	-- action x action matrix
+	if ALL_ACTIONS then
+	   for k,v in pairs(matrices) do
+	   	-- each k is a name, v is a matrix
+			for i,kone in ipairs(ALL_ACTIONS) do
+				v[kone.name]={}
+				for j,ktwo in ipairs(ALL_ACTIONS) do
+					if i == j then -- hopefully works
+                  error('no transition possible')
+					else
+                  v[kone.name][ktwo.name] = 0
+					end
+				end
+			end
+		end
+	else
+		error('Actions not populated, reward will not work')
+	end
+end
 
 function generate_inv_state(inventory, state)	
    if not inventory:IsFull() then
@@ -132,29 +180,6 @@ function generate_world_state(inst)
 	generate_inv_state(inventory, state)
 	generate_items_in_view(inventory, state, inst)
    return state
-end
-
-function PlanActions:Visit()	
-	if self.status == READY then
-	   local world_state = generate_world_state(self.inst)
-	   info('.\n')
-      info('world state: ')
-	   --printt(world_state)
-	   info('.\n')
-	   local goal_state = self.inst.brain.currentgoal:GetGoalState()
-		local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
-		
-		if #action_sequence > 0 then
-			error('succeed')
-         self.inst:PushEvent('actionplanned', {a_sequence=action_sequence})		
-			self.status = SUCCESS
-			return
-		else
-			error('fail')
-			self.status = FAILED
-			return
-		end
-	 end
 end
 
 function planactions(inst, goal)

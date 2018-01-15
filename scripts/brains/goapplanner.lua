@@ -3,6 +3,7 @@ require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 require 'general-utils/debugprint'
 require("general-utils/mathutils")
+require("utils")
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}

@@ -91,22 +91,7 @@ function GoalBasedBrain:OnStart()
    self.inst.components.inventory:GiveItem(SpawnPrefab('twigs'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('twigs'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('flint'))
-   --print(tostring(self.inst.components.inventory:FindItem(function(item)
-   --     return true
-   -- end
-   -- )))
-
-   --local root = GOAPSequenceNode(
-   --   function () return
-   --   {
-   --      SelectGoal(self.inst, function () return self.gwu_list end),
-   --      PlanActions(self.inst),
-   --      IfNode(function() return self.inst.brain.actionplan end, 'HasPlan',
-   --      GOAPSequenceNode(function() return self.inst.brain.actionplan end))
-
-   --      --if goal is same then dun come up with new plan?
-   --      --need to clean action plan
-   --   } end)
+   
 
    local root = ResponsiveGOAPNode(self.inst, .25, function ()
       return self.gwu_list

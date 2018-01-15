@@ -63,11 +63,8 @@ function PerformSearchFor:SearchWithDirection()
       self.status = RUNNING
    elseif self.status == RUNNING then
       info('time '..tostring(GetTime()))      
-      local eval = self.lasttime and self.period and GetTime() > self.lasttime + self.period
-      -- error('lasttime + period '..tostring(self.lasttime + self.period))
-      -- error('time'..tostring(GetTime()))
-      if GetTime() > self.waittime or eval then
-         error('look around')         
+      local eval = self.lasttime and self.period and GetTime() > self.lasttime + self.period      
+      if GetTime() > self.waittime or eval then         
          local target = self:CheckTarget()
          self.lasttime = GetTime()
 
@@ -76,7 +73,7 @@ function PerformSearchFor:SearchWithDirection()
             self.status = SUCCESS
             self.inst.components.locomotor:Stop()
          elseif not eval then -- and not target
-            error('compelte search found nothing')
+            info('complete search found nothing')
             self.status = FAILED -- for now only try once            
             self.inst.components.locomotor:Stop() -- later change so only stop when completely fail and success               
          end

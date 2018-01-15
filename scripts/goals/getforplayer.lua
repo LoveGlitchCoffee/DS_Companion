@@ -3,7 +3,7 @@ require 'general-utils/timeutil'
 require 'general-utils/debugprint'
 
 GetForPlayer = Class(Goal, function(self, inst, item)
-   Goal._ctor(self, inst, "GetForPlayer")
+   Goal._ctor(self, inst, "GetForPlayer"..item)
    self.item = item
    self.name = (self.name .. self.item)
    self.urgency = 0.8 -- pretty high urgency, usually primary task

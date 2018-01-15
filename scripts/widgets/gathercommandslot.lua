@@ -6,6 +6,7 @@ local GatherCommandSlot = Class(ItemSlot, function (self, atlas, bgim, owner, re
    self.owner = owner   
    self.item = resource   
    self.target = target
+   self.goal = GetForPlayer(self.target, self.item)
 end)
 
 function GatherCommandSlot:OnControl(control, down)
@@ -15,9 +16,8 @@ function GatherCommandSlot:OnControl(control, down)
 end
 
 -- function not part of widget, is custom
-function GatherCommandSlot:Click()   
-   local g = GetForPlayer(self.target, self.item)
-   self.target:PushEvent('insertgoal',{goal=g})
+function GatherCommandSlot:Click()      
+   self.target:PushEvent('insertgoal',{goal=self.goal})
 end
 
 return GatherCommandSlot
