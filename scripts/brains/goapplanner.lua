@@ -3,16 +3,16 @@ require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 require 'general-utils/debugprint'
 require("general-utils/mathutils")
-require("utils")
+require("brains/utils")
+require("brains/qlearner")
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}
 action_taken = {}
 
 local function reset_all_tables(all_actions)
-   for _, a in ipairs(all_actions) do
-      error('reseting for '..tostring(a))
-      distance[a] = intlimit();
+   for _, a in ipairs(all_actions) do      
+      distance[a] = math.huge
    end
    predecessor = {}
    action_taken = {}
@@ -54,11 +54,13 @@ local function calc_repeats_needed(node_state, world_state, action)
 end
 
 -- ALL GOALS MUST ONLY PRECOND HAVE OF 1
-function goap_backward_plan_action(world_state, goal_state, all_actions)
+function goap_backward_plan_action(world_state, goal, all_actions)
    reset_all_tables(all_actions)
    local pending_actions = Peaque:new()
-   local valid_actions = generate_valid_actions(all_actions, goal_state)
-   local goal_set = Set.new(goal_state)
+   --local goalstate = goal:GetGoalState()
+   local goalstate = {gave_player_food=true}
+   local valid_actions = generate_valid_actions(all_actions, goalstate)   
+   local goal_set = Set.new(goalstate)
 
    --info('GOAL')
    --info(tostring(goal_set))
@@ -68,12 +70,11 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       local precond_set = Set.new(a:Precondition())
       local posteff_set = Set.new(a:PostEffect())
       local node_state = goal_set - posteff_set + precond_set
-      local a_node = Node(a, a:Cost(), node_state)
-      distance[a] = a:Cost() -- pass world state and goal to calc heuristic
-      error('SETTING HERE')
-      error(tostring(distance[a]))
+      local cost = 0 -- because immediate hits goals state (hoping peaque is smaller first)
+      local a_node = Node(a, cost, node_state)
+      distance[a] = cost -- pass world state and goal to calc heuristic      
       predecessor[a] = nil
-      pending_actions:push(a_node, a:Cost())
+      pending_actions:push(a_node, cost)
    end
 
    --error('STARTING PENDING ACTIONS')
@@ -109,8 +110,8 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
       else
          info('not world state')
          table.insert(action_taken, node.next_action)
-         error('Precondition when at '..tostring(node.next_action))
-         printt(node.world_state)
+         info('Precondition when at '..tostring(node.next_action))
+         --printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
          -- printt(available_actions)
@@ -123,11 +124,11 @@ function goap_backward_plan_action(world_state, goal_state, all_actions)
                --info('current action: '..tostring(action))
 
                local cost = 0
+               local qcost = getcost(goal.name, node.next_action.name, action.name)
                error(tostring(node.next_action))
                --printt(distance)
-               local cost = distance[node.next_action] + (action:Cost() * repeats) -- gotta do soething bout this
-                  error('HERE')
-               info('cost '..tostring(cost))
+               local cost = distance[node.next_action] + ((100-qcost) * repeats) -- gotta do soething bout this
+               error('cost '..tostring(cost))
                info('cost of action so far: '..tostring(distance[action]))
 
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node

@@ -1,4 +1,4 @@
-
+require("brains/qlearner")
 
 Action = Class(function (self, inst, name)
       self.inst = inst
@@ -14,7 +14,7 @@ function Action:PostEffect()
 end
 
 function Action:Cost()
-   print('error. Cost() of ' .. self.name .. ' needs to be implemented')      
+   -- print('error. Cost() of ' .. self.name .. ' needs to be implemented')   
 end
 
 function Action:Perform()

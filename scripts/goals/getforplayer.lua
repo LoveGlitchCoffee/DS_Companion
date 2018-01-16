@@ -1,5 +1,4 @@
 require 'goals/goal'
-require 'general-utils/timeutil'
 require 'general-utils/debugprint'
 
 GetForPlayer = Class(Goal, function(self, inst, item)

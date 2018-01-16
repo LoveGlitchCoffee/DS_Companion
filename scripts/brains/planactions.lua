@@ -1,4 +1,4 @@
-require 'goapplanner'
+require 'brains/goapplanner'
 
 require 'actions/gather'
 require 'actions/gatherfood'
@@ -14,7 +14,7 @@ require("actions/attack")
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
-local ALL_ACTIONS = nil
+ALL_ACTIONS = nil
 
 function populate_actions(inst)
 	local player = GetPlayer()	
@@ -52,59 +52,6 @@ function populate_actions(inst)
 	}
 end
 
-Q_MATRICES = 
-{
-	-- these should be exact name of goals
-	'KeepPlayerFull'={},
-	'FollowPlayer'={},
-	'GetForPlayerlog'={},
-	'GetForPlayertwigs'={},
-	'GetForPlayercutgrass'={},
-	'GetForPlayerrocks'={},
-	'GetForPlayercarrot'={},
-	'GetForPlayerberries'={},
-	'GetForPlayersilk'={},
-	'GetForPlayergoldnugget'={},
-	'GetForPlayerflint'={}
-}
-
-R_MATRICES = 
-{
-	-- these should be exact name of goals
-	'KeepPlayerFull'={},
-	'FollowPlayer'={},
-	'GetForPlayerlog'={},
-	'GetForPlayertwigs'={},
-	'GetForPlayercutgrass'={},
-	'GetForPlayerrocks'={},
-	'GetForPlayercarrot'={},
-	'GetForPlayerberries'={},
-	'GetForPlayersilk'={},
-	'GetForPlayergoldnugget'={},
-	'GetForPlayerflint'={}
-}
-
-function populatematrices(matrices)
-	-- populate each goal matrix with
-	-- action x action matrix
-	if ALL_ACTIONS then
-	   for k,v in pairs(matrices) do
-	   	-- each k is a name, v is a matrix
-			for i,kone in ipairs(ALL_ACTIONS) do
-				v[kone.name]={}
-				for j,ktwo in ipairs(ALL_ACTIONS) do
-					if i == j then -- hopefully works
-                  error('no transition possible')
-					else
-                  v[kone.name][ktwo.name] = 0
-					end
-				end
-			end
-		end
-	else
-		error('Actions not populated, reward will not work')
-	end
-end
 
 function generate_inv_state(inventory, state)	
    if not inventory:IsFull() then
@@ -187,10 +134,8 @@ function planactions(inst, goal)
 	info('.\n')
    info('world state: ')
 	--printt(world_state)
-	info('.\n')
-	--local goal_state = goal:GetGoalState()
-	local goal_state = {froglegs=1}
-	local action_sequence = goap_backward_plan_action(world_state, goal_state, ALL_ACTIONS)
+	info('.\n')	
+	local action_sequence = goap_backward_plan_action(world_state, goal, ALL_ACTIONS)
 	
 	if #action_sequence > 0 then
 		--error('succeed')

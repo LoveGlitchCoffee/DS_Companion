@@ -55,7 +55,7 @@ function PerformSearchFor:SearchWithDirection()
    if self.status == READY then            
       local randomAngle = math.random() * 360 -- in degrees
       info('random degrees ' .. tostring(randomAngle))
-      self.waittime = GetTime() + 6
+      self.waittime = GetTime() + 2 -- originally 6
       self.lasttime = GetTime()
       info('start time '..tostring(GetTime()))
       info('end time '..tostring(self.waittime))

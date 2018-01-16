@@ -1,5 +1,5 @@
-require 'behaviours/selectgoal'
-require 'behaviours/planactions'
+require 'brains/selectgoal'
+require 'brains/planactions'
 require 'behaviours/goapsequencenode'
 require 'goals/stayfull'
 require 'goals/stayhealthy'
@@ -7,7 +7,6 @@ require("goals/followplayer")
 require("goals/keepplayerfull")
 
 require 'brains/utils'
-require 'behaviours/debug'
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
