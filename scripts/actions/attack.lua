@@ -28,7 +28,6 @@ function Attack:PostEffect()
          post[seenkey] = true
       end
    end
-   
    return post   
 end
 

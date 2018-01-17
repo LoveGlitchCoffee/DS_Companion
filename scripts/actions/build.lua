@@ -22,7 +22,7 @@ function Build:Precondition()
    local precond = {} -- convert to my own 'logic'   
    for _,ingredient in ipairs(recipe.ingredients) do
       precond[ingredient.type] = ingredient.amount
-   end   
+   end
    return precond
 end
 
