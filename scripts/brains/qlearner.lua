@@ -22,25 +22,17 @@ local GOALNAMES = {
 
 local Q_MATRICES, R_MATRICES = {}, {}
 
-local function populatematrices(matrices, actions, defaultvalue)
+local function populatematrices(matrices, allactions, defaultvalue)
 	-- populate each goal matrix with
 	-- action x action matrix
-	if actions then
+	if allactions then
 		for _, goalname in ipairs(GOALNAMES) do
 			matrices[goalname] = {}
 		end
 
 		for goalname,matrix in pairs(matrices) do
-			for i,actionone in ipairs(actions) do
-			   matrix[actionone.name] = {}
-			   for j,actiontwo in ipairs(actions) do
-				   if i == j then -- hopefully works
-                  info('no transition possible')
-                  matrix[actionone.name][actiontwo.name] = nil
-					else
-                  matrix[actionone.name][actiontwo.name] = defaultvalue
-					end
-				end
+			for i,action in ipairs(allactions) do
+			   matrix[action.name] = defaultvalue
 			end
       end
 	else
@@ -49,25 +41,21 @@ local function populatematrices(matrices, actions, defaultvalue)
 end
 
 -- remember 'action' is actually state in this case
-
+-- Scratch the above, trying action as action
 
 
 local function normalise(matrix)
    -- computationally expensive
    local largestvalue = -2
-   for k,v in pairs(matrix) do
-      for m,n in pairs(v) do
-         if n > largestvalue then
-            largestvalue = n
-         end
-      end
+   for k,v in pairs(matrix) do      
+      if v > largestvalue then
+         largestvalue = v
+      end      
    end
 
-   for k,v in pairs(matrix) do
-      for m,n in pairs(v) do
-			local normalised_n = n/largestvalue * 100 --get percentage			
-			matrix[k][m] = normalised_n
-      end
+   for k,v in pairs(matrix) do      
+		local normalised_v = v/largestvalue * 100 --get percentage
+		matrix[k]= normalised_v
    end
 end
 
@@ -75,7 +63,7 @@ local function unpackmatrix(matrix)
 	local unpacked = {}
 	for k,v in pairs(matrix) do
 		table.insert(unpacked, #unpacked+1, v)
-	end	
+	end
 	return unpacked
 end
 
@@ -83,16 +71,14 @@ local function updateallqmatrix()
 	error('UPDATE Q MATRIX')
 	for i=1,10 do
 	   for goalname,qmatrix in pairs(Q_MATRICES) do
-			for actionone,actionmatrix in pairs(qmatrix) do
-				for actiontwo,v in pairs(actionmatrix) do
-					local reward = R_MATRICES[goalname][actionone][actiontwo]
-					if reward and reward >= 0 then
-						info('for goal '..goalname..'. reward for '..actionone..':'..actiontwo..' - '..tostring(reward))
-						info('q-matrix value before: '..tostring(qmatrix[actionone][actiontwo]))
-						local qvalues = unpackmatrix(qmatrix[actiontwo])						
-						qmatrix[actionone][actiontwo] = reward + GAMMA * math.max(unpack(qvalues))
-						info('q-matrix value after: '..tostring(qmatrix[actionone][actiontwo]))
-		   		end
+			for action, value in pairs(qmatrix) do
+
+				local reward = R_MATRICES[goalname][action]
+				if reward and reward >= 0 then					
+					info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
+					local qvalues = unpackmatrix(qmatrix)
+					qmatrix[action] = reward + GAMMA * math.max(unpack(qvalues))
+					info('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
 		   	end
 		   end
       end
@@ -108,24 +94,24 @@ function populateallmatrices(actions)
 	populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
 end
 
-function updaterewardmatrix(goalname, prev_actionname, next_actionname, value)
+function updaterewardmatrix(goalname, actionname, value)
    -- occurs when Perform is ran
-   if prev_actionname == next_actionname then
-      -- jus repeatable action so don't worry
-      return
-	end
-   local gmatrix = R_MATRICES[goalname]
-	gmatrix[prev_actionname][next_actionname] = value
-	info('new value for transition '..prev_actionname..':'..next_actionname..' - '..tostring(value))
 
-	if UPDATECOUNT == UPDATE then
+   local gmatrix = R_MATRICES[goalname]
+	gmatrix[actionname] = value
+	info('new value for transition '..actionname..' : '..tostring(value))
+
+	if UPDATECOUNT == UPDATE then		
+		error('UPDATE COUNT '..tostring(UPDATECOUNT))
 		UPDATECOUNT = 0
 		updateallqmatrix()
-	else
+		error('NEW UPDATE COUNT '..tostring(UPDATECOUNT))
+	else		
 		UPDATECOUNT = UPDATECOUNT + 1
+		error('UPDATE COUNT '..tostring(UPDATECOUNT))
 	end
 end
 
-function getcost(goalname, prev_actionname, next_actionname)
-   return Q_MATRICES[goalname][prev_actionname][next_actionname]
+function getcost(goalname, actionname)
+   return Q_MATRICES[goalname][actionname]
 end

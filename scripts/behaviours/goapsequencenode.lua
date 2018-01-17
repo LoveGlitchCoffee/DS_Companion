@@ -94,23 +94,21 @@ function ResponsiveGOAPNode:Visit()
                return
             elseif child.status == FAILED then
                self.finish = true
-               error('FAILED. REPLAN')
-               if self.idx > 1 then                  
-                  updaterewardmatrix(self.oldgoal.name, self.plan[self.idx-1].name, self.plan[self.idx].name, 10)
-               end
+               error('FAILED. REPLAN')               
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)               
                return
             end
             -- if child succeeds
             info("child suceed, move on")
             self.idx = self.idx + 1
             -- update qlearner
-            if self.idx < #self.actionplan then
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx-1].name, self.plan[self.idx].name, 50)
+            if self.idx <= #self.actionplan then
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 50)
             end
          end         
          info('FINISH Sequence')
          self.finish = true
-         updaterewardmatrix(self.oldgoal.name, self.plan[self.idx-1].name, self.plan[self.idx-2].name, 100)
+         updaterewardmatrix(self.oldgoal.name, self.plan[self.idx-1].name, 100) -- update for previous
          --self.status = SUCCESS
       end
    else      

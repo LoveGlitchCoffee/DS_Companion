@@ -10,7 +10,6 @@ require 'actions/give'
 require("actions/followplayeraction")
 require 'actions/givefood'
 require("actions/attack")
-require("actions/idle")
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
@@ -19,8 +18,7 @@ ALL_ACTIONS = nil
 
 function populate_actions(inst)
 	local player = GetPlayer()	
-	ALL_ACTIONS = {
-		Idle(inst), -- just for q-learning here
+	ALL_ACTIONS = {		
       FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),

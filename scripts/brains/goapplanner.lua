@@ -5,7 +5,6 @@ require 'general-utils/debugprint'
 require("general-utils/mathutils")
 require("brains/utils")
 require("brains/qlearner")
-require("actions/idle")
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
 predecessor = {}
@@ -93,31 +92,29 @@ function goap_backward_plan_action(world_state, goal, all_actions)
        if predecessor[node] then
           predtest = predecessor[node].next_action
        end
-       error('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
+       info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
 
       -- backwards so check if satisfy world state
       if is_subset(node.world_state, world_state) then
          info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
-         local action_sequence = {}
-         --table.insert(action_sequence, 1, all_actions[1]) -- should be idle         
+         local action_sequence = {}         
          while predecessor[found_node] do
             table.insert(action_sequence, #action_sequence+1, found_node.next_action)
             found_node = predecessor[found_node]
-         end
-         error('first action '..tostring(action_sequence[1]))
+         end         
          table.insert(action_sequence, #action_sequence+1, found_node.next_action) -- insert last action
          -- printt(action_sequence)
          return action_sequence
       else
          info('not world state')
          table.insert(action_taken, node.next_action)
-         error('Precondition when at '..tostring(node.next_action))
-         printt(node.world_state)
+         info('Precondition when at '..tostring(node.next_action))
+         --printt(node.world_state)         
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
-         -- printt(available_actions)
+         --printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                local repeats = calc_repeats_needed(node.world_state, world_state, action)
@@ -127,11 +124,10 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                --info('current action: '..tostring(action))
 
                local cost = 0
-               local qcost = getcost(goal.name, action.name, node.next_action.name)
-               info('action pair '..tostring(action.name)..':'..tostring(node.next_action.name))
+               local qcost = getcost(goal.name, action.name)
                --printt(distance)
                local cost = distance[node.next_action] + ((100-qcost) * repeats) -- gotta do soething bout this
-               info('cost '..tostring(cost))
+               info('cost of '..action.name..':'..tostring(cost))
                info('cost of action so far: '..tostring(distance[action]))
 
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
