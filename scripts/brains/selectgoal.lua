@@ -8,18 +8,22 @@ function selectgoal(gwulistfn)
    --------------------------------------
    -- @param goal_weight_urgency_list: list of goals, their weighting and urgency as a 3-tuple
    -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction
-    if gwulistfn  then
+    if gwulistfn then
        local weighted_goals = get_weighted_goals(gwulistfn())
-       local next_goal = max_goal(weighted_goals)
-       return next_goal
+       if weighted_goals then
+          local next_goal = max_goal(weighted_goals)
+          return next_goal
+       end
     end
+
+    return nil
 end
 
 function get_weighted_goals( gwu_list )
    --  get a weighted goal value, representing how important a goal is, how much it is satisfied and whether its urgent
    local weighted_goals = {}
-   if gwu_list == nil then
-      return -- not ready yet
+   if gwu_list == nil or #gwu_list < 1 then
+      return nil -- not ready yet, this basically should never occur
    end
 
    local i = 1

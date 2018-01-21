@@ -1,11 +1,11 @@
-function goal_tuple( goal, weight, urgency )
+function goaltuple( goal, weight)
    local goal_tuple = {goal=goal, weight=weight}
    --goal_tuple['goal'] = goal
    --goal_tuple['weight'] = weight
    return goal_tuple
 end
 
-function is_subset_key(actionpost, desiredpred)   
+function is_satisfypred(actionpost, desiredpred)
    local needseen = false
    local needhasweapon = false
 
@@ -14,18 +14,18 @@ function is_subset_key(actionpost, desiredpred)
          -- the idea is if there is this pred
          -- get rid of it first
          -- a nice heuristic I guess
-         needseen = true                  
+         needseen = true
       end
       if string.find(k, 'has_weapon') then
          needhasweapon = true
       end
    end
 
-   if needseen then      
+   if needseen then
       -- basically for pred requiring 'seen'
       -- but post has multiple 'seen'
       -- only 1 needs to satisfy
-      local seen_one = false      
+      local seen_one = false
       local satisfyother = true
       local seenpost = {}
       local post_has_seen = false
@@ -33,24 +33,24 @@ function is_subset_key(actionpost, desiredpred)
 
       -- split the posteffects to different groups
       -- because they're treated in different ways
-      for k,v in pairs(actionpost) do         
-         if string.find( k, 'seen_') then            
+      for k,v in pairs(actionpost) do
+         if string.find( k, 'seen_') then
             seenpost[k] = v
             post_has_seen = true
          else
             otherpost[k] = v
          end
-      end      
-            
-      if post_has_seen then         
-         for k,v in pairs(seenpost) do            
+      end
+
+      if post_has_seen then
+         for k,v in pairs(seenpost) do
             if desiredpred[k] then
-               seen_one = true               
+               seen_one = true
                break
             end
          end
          for k,v in pairs(otherpost) do
-            if not desiredpred[k] then               
+            if not desiredpred[k] then
                satisfyother = false
                break
             end
@@ -68,16 +68,16 @@ function is_subset_key(actionpost, desiredpred)
             return true
          end
       end
-   else      
+   else
       -- handle 'normal' cases
       for k,v in pairs(actionpost) do
          if not desiredpred[k] then
             return false
          end
       end
-      
+
       return true
-   end   
+   end
 end
 
 function is_subset(set, superset)

@@ -3,7 +3,7 @@ require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 require 'general-utils/debugprint'
 require("general-utils/mathutils")
-require("brains/utils")
+require("brains/brainutils")
 require("brains/qlearner")
 
 distance = {} -- purely to track so far for distance, not used to decide cheapest
@@ -23,7 +23,7 @@ local function generate_valid_actions(all_actions, world_state)
    local available_a = {}
 
    for _, a in ipairs(all_actions) do
-      if is_subset_key(a:PostEffect(), world_state) then
+      if is_satisfypred(a:PostEffect(), world_state) then
          info('can generate this action: ' .. tostring(a))
          table.insert(available_a, a)
       end

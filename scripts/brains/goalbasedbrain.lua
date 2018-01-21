@@ -6,7 +6,7 @@ require 'goals/stayhealthy'
 require("goals/followplayer")
 require("goals/keepplayerfull")
 
-require 'brains/utils'
+require 'brains/brainutils'
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
@@ -30,8 +30,8 @@ local function initialise_gwu(inst)
    
    --local healthy = goal_tuple(stayhealthy, 1)
    --local full = goal_tuple(stayfull, 1)
-   local follow = goal_tuple(followPlayer, 1)
-   local keepfull = goal_tuple(keepplayerfull, 1)
+   local follow = goaltuple(followPlayer, 1)
+   local keepfull = goaltuple(keepplayerfull, 1)
 
    --gwu_list[stayhealthy.name] = healthy
    --gwu_list[stayfull.name] = full
@@ -61,7 +61,7 @@ end
 
 local function onInsertGoal(inst, data)
    local goal = data.goal
-   local g = goal_tuple(goal, 1) -- in proto following orders is important so 1
+   local g = goaltuple(goal, 1) -- in proto following orders is important so 1
    inst.brain.gwu_list[goal.name] = g
 
    -- currently, this goal is first considered in the next iteration
