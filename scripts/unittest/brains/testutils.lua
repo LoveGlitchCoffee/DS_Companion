@@ -1,5 +1,4 @@
 lu = require("luaunit")
-require("unittest/testcommon")
 require("brains/utils")
 
 ------------------------------------------------
