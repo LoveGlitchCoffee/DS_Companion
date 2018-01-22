@@ -23,7 +23,7 @@ local function generate_valid_actions(all_actions, world_state)
    local available_a = {}
 
    for _, a in ipairs(all_actions) do
-      if is_satisfypred(a:PostEffect(), world_state) then
+      if is_satisfykey(a:PostEffect(), world_state) then
          info('can generate this action: ' .. tostring(a))
          table.insert(available_a, a)
       end
@@ -95,7 +95,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
        info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
 
       -- backwards so check if satisfy world state
-      if is_subset(node.world_state, world_state) then
+      if is_satisfystate(node.world_state, world_state) then
          info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node

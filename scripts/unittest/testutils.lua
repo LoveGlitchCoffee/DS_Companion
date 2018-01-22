@@ -23,48 +23,87 @@ function TestBrainUtils:test_goaltuple()
    lu.assertEquals(goaltuple(goalone, 1), expectedtuple)
 end
 
---- Tests 'is_satisfypred' with normal cases.
+--- Tests 'is_satisfykey' with normal cases.
 -- Normal actions do not have 'seen_' or 'has_weapon'.
--- Test for cases with only 1 in set, 2> in set and both true and false outputs.
-function TestBrainUtils:test_is_satisfypred_normal()
-   lu.AssertTrue(is_satisfypred({c=true}, {c=true}))
-   lu.AssertFalse(is_satisfypred({c=true}, {d=true}))
-   lu.AssertTrue(is_satisfypred({c=true, d=true}, {c=true, d=true, e=true}))
-   lu.AssertFalse(is_satisfypred({c=true, d=true}, {a=false}))
+-- Test for cases with both true and false outputs, can have multiple states.
+function TestBrainUtils:test_is_satisfykey_normal()
+   lu.AssertTrue(is_satisfykey({c=true}, {c=true}))
+   lu.AssertFalse(is_satisfykey({c=true}, {d=true}))
+
+   lu.AssertTrue(is_satisfykey({c=true, d=true}, {c=true, d=true, e=true}))
+   lu.AssertFalse(is_satisfykey({c=true, d=true}, {a=false}))
 end
 
--- should also test for case where only some statement in pred satisfy some in post
+
+--- Tests 'is_satisfykey' where some posteffect satisfy some preconditions
+function TestBrainUtils:test_is_satisfied_partial()
+   lu.AssertTrue(is_satisfykey({c=true, b=true}, {c=true, a=true}))
+end
 
 
---- Tests 'is_satisfypred' with 'seen' cases and is satisfied.
+---- Following cases cater for historical issues
+
+--- Tests 'is_satisfykey' with 'seen' cases and is satisfied.
 -- 'seen' cases are statements with 'seen_*' in them.
-function TestBrainUtils:test_is_satisfypred_seentrue()
-   lu.AssertTrue(is_satisfypred({seen_a=true}, {seen_a=true, seen_b=true}))
+function TestBrainUtils:test_is_satisfykey_seentrue()
+   lu.AssertTrue(is_satisfykey({seen_a=true, b=true}, {seen_a=true, seen_b=true}))
 end
 
---- Tests 'is_satisfypred' with 'seen' cases and not satisfied.
--- Cases to test include invalid and empty posteffect.
-function TestBrainUtils:test_is_satisfypred_seeninvalid( ... )
-   lu.AssertFalse(is_satisfypred({seen_a=true}, {seen_b=true}))
-end
 
---- Tests 'is_satisfypred' with 'seen' cases with multiple seen in posteffect,
+--- Tests 'is_satisfykey' with 'seen' cases with multiple seen in posteffect,
 -- but only 1 satisfied seen in precondition
-function TestBrainUtils:test_issatisfypred_seenmultipost( ... )
-   
+function TestBrainUtils:test_issatisfykey_seenmultipost()
+   lu.AssertTrue(is_satisfykey({seen_a=true, seen_b=true}, {seen_a=true}))
 end
 
---- Tests 'is_satisfypred' with 'seen' cases with multiple seen in both
--- desired precondition and posteffect, all satisfied.
+
+--- Tests 'is_satisfykey' where invalid posteffect
+-- Cases to test is empty posteffect.
+function TestBrainUtils:test_is_satisfykey_invalid()
+   lu.AssertFalse(is_satisfykey({}, {b=true}))
+end
 
 
---- Tests 'is_satisfypred' with 'seen' cases with multiple seen in both
--- desired precondition and posteffect, none satisfied.
-
-
---- Tests 'is_satisfypred' with 'seen' cases with multiple seen in precondition,
--- but only 1 satisfied with posteffect.
-
-
---- Tests 'is_satisfypred' with 'has_weapon' case.
+--- Tests 'is_satisfykey' with 'has_weapon' case.
 -- 'has_weapon' case  also ends with build <item> so testing is thats skipped
+function TestBrainUtils:test_is_satisfykey_hasweapon()
+   lu.AssertTrue(is_satisfykey({has_weapon=true}, {has_weapon=true, b=true}))
+end
+
+
+--- Tests 'is_satisfystate' where states has bool values.
+-- Sample bool values: 'has_weapon'=true
+function TestBrainUtils:test_is_satisfystate_bool()
+   lu.AssertTrue(is_satisfystate({a=true}, {a=true}))
+   lu.AssertTrue(is_satisfystate({a=true, b=true}, {a=true, b=true}))
+end
+
+
+--- Tests 'is_satisfystate' where states has bool values not all state satisfied.
+-- Sample bool values: 'has_weapon'=true
+function TestBrainUtils:test_is_satisfystate_boolinvalid()
+   lu.AssertFalse(is_satisfystate({a=true}, {a=true, b=true}))
+end
+
+
+--- Tests 'is_satisfystate' where states has number values.
+-- Sample number values: cutgrass=2
+function TestBrainUtils:test_is_satisfystate_number()
+   lu.AssertTrue(is_satisfystate({itema=3, itemb=2}, {itema=3, itemb=2}))
+end
+
+
+--- Tests 'is_satisfystate' where states has number values but mismatch.
+-- Sample number values: cutgrass=2
+function TestBrainUtils:test_is_satisfystate_number()
+   lu.AssertFalse(is_satisfystate({itema=1, itemb=2}, {itema=3, itemb=2}))
+   lu.AssertFalse(is_satisfystate({itemb=2}, {itema=3, itemb=2}))
+end
+
+
+--- Tests 'is_satisfystate' where states has other values.
+-- Sample values: cutgrass='hello'
+function TestBrainUtils:test_is_satisfystate_other()
+   lu.AssertTrue(is_satisfystate({a=b}, {a=b}))
+   lu.AssertFalse(is_satisfystate({a=b}, {a=c}))
+end

@@ -5,8 +5,17 @@ function goaltuple( goal, weight)
    return goal_tuple
 end
 
-function is_satisfypred(actionpost, desiredpred)
-   local needseen = false
+function is_satisfykey(actionpost, desiredpred)
+   local satisfysome = false
+   for k,v in pairs(actionpost) do
+      if desiredpred[k] then
+         satisfysome = true
+         break
+      end
+   end
+
+   return satisfysome
+   --[[ local needseen = false
    local needhasweapon = false
 
    for k,v in pairs(desiredpred) do
@@ -77,32 +86,32 @@ function is_satisfypred(actionpost, desiredpred)
       end
 
       return true
-   end
+   end]]--
 end
 
-function is_subset(set, superset)
-   local is_subset = true
+function is_satisfystate(set, superset)
+   local is_satisfystate = true
    for k, v in pairs(set) do
       if superset[k] == nil then
          info('not in world state')
-         is_subset = false
+         is_satisfystate = false
          break
       end
       if type(set[k]) == type(superset[k]) then
          if type(set[k]) == 'number'
          and superset[k] < set[k] then
             info('values is more')
-            is_subset = false
+            is_satisfystate = false
             break
          end
          -- handle other types
       else
          if superset[k] ~= set[k] then
             error('value not the same')
-            is_subset = false
+            is_satisfystate = false
             break
          end
       end
    end
-   return is_subset
+   return is_satisfystate
 end

@@ -64,7 +64,7 @@ function ResponsiveGOAPNode:Visit()
       -- info('new goal: '..tostring(newgoal))
       -- info(tostring(not self.oldgoal))
       -- info(tostring(not self.oldgoal == newgoal))
-      local replan = not self.oldgoal or not self.oldgoal == newgoal
+      local replan = not self.oldgoal or (newgoal and not self.oldgoal == newgoal)
 
       if replan then
          info('HAVING TO REPLAN')

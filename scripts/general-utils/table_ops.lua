@@ -19,3 +19,11 @@ function has_v(value, list)
    end
    return found
 end
+
+function tablesize(t)
+   local count = 0
+   for k,v in pairs(t) do
+      count = count + 1
+   end
+   return count
+end
