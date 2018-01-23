@@ -7,14 +7,14 @@ require("goals/followplayer")
 require("goals/keepplayerfull")
 
 require 'brains/brainutils'
+require("brains/qlearner")
 
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
 local GoalBasedBrain = Class(Brain, function (self, inst)
 	Brain._ctor(self, inst)
-   self.gwu_list = {}
-   self.actionplan = {}
+   self.gwu_list = {}   
 end)
 
 
@@ -41,24 +41,6 @@ local function initialise_gwu(inst)
    return gwu_list
 end
 
-local function onNextGoalFound(inst, data)    
-   inst.brain.currentgoal = data.goal
-   info('DECIDED ON GOAL ' .. tostring(inst.brain.currentgoal) .. '\n')
-end
-
-local function onActionPlanned(inst, data)
-   if data.a_sequence ~= nil then
-      local a_sequence = data.a_sequence
-      local plan = {}
-      for a=1,#a_sequence do
-         info('putting in plan' .. tostring(a_sequence[a]))
-         table.insert(plan, #plan+1, a_sequence[a]:Perform())
-      end
-      info('.\n')
-      inst.brain.actionplan = plan
-   end
-end
-
 local function onInsertGoal(inst, data)
    local goal = data.goal
    local g = goaltuple(goal, 1) -- in proto following orders is important so 1
@@ -76,10 +58,8 @@ end
 function GoalBasedBrain:OnStart()
    self.gwu_list = initialise_gwu(self.inst)
 
-   self.inst:ListenForEvent('nextgoalfound', onNextGoalFound)
-   self.inst:ListenForEvent('actionplanned', onActionPlanned)
    self.inst:ListenForEvent('insertgoal', onInsertGoal)
-   self.inst:ListenForEvent('dropgoal', onDropGoal)
+   self.inst:ListenForEvent('dropgoal', onDropGoal)   
 
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
    self.inst.components.inventory:GiveItem(SpawnPrefab('cutgrass'))
@@ -99,8 +79,6 @@ function GoalBasedBrain:OnStart()
 end
 
 function GoalBasedBrain:OnStop()
-   self.inst:RemoveEventCallback('nextgoalfound', onNextGoalFound)
-   self.inst:RemoveEventCallback('actionplanned', onActionPlanned)
    self.inst:RemoveEventCallback('insertgoal', onInsertGoal)
    self.inst:RemoveEventCallback('dropgoal', onDropGoal)
 
