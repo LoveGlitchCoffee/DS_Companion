@@ -61,11 +61,6 @@ function ResponsiveGOAPNode:Reset()
    self.idx = 1
 end
 
-function ResponsiveGOAPNode:Stop()
-   self.inst:RemoveEventCallback('healthdelta', onHealthChange)
-   BehaviourNode.Stop()   
-end
-
 function ResponsiveGOAPNode:generateActionSequence()
    if self.plan == nil then
       return nil

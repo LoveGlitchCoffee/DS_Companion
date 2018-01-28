@@ -1,21 +1,41 @@
+require("general-utils/table_ops")
+
 function GetClosestInstOf(prefab, inst, radius)
-   -- body
-   local trans = inst.Transform
-   local x,y,z = trans:GetWorldPosition()
-   local ents = TheSim:FindEntities(x,y,z, radius)
-   for k,v in pairs(ents) do
-            if v ~= inst and v.prefab == prefab then return v end
-         end   
+   -- body   
+   local pt = inst:GetPosition()   
+   local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, radius)
+   for k, entity in pairs(ents) do      
+      if entity ~= inst and entity.prefab == prefab then         
+         return entity
+      end
+   end   
+   return nil
 end
 
-function GetClosestInstWithProduct(product, inst ,radius)
-   -- body    
-   local trans = inst.Transform
-   local x,y,z = trans:GetWorldPosition()
-   local ents = TheSim:FindEntities(x,y,z, radius)
-   for k,v in pairs(ents) do
-            if v ~= inst 
-            and v.components.pickable
-            and v.components.pickable.product == product then return v end
-         end   
+function GetClosestInstWithProduct(product, inst, radius)
+   -- body
+   local trans = inst:GetPosition()   
+   local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, radius)
+   for k, entity in pairs(ents) do
+      if entity ~= inst and entity.components.pickable and entity.components.pickable.product == product then
+         return entity
+      end
+   end
+   return nil
+end
+
+function CheckDangerLevel(centrept)
+   local dangercounter = 0
+   local ents = TheSim:FindEntities(centrept.x, centrept.y, centrept.z, 10)
+   for k, entity in pairs(ents) do
+      if entity:HasTag("hostile") or entity:HasTag("scarytoprey") then
+         dangercounter = dangercounter + 3
+      elseif entity:HasTag("fire") then
+         if entity.prefab ~= "torch" or entity.prefab ~= "fire" then
+            dangercounter = dangercounter + 5
+         end
+      end
+   end
+
+   return dangercounter
 end

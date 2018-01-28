@@ -19,17 +19,36 @@ function PerformSearchFor:OnSucceed()
    self.pendingstatus = SUCCESS
 end
 
+function PerformSearchFor:GenerateRandomValidPointWithRadius(startpos, minradius, maxradius)   
+   for i=1,10 do
+      local offsetx = math.random( minradius, maxradius)
+      local offsety = math.random( minradius, maxradius)
+
+      if math.random( 1 ) == 0 then
+         offsetx = offsetx * -1
+      end
+      if math.random(1) == 0 then
+         offsety = offsety * -1
+      end      
+
+      local newx = startpos.x + offsetx
+      local newy = startpos.y + offsety
+      local tile = GetWorld().Map:GetTileAtPoint(newx, newy, currentPos.z)
+      if tile ~= GROUND.IMPASSABLE or tile ~= GROUND.INVALID then
+         return Vector3(newx, newy, currentPos.z)
+      end
+   end
+end
+
 -- unused atm
-function PerformSearchFor:SearchWithPoint()   
+function PerformSearchFor:SearchWithPoint()
    if self.status == READY then
       local maxSearchDist = 20
       local minSearchDist = 5
-      local currentPos = Vector3(self.inst.Transform:GetWorldPosition())
-      local newx = currentPos.x + math.rad(minSearchDist, maxSearchDist)
-      local newy = currentPos.y + math.rad(minSearchDist, maxSearchDist)
-      local newPos = Vector3(newx, newy, currentPos.z)
-      -- implement valid point later
-      action =  BufferedAction(self.inst, nil, ACTIONS.WALKTO, nil, newPos,nil, 0.1)
+      local currentPos = self.inst:GetPosition()
+      local newPos = self:GenerateRandomValidPointWithRadius(currentPos, minSearchDist, maxSearchDist)
+
+      action =  BufferedAction(self.inst, nil, ACTIONS.WALKTO, nil, newPos, nil, 0.1)
       action:AddFailAction(function() self:OnFail() end)
       action:AddSuccessAction(function() self:OnSucceed() end)   
       self.action = action

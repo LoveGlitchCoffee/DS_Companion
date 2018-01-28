@@ -23,8 +23,8 @@ function SearchFor:PostEffect()
 end
 
 function SearchFor:Cost()
-   -- body
-   return 5
+   
+   return 
 end
 
 function SearchFor:Perform()

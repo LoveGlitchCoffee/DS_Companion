@@ -19,8 +19,8 @@ function FollowPlayerAction:PostEffect()
    return {close_to_player=true}
 end
 
-function FollowPlayerAction:Cost()
-   return 2
+function FollowPlayerAction:Cost()   
+   return 0 -- only action to follow. this is goal adjustable
 end
 
 function FollowPlayerAction:Perform()
