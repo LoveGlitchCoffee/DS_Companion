@@ -11,6 +11,8 @@ require("actions/followplayeraction")
 require 'actions/givefood'
 require("actions/attack")
 
+require("goals/keepplayerfull")
+
 require 'general-utils/table_ops'
 require 'general-utils/debugprint'
 
@@ -134,12 +136,12 @@ function planactions(inst, goal)
 	info('.\n')
    info('world state: ')
 	--printt(world_state)
-	info('.\n')	
-	local action_sequence = goap_backward_plan_action(world_state, goal, ALL_ACTIONS)
-	
+   info('.\n')   
+	local action_sequence = goap_backward_plan_action(world_state, KeepPlayerFull(inst, GetPlayer()), ALL_ACTIONS)	
 	if #action_sequence > 0 then
 		--error('succeed')
 		return action_sequence
-	end
+   end
+   error('Failed, no plan produced')
 	return nil
 end

@@ -7,7 +7,7 @@ SearchFor = Class(Action, function (self, inst, item)
    -- it always assume that search will be successfull
    -- if search is not sucessful, then replan is required
    self.item_to_search = item
-   self.maxSearchDist = 30
+   self.maxSearchDist = 15
    self.minSearchDist = 0
 	Action._ctor(self, inst, 'Search for ' .. item)
 end)
@@ -57,6 +57,7 @@ function SearchFor:Cost()
    if self.newPos then
       return CheckDangerLevel(self.newPos)
    end
+   return 0
 end
 
 function SearchFor:Perform()

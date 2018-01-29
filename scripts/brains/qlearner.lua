@@ -113,5 +113,8 @@ function updaterewardmatrix(goalname, actionname, value)
 end
 
 function getcost(goalname, actionname)
+   error("goal name "..goalname)
+   error("action name "..actionname)
+   error("value "..tostring(Q_MATRICES[goalname][actionname]))
    return Q_MATRICES[goalname][actionname]
 end

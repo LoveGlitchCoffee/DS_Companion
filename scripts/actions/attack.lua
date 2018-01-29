@@ -36,7 +36,8 @@ function Attack:Cost()
    local centrept = GetClosestInstOf(self.enemy, self.inst, 10)   
    if centrept then
       return CheckDangerLevel(centrept)
-   end   
+   end
+   return 0
 end
 
 function Attack:Perform()      

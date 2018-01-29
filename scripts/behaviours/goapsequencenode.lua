@@ -93,7 +93,7 @@ function ResponsiveGOAPNode:Visit()
       local replan = not self.oldgoal or (newgoal and not self.oldgoal == newgoal)
 
       if replan then
-         info("HAVING TO REPLAN")
+         error("HAVING TO REPLAN")
          self.oldgoal = newgoal
          -- reset all actions for good measure
          -- even though perform makes anew one each time, could store them
@@ -110,7 +110,7 @@ function ResponsiveGOAPNode:Visit()
          self.idx = 1
       end
 
-      if self.actionplan then
+      if self.actionplan then         
          while self.idx <= #self.actionplan do
             local child = self.actionplan[self.idx]
             child:Visit()
@@ -121,7 +121,7 @@ function ResponsiveGOAPNode:Visit()
             elseif child.status == FAILED then
                self.finish = true
                error("FAILED. REPLAN")
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)               
                return
             end
             -- if child succeeds
@@ -136,8 +136,10 @@ function ResponsiveGOAPNode:Visit()
          self.finish = true
          updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 100) -- update for previous
       --self.status = SUCCESS
+      else
+         error("No plan")
       end
-   else
+   else      
       if self.idx then
          local child = self.actionplan[self.idx]
          if child then

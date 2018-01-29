@@ -20,8 +20,7 @@ PerformSearchFor =
             self.status = SUCCESS
          else
             self.status = FAILED
-         end
-         self.inst.components.locomotor:Stop()
+         end         
          error("Finish behav")
       end)
    end)
@@ -56,11 +55,11 @@ function PerformSearchFor:SearchWithPoint()
             self.inst.components.locomotor:Stop()
          end
       end
-      if GetTime() > self.timeout then
-         error("timed out")
-         self.status = FAILED
-         self.inst.components.locomotor:Stop()
-      end
+      --if GetTime() > self.timeout then
+      --   error("timed out")
+      --   self.status = FAILED
+      --   self.inst.components.locomotor:Stop()
+      --end
    end
 end
 
