@@ -26,7 +26,7 @@ function Gather:PostEffect()
 end
 
 function Gather:Cost()
-   return 2
+   return 0
 end
 
 function Gather:Perform()

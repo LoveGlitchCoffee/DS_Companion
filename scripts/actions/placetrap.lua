@@ -22,7 +22,7 @@ function PlaceTrap:PostEffect()
 end
 
 function PlaceTrap:Cost()
-   return 2
+   return 0
 end
 
 function PlaceTrap:Perform()

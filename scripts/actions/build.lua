@@ -38,7 +38,7 @@ end
 
 function Build:Cost()
    -- body
-   return 2
+   return 0
 end
 
 function Build:Perform()

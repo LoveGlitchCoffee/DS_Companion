@@ -68,7 +68,7 @@ local function unpackmatrix(matrix)
 end
 
 local function updateallqmatrix()
-	error('UPDATE Q MATRIX')
+	info('UPDATE Q MATRIX')
 	for i=1,10 do
 	   for goalname,qmatrix in pairs(Q_MATRICES) do
 			for action, value in pairs(qmatrix) do
@@ -102,13 +102,13 @@ function updaterewardmatrix(goalname, actionname, value)
 	info('new value for transition '..actionname..' : '..tostring(value))
 
 	if UPDATECOUNT == UPDATE then		
-		error('UPDATE COUNT '..tostring(UPDATECOUNT))
+		info('UPDATE COUNT '..tostring(UPDATECOUNT))
 		UPDATECOUNT = 0
 		updateallqmatrix()
-		error('NEW UPDATE COUNT '..tostring(UPDATECOUNT))
+		info('NEW UPDATE COUNT '..tostring(UPDATECOUNT))
 	else		
 		UPDATECOUNT = UPDATECOUNT + 1
-		error('UPDATE COUNT '..tostring(UPDATECOUNT))
+		info('UPDATE COUNT '..tostring(UPDATECOUNT))
 	end
 end
 

@@ -1,11 +1,11 @@
 require 'general-utils/debugprint'
 require 'behaviours/performsearchfor'
 
-PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity)
+PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity, period,newPos)
    -- search for is travelling in a random direction
    -- then do another check to see if entity wanted is in view
    -- fail if no entity is in view then
-   PerformSearchFor._ctor(self, inst, entity)   
+   PerformSearchFor._ctor(self, inst, entity, period, newPos)
 end)
 
 function PerformSearchForResource:CheckTarget()

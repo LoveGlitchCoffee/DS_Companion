@@ -9,6 +9,6 @@ SearchForResource = Class(SearchFor, function (self, inst, item)
 end)
 
 
-function SearchForResource:Perform()
-   return PerformSearchForResource(self.inst, self.item_to_search)
+function SearchForResource:Perform()   
+   return PerformSearchForResource(self.inst, self.item_to_search, 0.5, self.newPos)
 end

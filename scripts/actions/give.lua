@@ -22,7 +22,7 @@ function Give:PostEffect()
 end
 
 function Give:Cost()
-   return 1
+   return 0
 end
 
 function Give:Perform()   

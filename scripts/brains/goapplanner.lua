@@ -126,7 +126,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                local cost = 0
                local qcost = getcost(goal.name, action.name)
                --printt(distance)
-               local cost = distance[node.next_action] + ((100-qcost) * repeats) -- gotta do soething bout this
+               local cost = distance[node.next_action] + ((100-qcost) * repeats) + action:Cost()
                info('cost of '..action.name..':'..tostring(cost))
                info('cost of action so far: '..tostring(distance[action]))
 
