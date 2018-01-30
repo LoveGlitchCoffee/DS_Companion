@@ -20,8 +20,7 @@ PerformSearchFor =
             self.status = SUCCESS
          else
             self.status = FAILED
-         end         
-         error("Finish behav")
+         end
       end)
    end)
 
@@ -35,15 +34,15 @@ end
 -- unused atm
 function PerformSearchFor:SearchWithPoint()
    if self.status == READY then
-      if self.newPos then         
-         self.timeout = GetTime() + 2
+      if self.newPos then
+         self.timeout = GetTime() + 5
          self.inst.components.locomotor:GoToPoint(self.newPos, nil, true)
          self.lasttime = GetTime()
          self.status = RUNNING
       else
          self.status = FAILED
       end
-   elseif self.status == RUNNING then      
+   elseif self.status == RUNNING then
       local eval = self.lasttime and self.period and GetTime() > self.lasttime + self.period
       if eval then
          local target = self:CheckTarget()
@@ -55,11 +54,11 @@ function PerformSearchFor:SearchWithPoint()
             self.inst.components.locomotor:Stop()
          end
       end
-      --if GetTime() > self.timeout then
-      --   error("timed out")
-      --   self.status = FAILED
-      --   self.inst.components.locomotor:Stop()
-      --end
+      if GetTime() > self.timeout then
+         info("timed out")
+         self.status = FAILED
+         self.inst.components.locomotor:Stop()
+      end
    end
 end
 

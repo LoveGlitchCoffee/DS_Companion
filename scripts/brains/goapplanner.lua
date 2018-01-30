@@ -47,7 +47,7 @@ local function calc_repeats_needed(node_state, world_state, action)
       end
    end
    if repeats <= 0 then
-      error('repeats is less than 0')
+      info('repeats is less than 0')
       repeats = 1 -- otherwise infinite loop where used
    end
    return repeats
@@ -92,11 +92,11 @@ function goap_backward_plan_action(world_state, goal, all_actions)
        if predecessor[node] then
           predtest = predecessor[node].next_action
        end
-       error('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
+       info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
 
       -- backwards so check if satisfy world state
       if is_satisfystate(node.world_state, world_state) then
-         error('found world state\n')
+         info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
          local action_sequence = {}         
@@ -118,7 +118,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then
                local repeats = calc_repeats_needed(node.world_state, world_state, action)
-               error('repeating this action ' .. tostring(repeats))
+               info('repeating this action ' .. tostring(repeats))
                --info('previous node: '..tostring(node.next_action))
                --info('cost '..tostring(distance[node.next_action]))
                --info('current action: '..tostring(action))
@@ -126,7 +126,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                local cost = 0
                local qcost = getcost(goal.name, action.name)
                --printt(distance)               
-               error('cost of '..action.name..':'..tostring(action:Cost()))
+               info('cost of '..action.name..':'..tostring(action:Cost()))
                cost = distance[node.next_action] + ((100-qcost) * repeats) + action:Cost()               
                info('cost of action so far: '..tostring(distance[action]))
 
@@ -146,7 +146,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                   -- need to fix cost at some point
 
                   for i=1,repeats do
-                     error ('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(next_node.next_action))
+                     info('inserting action ' .. tostring(action) .. ' with parent ' .. tostring(next_node.next_action))
                      local new_node = Node(action, cost, new_state + precond)
                      predecessor[new_node] = next_node
                      next_node = new_node
@@ -162,7 +162,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          end
       end
    end
-   error('no plan')
+   info('no plan')
    return {} -- no plan found
 end
 

@@ -39,8 +39,9 @@ function populate_actions(inst)
 		GiveFood(inst, 'meat', player),
 		GiveFood(inst, 'froglegs', player),
       SearchForResource(inst, 'twigs'),
-      SearchForResource(inst, 'cutgrass'), -- need to make SearchForResource
-		SearchForResource(inst, 'carrot'),
+      SearchForResource(inst, 'cutgrass'),
+      SearchForResource(inst, 'carrot'),
+      SearchForResource(inst, 'berries'),
 		SearchFor(inst, 'pigman'),
 		SearchFor(inst, 'frog'),
 		-- SearchFor(inst, 'meat'), -- for testing. rn wnat to kill to get it
@@ -104,14 +105,14 @@ function generate_items_in_view(inventory, state, inst)
 	for k,entity in pairs(ents) do
 		if entity then
          if entity ~= inst then
-            info('see ' .. tostring(entity))
+            error('see ' .. tostring(entity))
 				local entityname = entity.prefab
 				
             if entity.components.pickable then
                entityname = entity.components.pickable.product -- so gather works
 				end
-
-				if inventory:FindItem(function (invItem) return invItem == entity end) then
+                        
+            if entity.inlimbo then
 					info('item is part of inventory')
 				else
 					local seenkey = ('seen_' .. entityname)				
