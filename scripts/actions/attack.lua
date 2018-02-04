@@ -12,6 +12,7 @@ ENEMY_LOOT = {}
 ENEMY_LOOT['pigman']={'meat', 'pigskin'}
 ENEMY_LOOT['perd']={'drumstick'}
 ENEMY_LOOT['frog']={'froglegs'}
+ENEMY_LOOT['spider']={'silk', 'spidergland', 'monstermeat'}
 
 function Attack:Precondition()
    local seenkey = ('seen_'..self.enemy)
@@ -33,7 +34,7 @@ function Attack:PostEffect()
 end
 
 function Attack:Cost()
-   local centrept = GetClosestInstOf(self.enemy, self.inst, 10)   
+   local centrept = GetClosestInstOf(self.enemy, self.inst, 10)      
    if centrept then
       return CheckDangerLevel(centrept)
    end

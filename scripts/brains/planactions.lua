@@ -10,6 +10,7 @@ require 'actions/give'
 require("actions/followplayeraction")
 require 'actions/givefood'
 require("actions/attack")
+require("actions/fishing")
 
 require("goals/keepplayerfull")
 
@@ -22,18 +23,21 @@ function populate_actions(inst)
 	local player = GetPlayer()	
 	ALL_ACTIONS = {		
       FollowPlayerAction(inst, player),
-      Gather(inst, 'twigs'),
-      Gather(inst, 'cutgrass'),
-		Gather(inst, 'carrot'),
-		Gather(inst, 'flint'),
+      -- Gather(inst, 'twigs'),
+      -- Gather(inst, 'cutgrass'),
+		-- Gather(inst, 'carrot'),
+      -- Gather(inst, 'flint'),
+      Gather(inst, 'silk'),
 		GatherFood(inst, 'carrot'), -- special case
 		GatherFood(inst, 'berries'),
 		GatherFood(inst, 'meat'),
-		GatherFood(inst, 'froglegs'),
+      GatherFood(inst, 'froglegs'),
+      GatherFood(inst, 'fish'),
       Give(inst, 'twigs', player),
       Give(inst, 'cutgrass', player),
 		Give(inst, 'carrot', player),
-		Give(inst, 'flint'),	
+      Give(inst, 'flint', player),
+      Give(inst, 'silk', player),      
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
@@ -45,12 +49,18 @@ function populate_actions(inst)
 		SearchFor(inst, 'pigman'),
 		SearchFor(inst, 'frog'),
 		-- SearchFor(inst, 'meat'), -- for testing. rn wnat to kill to get it
-		SearchFor(inst, 'flint'),
+      SearchFor(inst, 'flint'),
+      SearchFor(inst, 'silk'), -- force kill spider
+      SearchFor(inst, 'spider'),
+      SearchFor(inst, 'pond'),
 		Build(inst, 'trap'),
 		Build(inst, 'rope'),
-		Build(inst, 'spear'),
+      Build(inst, 'spear'),
+      Build(inst, 'fishingrod'),
 		Attack(inst, 'pigman'),
-		Attack(inst, 'frog')
+      Attack(inst, 'frog'),
+      Fishing(inst)
+      --Attack(inst, 'spider')
       --Eat(inst)
 	}
 end
@@ -105,7 +115,7 @@ function generate_items_in_view(inventory, state, inst)
 	for k,entity in pairs(ents) do
 		if entity then
          if entity ~= inst then
-            error('see ' .. tostring(entity))
+            info('see ' .. tostring(entity))
 				local entityname = entity.prefab
 				
             if entity.components.pickable then
@@ -126,21 +136,21 @@ end
 
 function generate_world_state(inst)	
    local state = {}
-	local inventory = inst.components.inventory
+   local inventory = inst.components.inventory      
 	generate_inv_state(inventory, state)
-	generate_items_in_view(inventory, state, inst)
+   generate_items_in_view(inventory, state, inst)   
    return state
 end
 
 function planactions(inst, goal)
-	local world_state = generate_world_state(inst)
+   local world_state = generate_world_state(inst)
 	info('.\n')
    info('world state: ')
 	--printt(world_state)
    info('.\n')   
 	local action_sequence = goap_backward_plan_action(world_state, KeepPlayerFull(inst, GetPlayer()), ALL_ACTIONS)	
 	if #action_sequence > 0 then
-		--error('succeed')
+      --error('succeed')      
 		return action_sequence
    end
    error('Failed, no plan produced')

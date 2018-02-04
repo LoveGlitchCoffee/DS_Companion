@@ -27,6 +27,10 @@ end
 
 function CheckDangerLevel(centrept)
    local dangercounter = 0
+   -- if not centrept then
+   --    error('not there')
+   --    return 0
+   -- end
    local ents = TheSim:FindEntities(centrept.x, centrept.y, centrept.z, 10)
    for k, entity in pairs(ents) do
       if entity:HasTag("hostile") or entity:HasTag("scarytoprey") then         

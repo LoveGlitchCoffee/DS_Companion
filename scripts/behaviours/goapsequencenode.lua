@@ -68,6 +68,7 @@ function ResponsiveGOAPNode:generateActionSequence()
 
    local actionsequence = {}
    for a = 1, #self.plan do
+      info(tostring(self.plan[a]))
       table.insert(actionsequence, #actionsequence + 1, self.plan[a]:Perform())
    end
    return actionsequence

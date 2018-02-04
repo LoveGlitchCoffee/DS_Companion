@@ -57,8 +57,8 @@ end
 function goap_backward_plan_action(world_state, goal, all_actions)
    reset_all_tables(all_actions)
    local pending_actions = Peaque:new()
-   local goalstate = goal:GetGoalState()
-   --local goalstate = {gave_player_food=true}
+   --local goalstate = goal:GetGoalState()
+   local goalstate = {seen_fish=true}
    local valid_actions = generate_valid_actions(all_actions, goalstate)   
    local goal_set = Set.new(goalstate)
 
@@ -77,11 +77,11 @@ function goap_backward_plan_action(world_state, goal, all_actions)
       pending_actions:push(a_node, cost)
    end
 
-   --error('STARTING PENDING ACTIONS')
+   --info('STARTING PENDING ACTIONS')
    --for i=1,#pending_actions.A do
-   --   error('pending action')
+   --   info('pending action')
    --   print(tostring(pending_actions.A[i].data.next_action))
-   --   error('end pending action')
+   --   info('end pending action')
    --end
 
    while pending_actions:size() > 0 do
@@ -111,7 +111,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          info('not world state')
          table.insert(action_taken, node.next_action)
          info('Precondition when at '..tostring(node.next_action))
-         --printt(node.world_state)         
+         printt(node.world_state)         
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
          --printt(available_actions)

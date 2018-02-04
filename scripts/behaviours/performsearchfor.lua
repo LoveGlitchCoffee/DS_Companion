@@ -38,7 +38,11 @@ function PerformSearchFor:SearchWithPoint()
          self.timeout = GetTime() + 5
          self.inst.components.locomotor:GoToPoint(self.newPos, nil, true)
          self.lasttime = GetTime()
-         self.status = RUNNING
+         if self:CheckTarget() then
+            self.status = SUCCESS
+         else
+            self.status = RUNNING
+         end
       else
          self.status = FAILED
       end
@@ -65,7 +69,7 @@ end
 function PerformSearchFor:CheckTarget()
    return FindEntity(
       self.inst,
-      6,
+      8,
       function(ent)
          return ent.prefab == self.entity
       end
