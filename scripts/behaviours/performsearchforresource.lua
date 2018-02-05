@@ -1,5 +1,6 @@
 require 'general-utils/debugprint'
 require 'behaviours/performsearchfor'
+require("general-utils/config")
 
 PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity, period,newPos)
    -- search for is travelling in a random direction
@@ -9,7 +10,7 @@ PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity, 
 end)
 
 function PerformSearchForResource:CheckTarget()
-   return FindEntity(self.inst, 4, function(resource)
+   return FindEntity(self.inst, SIGHT_DISTANCE, function(resource)
       if resource.components.pickable then -- might want to change at some point
          return resource.components.pickable.product == self.entity
       else

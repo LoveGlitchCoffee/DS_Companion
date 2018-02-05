@@ -2,6 +2,7 @@ require 'actions/action'
 require 'general-utils/debugprint'
 require 'general-utils/table_ops'
 require("general-utils/gameutils")
+require("general-utils/config")
 
 Attack = Class(Action, function (self, inst, enemy)
    self.enemy = enemy
@@ -34,7 +35,7 @@ function Attack:PostEffect()
 end
 
 function Attack:Cost()
-   local centrept = GetClosestInstOf(self.enemy, self.inst, 10)      
+   local centrept = GetClosestInstOf(self.enemy, self.inst, ASSUME_DANGER_DIST)
    if centrept then
       return CheckDangerLevel(centrept)
    end

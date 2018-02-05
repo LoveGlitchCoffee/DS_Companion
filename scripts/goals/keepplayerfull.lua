@@ -1,28 +1,29 @@
 require("goals/goal")
+require("general-utils/config")
 
 KeepPlayerFull = Class(Goal, function(self, inst, player)
    Goal._ctor(self, inst, "KeepPlayerFull")
-   self.urgency = 0.3 -- primary task unless extremely important one   
-   
+   self.urgency = KEEP_PLAYER_FULL_U_NORMAL
+
    self.updateUrgency = function (inst, data)
-      local new_percent = data.newpercent   
-      if new_percent < 0.20 then      
-         self.urgency = 0.8
-      elseif new_percent > 0.15 then
-         self.urgency = 0.3
-      end      
+      local new_percent = data.newpercent
+      if new_percent < KEEP_PLAYER_FULL_LOWER then
+         self.urgency = KEEP_PLAYER_FULL_U_URGENT
+      elseif new_percent > KEEP_PLAYER_FULL_UPPER then
+         self.urgency = KEEP_PLAYER_FULL_U_NORMAL
+      end
    end
-   
+
    self.player = player
    self.player:ListenForEvent("hungerdelta", self.updateUrgency)
-   -- could do for start starving event too   
+   -- could do for start starving event too
 end)
 
 function KeepPlayerFull:OnStop()
    self.player:RemoveEventCallback('hungerdelta', self.updateUrgency)
 end
 
-function KeepPlayerFull:Satisfaction()   
+function KeepPlayerFull:Satisfaction()
    return self.player.components.hunger:GetPercent()
 end
 

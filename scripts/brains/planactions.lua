@@ -23,10 +23,10 @@ function populate_actions(inst)
 	local player = GetPlayer()	
 	ALL_ACTIONS = {		
       FollowPlayerAction(inst, player),
-      -- Gather(inst, 'twigs'),
-      -- Gather(inst, 'cutgrass'),
-		-- Gather(inst, 'carrot'),
-      -- Gather(inst, 'flint'),
+      Gather(inst, 'twigs'),
+      Gather(inst, 'cutgrass'),
+		Gather(inst, 'carrot'),
+      Gather(inst, 'flint'),
       Gather(inst, 'silk'),
 		GatherFood(inst, 'carrot'), -- special case
 		GatherFood(inst, 'berries'),
@@ -48,9 +48,9 @@ function populate_actions(inst)
       SearchForResource(inst, 'berries'),
 		SearchFor(inst, 'pigman'),
 		SearchFor(inst, 'frog'),
-		-- SearchFor(inst, 'meat'), -- for testing. rn wnat to kill to get it
+		SearchFor(inst, 'meat'),
       SearchFor(inst, 'flint'),
-      SearchFor(inst, 'silk'), -- force kill spider
+      SearchFor(inst, 'silk'),
       SearchFor(inst, 'spider'),
       SearchFor(inst, 'pond'),
 		Build(inst, 'trap'),
@@ -59,8 +59,8 @@ function populate_actions(inst)
       Build(inst, 'fishingrod'),
 		Attack(inst, 'pigman'),
       Attack(inst, 'frog'),
-      Fishing(inst)
-      --Attack(inst, 'spider')
+      Fishing(inst),
+      Attack(inst, 'spider')
       --Eat(inst)
 	}
 end
@@ -96,7 +96,7 @@ function generate_inv_state(inventory, state)
 			end
 			if has_v(item.prefab, WEAPONS) then
 				state['has_weapon'] = true -- but not equipped
-			end			
+         end         
 			--local has_key = 'has' .. tostring(item.prefab)			
       end	 
 	end
@@ -104,6 +104,8 @@ function generate_inv_state(inventory, state)
 	for k,v in pairs(inventory.equipslots) do
 		if has_v(v.prefab, WEAPONS) then
          state['has_weapon'] = true -- only valid way rn (hacky)
+      else
+         state[v.prefab] = 1 -- should add really but dc rn
 		end
 	end
 end
@@ -148,7 +150,7 @@ function planactions(inst, goal)
    info('world state: ')
 	--printt(world_state)
    info('.\n')   
-	local action_sequence = goap_backward_plan_action(world_state, KeepPlayerFull(inst, GetPlayer()), ALL_ACTIONS)	
+	local action_sequence = goap_backward_plan_action(world_state, goal, ALL_ACTIONS)
 	if #action_sequence > 0 then
       --error('succeed')      
 		return action_sequence

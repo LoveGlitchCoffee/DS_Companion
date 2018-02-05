@@ -1,5 +1,6 @@
 require 'general-utils/debugprint'
 require 'general-utils/table_ops'
+require("general-utils/config")
 require 'class'
 local Widget = require 'widgets/widget'
 local UIAnim = require 'widgets/uianim'
@@ -83,7 +84,7 @@ end
 function GatherCommandWidget:OnUpdate(dt)
    if self.isopen and self.owner then      
 	   local distsq = self.owner:GetDistanceSqToInst(self.target)
-	   if distsq > 7*7 then	
+	   if distsq > DISTANCE_BEFORE_LOSE * DISTANCE_BEFORE_LOSE then
 	      self:Close()	
       end	
    end

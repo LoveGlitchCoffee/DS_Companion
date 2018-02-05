@@ -91,7 +91,7 @@ function PerformBuild:Visit()
                   prod:OnBuilt(self.inst) -- leave here for now
                   
                   self.status = SUCCESS
-                  error('Built'..self.item)
+                  info('Built '..self.item)
                   printt(self.inst.components.inventory.itemslots)
                end
             else

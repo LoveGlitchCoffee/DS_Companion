@@ -10,7 +10,7 @@ function selectgoal(gwulistfn)
    -- @param next_goal: string describing the next goal agent will fulfill, balanced between urgent, important and satisfaction
    if gwulistfn then
       local weighted_goals = get_weighted_goals(gwulistfn())
-      if weighted_goals then         
+      if weighted_goals then
          local next_goal = max_goal(weighted_goals)
          return next_goal
       end
@@ -21,8 +21,8 @@ end
 
 function get_weighted_goals(gwu_list)
    --  get a weighted goal value, representing how important a goal is, how much it is satisfied and whether its urgent
-   local weighted_goals = {}   
-   if gwu_list == nil or tablesize(gwu_list) < 1 then      
+   local weighted_goals = {}
+   if gwu_list == nil or tablesize(gwu_list) < 1 then
       return nil -- not ready yet, this basically should never occur
    end
 
@@ -35,6 +35,7 @@ function get_weighted_goals(gwu_list)
       -- multiply the inverse current satisfaciton value of goal and weightage
       -- we multiply inverse because we usually want to satisfy goals that are less satisfied
       weighted_goals[i]["weighted_value"] = (1 - v.goal:Satisfaction()) * v.weight * v.goal:Urgency()
+      info('satisfaction for '..weighted_goals[i]["goal"].name..': '..tostring(v.goal:Satisfaction()))
       info(string.format("%s: %s", weighted_goals[i]["goal"].name, weighted_goals[i]["weighted_value"]))
 
       i = i + 1

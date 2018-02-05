@@ -1,14 +1,13 @@
 require 'actions/action'
 require 'behaviours/performsearchfor'
 require("general-utils/gameutils")
+require("general-utils/config")
 
 SearchFor = Class(Action, function (self, inst, item)
    -- this is for the actual looking
    -- it always assume that search will be successfull
    -- if search is not sucessful, then replan is required
-   self.item_to_search = item
-   self.maxSearchDist = 15
-   self.minSearchDist = 0
+   self.item_to_search = item   
 	Action._ctor(self, inst, 'Search for ' .. item)
 end)
 
@@ -53,7 +52,7 @@ end
 
 function SearchFor:Cost()
    local currentPos = self.inst:GetPosition()
-   self.newPos = self:GenerateRandomValidPointWithRadius(currentPos, self.minSearchDist, self.maxSearchDist)
+   self.newPos = self:GenerateRandomValidPointWithRadius(currentPos, MIN_SEARCH_DIST, MAX_SEARCH_DIST)
    if self.newPos then
       return CheckDangerLevel(self.newPos)
    end

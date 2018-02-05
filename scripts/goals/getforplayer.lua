@@ -1,19 +1,18 @@
 require 'goals/goal'
 require 'general-utils/debugprint'
+require("general-utils/config")
 
 GetForPlayer = Class(Goal, function(self, inst, item)
    Goal._ctor(self, inst, "GetForPlayer"..item)
-   self.item = item
-   self.name = (self.name .. self.item)
-   self.urgency = 0.8 -- pretty high urgency, usually primary task
-   self.cur_time = os.clock()
-   self.time_thres = 5 -- in seconds
+   self.item = item   
+   self.urgency = GET_FOR_PLAYER_U
+   self.cur_time = GetTime()   
 
    self.updateUrgency = function(inst, data)      
-      if os.clock() - self.cur_time > self.time_thres then
-         self.urgency = self.urgency - 0.1
-         self.cur_time = os.clock()
-         error('updating urgency'..tostring(self.urgency))
+      if GetTime() - self.cur_time > GET_FOR_PLAYER_TIME_THRES then
+         self.urgency = self.urgency - GET_FOR_PLAYER_U_DECREASE
+         self.cur_time = GetTime()
+         error('updating urgency '..tostring(self.urgency))
          if self.urgency <= 0 then
             -- drop it
             self.inst:PushEvent('dropgoal', {goalname=self.name})
@@ -40,7 +39,7 @@ end)
 function GetForPlayer:Satisfaction()
    -- if middle of fight, reduce?
    -- if doing something else more important reduce?
-   return 0.8 -- to make primary objective, very high value
+   return GET_FOR_PLAYER_S -- to make primary objective, very high value
 end
 
 function GetForPlayer:GetGoalState()

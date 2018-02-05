@@ -87,15 +87,15 @@ function ResponsiveGOAPNode:Visit()
       end
 
       -- select goal
-      local newgoal = selectgoal(self.gwulistfn)
-      -- info('new goal: '..tostring(newgoal))
-      -- info(tostring(not self.oldgoal))
-      -- info(tostring(not self.oldgoal == newgoal))
+      local newgoal = selectgoal(self.gwulistfn)      
+      info(tostring(not self.oldgoal))
+      info(tostring(not self.oldgoal == newgoal))
       local replan = not self.oldgoal or (newgoal and not self.oldgoal == newgoal)
 
       if replan then
          info("HAVING TO REPLAN")
          self.oldgoal = newgoal
+         error('new goal: '..tostring(newgoal))
          -- reset all actions for good measure
          -- even though perform makes anew one each time, could store them
          if self.actionplan then
@@ -107,7 +107,7 @@ function ResponsiveGOAPNode:Visit()
          self.plan = planactions(self.inst, newgoal)
          print('.\n')
          printt(self.plan)
-         self.actionplan = self:generateActionSequence()
+         self.actionplan = self:generateActionSequence()         
          -- reset idx
          self.idx = 1
       end
@@ -134,7 +134,7 @@ function ResponsiveGOAPNode:Visit()
                updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 70)
             end
          end
-         info("FINISH Sequence")
+         error("FINISH Sequence")
          self.finish = true
          updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 100) -- update for previous
       --self.status = SUCCESS

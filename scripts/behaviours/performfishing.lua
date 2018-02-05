@@ -1,33 +1,31 @@
 require("general-utils/gameutils")
+require("general-utils/config")
 
 PerformFishing = Class(BehaviourNode, function(self, inst)
    BehaviourNode._ctor(self, "PerformFishing")
    self.inst = inst   
-   self.fishhooked = false
 
    self.reel = function (inst, data)
       local sn = data.statename      
       local fishingrodcomp = self:GetRod().components.fishingrod
-      if sn == "fishing_nibble" and not fishingrodcomp:HasHookedFish() then
-         error("HOOK")         
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, 0.7)
+      if sn == "fishing_nibble" and not fishingrodcomp:HasHookedFish() then         
+         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
          pAction:AddFailAction(function() self:OnFail() end)
          self.action = pAction         
          inst.components.locomotor:PushAction(pAction, true)
-      elseif sn == "fishing_strain" and not fishingrodcomp.caughtfish then
-         error("REELING")
-         self.fishhooked = true
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, 0.7)
+      elseif sn == "fishing_strain" and not fishingrodcomp.caughtfish then                  
+         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
          pAction:AddFailAction(function() self:OnFail() end)
-         pAction:AddSuccessAction(function() self:OnFail() end)
+         pAction:AddSuccessAction(function() self:OnSucceed() end)
          self.action = pAction         
-         inst.components.locomotor:PushAction(pAction, true)
-      --else
-      end         
-      -- only occur if in those states above
+         inst.components.locomotor:PushAction(pAction, true)         
+      end               
    end
 
    self.inst:ListenForEvent('newstate', self.reel)
+   self.inst:ListenForEvent('fishingcollect', function ()
+      self.status = SUCCESS
+   end)
 end)
 
 function PerformFishing:OnFail()
@@ -36,7 +34,7 @@ function PerformFishing:OnFail()
 end
 function PerformFishing:OnSucceed()
    error('\nsuccesffuly fished\n')
-   self.pendingstatus = SUCCESS
+   self.status = SUCCESS
 end
 
 function PerformFishing:GetRod()
@@ -58,10 +56,9 @@ end
 
 function PerformFishing:Visit()
    if self.status == READY then
-      self.target = GetClosestInstOf('pond', self.inst, 7)
-      if self.target then
-         error('found pond')
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.FISH, self:GetRod(), nil, nil, 3.5)
+      self.target = GetClosestInstOf('pond', self.inst, SIGHT_DISTANCE)
+      if self.target then         
+         local pAction = BufferedAction(self.inst, self.target, ACTIONS.FISH, self:GetRod(), nil, nil, DEFAULT_DISTANCE)
          pAction:AddFailAction(function() self:OnFail() end)
          self.action = pAction
          self.pendingstatus = nil
@@ -70,8 +67,9 @@ function PerformFishing:Visit()
       else
          self.status = FAILED
       end
-   elseif self.status == RUNNING then
+   elseif self.status == RUNNING then      
       if self.pendingstatus then
+         error("pending "..tostring(self.pending))
          self.status = self.pendingstatus
       elseif not self.action:IsValid() then
          self.status = FAILED

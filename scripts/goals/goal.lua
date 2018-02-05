@@ -15,6 +15,7 @@ function Goal:__tostring()
    return string.format("Goal: %s", self.name)
 end
 
+--- Satisfaciton is how much satisfaction currently at
 function Goal:Satisfaction()
    error('Satisfaction() needs to be implemented')
 end

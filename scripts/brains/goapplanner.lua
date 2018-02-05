@@ -2,7 +2,6 @@ require 'general-utils/sets'
 require 'general-utils/table_ops'
 Peaque = require 'general-utils/peaque'
 require 'general-utils/debugprint'
-require("general-utils/mathutils")
 require("brains/brainutils")
 require("brains/qlearner")
 
@@ -57,8 +56,8 @@ end
 function goap_backward_plan_action(world_state, goal, all_actions)
    reset_all_tables(all_actions)
    local pending_actions = Peaque:new()
-   --local goalstate = goal:GetGoalState()
-   local goalstate = {seen_fish=true}
+   local goalstate = goal:GetGoalState()
+   -- local goalstate = {seen_fish=true} -- for testing
    local valid_actions = generate_valid_actions(all_actions, goalstate)   
    local goal_set = Set.new(goalstate)
 
@@ -93,6 +92,8 @@ function goap_backward_plan_action(world_state, goal, all_actions)
           predtest = predecessor[node].next_action
        end
        info('.\nlooking at ' .. tostring(node.next_action)..' predecessor '..tostring(predtest))
+       info('wold sate')
+       -- printt(world_state)
 
       -- backwards so check if satisfy world state
       if is_satisfystate(node.world_state, world_state) then
@@ -111,7 +112,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          info('not world state')
          table.insert(action_taken, node.next_action)
          info('Precondition when at '..tostring(node.next_action))
-         printt(node.world_state)         
+         -- printt(node.world_state)         
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
          --printt(available_actions)

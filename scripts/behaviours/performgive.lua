@@ -32,7 +32,7 @@ function PerformGive:Visit()
          local item = self:GetItemFromInventory()
          if item then
             error('item found: '..tostring(item))
-            local pAction = BufferedAction(self.inst, self.target, ACTIONS.GIVE, item, nil, nil, 4)
+            local pAction = BufferedAction(self.inst, self.target, ACTIONS.GIVE, item, nil, nil, DEFAULT_DISTANCE)
             pAction:AddFailAction(function() self:OnFail() end)
             pAction:AddSuccessAction(function() self:OnSucceed() end)
             self.action = pAction

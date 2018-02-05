@@ -1,5 +1,6 @@
 require("general-utils/table_ops")
 require("general-utils/debugprint")
+require("general-utils/config")
 
 function GetClosestInstOf(prefab, inst, radius)
    -- body   
@@ -31,7 +32,7 @@ function CheckDangerLevel(centrept)
    --    error('not there')
    --    return 0
    -- end
-   local ents = TheSim:FindEntities(centrept.x, centrept.y, centrept.z, 10)
+   local ents = TheSim:FindEntities(centrept.x, centrept.y, centrept.z, ASSUME_DANGER_DIST)
    for k, entity in pairs(ents) do
       if entity:HasTag("hostile") or entity:HasTag("scarytoprey") then         
          dangercounter = dangercounter + 3
