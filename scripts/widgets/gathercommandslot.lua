@@ -1,12 +1,13 @@
 local ItemSlot = require 'widgets/itemslot'
 require 'goals/getforplayer'
 
-local GatherCommandSlot = Class(ItemSlot, function (self, atlas, bgim, owner, resource, target)
+local GatherCommandSlot = Class(ItemSlot, function (self, atlas, bgim, owner, resource, target, commandwidget)
    ItemSlot._ctor(self, atlas, bgim, owner)   
    self.owner = owner   
    self.item = resource   
    self.target = target
    self.goal = GetForPlayer(self.target, self.item)
+   self.widget = commandwidget
 end)
 
 function GatherCommandSlot:OnControl(control, down)
@@ -18,6 +19,7 @@ end
 -- function not part of widget, is custom
 function GatherCommandSlot:Click()      
    self.target:PushEvent('insertgoal',{goal=self.goal})
+   self.widget:Close()
 end
 
 return GatherCommandSlot

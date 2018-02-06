@@ -2,10 +2,13 @@ GLOBAL.CHEATS_ENABLED = true
 GLOBAL.require( 'debugkeys' ) -- for debugging, ctrl+r to reload all scripts
 local Vector3 = GLOBAL.Vector3
 local ACTIONS = GLOBAL.ACTIONS
+local STRINGS = GLOBAL.STRINGS
 local COLLISION = GLOBAL.COLLISION
 -- local GetPlayer = GLOBAL.GetPlayer
 
 -- set Gathering ----------------------------------------
+STRINGS.ACTIONS.GATHERCOMMAND = "Command"
+
 ACTIONS.GATHERCOMMAND = GLOBAL.Action(-1, true)
 ACTIONS.GATHERCOMMAND.fn = function(act)   
    local targ = act.target
@@ -14,7 +17,10 @@ ACTIONS.GATHERCOMMAND.fn = function(act)
       return true
    end
 end
-ACTIONS.GATHERCOMMAND.str = "Command to gather"
+ACTIONS.GATHERCOMMAND.str = STRINGS.ACTIONS.GATHERCOMMAND
+ACTIONS.GATHERCOMMAND.strfn = function (act)   
+   return "Command"
+end
 ACTIONS.GATHERCOMMAND.id = "GATHERCOMMAND"
 ---------------------------------------------------------
 

@@ -59,7 +59,7 @@ function GatherCommandWidget:Open(target)
    -- each command
    local n = 1
    for k,v in pairs(slotpos_3x3) do
-      self.gatherable[n] = self:AddChild(GatherCommandSlot('images/hud.xml', 'inv_slot.tex', self.owner, resource[n], self.target))
+      self.gatherable[n] = self:AddChild(GatherCommandSlot('images/hud.xml', 'inv_slot.tex', self.owner, resource[n], self.target, self))
       self.gatherable[n]:SetPosition(v)      
       self.gatherable[n]:SetTile(GatherCommandTile(resource[n]))
       
