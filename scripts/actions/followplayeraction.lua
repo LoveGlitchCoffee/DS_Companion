@@ -9,6 +9,13 @@ require("behaviours/chattynode")
 FollowPlayerAction = Class(Action, function (self, inst, player)
    Action._ctor(self, inst, 'FollowPlayerAction')
    self.player = player
+   self.reason = ""
+   self.addreasontochatlines = function (inst, data)
+      error("GOT REASON "..tostring(data.reason))
+      self.reason = data.reason
+   end
+
+   self.inst:ListenForEvent('failreasoning', self.addreasontochatlines)
 end)
 
 function FollowPlayerAction:Precondition()
@@ -32,7 +39,7 @@ function FollowPlayerAction:Perform()
    if dist_sq < FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST then
       warning('WANDER')
       -- very close to player
-      return ChattyNode(self.inst, {"WEATHER: HABITABLE", "NO IMMEDIATE TASK", "", ""}, WalkRandomly(self.inst))
+      return ChattyNode(self.inst, {"WEATHER: HABITABLE", "", "",self.reason}, WalkRandomly(self.inst))
 
    elseif dist_sq > FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST   
    and dist_sq < FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then

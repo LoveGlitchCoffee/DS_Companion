@@ -3,7 +3,7 @@ require("general-utils/table_ops")
 require("behaviours/performgive")
 
 Give = Class(Action, function(self, inst, item, target)   
-   Action._ctor(self, inst, 'Give '..item)
+   Action._ctor(self, inst, 'Give '..item, "Cannot give "..item)
    self.item = item
    self.target = target -- usually player
 end)

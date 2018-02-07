@@ -9,7 +9,7 @@ WEAPONS = {
 
 Build = Class(Action, function (self, inst, item)
    self.item = item
-   Action._ctor(self, inst, 'Build ' .. item)   
+   Action._ctor(self, inst, 'Build ' .. item, "ERROR IN CRAFTING")   
 end)
 
 function Build:Precondition()

@@ -4,7 +4,7 @@ require("general-utils/debugprint")
 require("general-utils/table_ops")
 
 Fishing = Class(Action, function (self, inst)   
-   Action._ctor(self, inst, 'Fishing')
+   Action._ctor(self, inst, 'Fishing', "NO FISHY")
 end)
 
 function Fishing:Precondition()

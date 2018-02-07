@@ -6,7 +6,7 @@ require("general-utils/config")
 
 Attack = Class(Action, function (self, inst, enemy)
    self.enemy = enemy
-   Action._ctor(self, inst, 'Attack ' .. enemy)
+   Action._ctor(self, inst, 'Attack ' .. enemy, "CANNOT LOCATE PREY")
 end)
 
 ENEMY_LOOT = {}

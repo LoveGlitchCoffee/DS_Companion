@@ -1,6 +1,7 @@
-Action = Class(function (self, inst, name)
+Action = Class(function (self, inst, name, failreason)
       self.inst = inst
       self.name = name
+      self.failreason = failreason
 end)
 
 function Action:Precondition()
@@ -17,6 +18,13 @@ end
 
 function Action:Perform()
    print('error. Perform() of ' .. self.name .. ' needs to be implemented')
+end
+
+function Action:FailReason()
+   if self.failreason then
+      return self.failreason
+   end
+   return ""
 end
 
 function Action:__eq(b)

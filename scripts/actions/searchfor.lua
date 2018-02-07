@@ -8,7 +8,7 @@ SearchFor = Class(Action, function (self, inst, item)
    -- it always assume that search will be successfull
    -- if search is not sucessful, then replan is required
    self.item_to_search = item   
-	Action._ctor(self, inst, 'Search for ' .. item)
+	Action._ctor(self, inst, 'Search for ' .. item, "Sorry, Cannot locate "..item)
 end)
 
 function SearchFor:Precondition()

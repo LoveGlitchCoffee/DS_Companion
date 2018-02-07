@@ -5,7 +5,7 @@ require 'general-utils/table_ops'
 
 Gather = Class(Action, function (self, inst, item)
    self.item = item
-   Action._ctor(self, inst, 'Gather ' .. item)
+   Action._ctor(self, inst, 'Gather ' .. item, "Sorry, Cannot locate "..item)
 end)
 
 function Gather:Precondition()
