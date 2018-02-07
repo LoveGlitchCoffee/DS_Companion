@@ -6,7 +6,8 @@ local FOOD_COST = {
    carrot=1,
    berries=1,
    meat=2,
-   froglegs=2
+   froglegs=2,
+   fish=2
 }
 
 GatherFood = Class(Gather, function (self, inst, item)   

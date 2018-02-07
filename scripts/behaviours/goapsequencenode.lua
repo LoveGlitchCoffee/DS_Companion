@@ -78,12 +78,10 @@ end
 
 function ResponsiveGOAPNode:Visit()
 
-   if self.announcegoal then
-      error("announce")
+   if self.announcegoal then      
       self.announcegoal:Visit()
       if self.announcegoal.status == SUCCESS then
-         self.announcegoal = nil
-         error('done talking')
+         self.announcegoal = nil         
       end
       return
    end
@@ -92,8 +90,7 @@ function ResponsiveGOAPNode:Visit()
    local do_eval = not self.lasttime or not self.period or self.lasttime + self.period < time
 
 
-   if do_eval then
-      error('eval fine')
+   if do_eval then      
       self.lasttime = time
       if self.finish then
          error("RESETINNG")
@@ -107,7 +104,6 @@ function ResponsiveGOAPNode:Visit()
       info(tostring(not self.oldgoal))
       info(tostring(not self.oldgoal == newgoal))
       local replan = not self.oldgoal or (newgoal and not self.oldgoal == newgoal)
-      error("replanned set")
 
       if replan then
          info("HAVING TO REPLAN")
@@ -130,14 +126,12 @@ function ResponsiveGOAPNode:Visit()
          self.idx = 1
       end
 
-      if newgoal:Announce() and replan then
-         error("Something to announce")
+      if newgoal:Announce() and replan then         
          self.announcegoal = ClosureChattyNode(self.inst, {newgoal:Announce()}, 1)
          return
       end
 
-      if self.actionplan then
-         error("xectugin")
+      if self.actionplan then         
          while self.idx <= #self.actionplan do
             local child = self.actionplan[self.idx]
             child:Visit()

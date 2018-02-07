@@ -22,7 +22,7 @@ function Goal:Satisfaction()
 end
 
 function Goal:Announce()
-   error("announce called for "..self.name.." "..tostring(self.announcement))
+   info("announce called for "..self.name.." "..tostring(self.announcement))
    return self.announcement
 end
 
