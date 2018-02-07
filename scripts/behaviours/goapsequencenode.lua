@@ -1,6 +1,7 @@
 require("general-utils/debugprint")
 require("brains/selectgoal") -- migh wanna place this somewhere else
 require("brains/planactions")
+require("behaviours/closurechattynode")
 require("general-utils/table_ops")
 
 require "actions/gather"
@@ -24,6 +25,7 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
    self.gwulistfn = gwulistfn
    self.finish = false
    self.lasttime = nil
+   self.announcegoal = nil
    populate_actions(inst)
    populateallmatrices(ALL_ACTIONS) -- refactor later
 
@@ -39,14 +41,14 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 5)
          else
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)
-         end         
+         end
       else
          if changedegree > 0.3 then
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 40)
          else
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 30)
          end
-      end   
+      end
    end
 
    self.inst:ListenForEvent('healthdelta', self.onHealthChange)
@@ -75,27 +77,43 @@ function ResponsiveGOAPNode:generateActionSequence()
 end
 
 function ResponsiveGOAPNode:Visit()
+
+   if self.announcegoal then
+      error("announce")
+      self.announcegoal:Visit()
+      if self.announcegoal.status == SUCCESS then
+         self.announcegoal = nil
+         error('done talking')
+      end
+      return
+   end
+
    local time = GetTime()
    local do_eval = not self.lasttime or not self.period or self.lasttime + self.period < time
 
+
    if do_eval then
+      error('eval fine')
       self.lasttime = time
       if self.finish then
-         info("RESETINNG")
+         error("RESETINNG")
          self.oldgoal = nil
          self.finish = false
       end
 
       -- select goal
-      local newgoal = selectgoal(self.gwulistfn)      
+      local newgoal = selectgoal(self.gwulistfn)
+
       info(tostring(not self.oldgoal))
       info(tostring(not self.oldgoal == newgoal))
       local replan = not self.oldgoal or (newgoal and not self.oldgoal == newgoal)
+      error("replanned set")
 
       if replan then
          info("HAVING TO REPLAN")
          self.oldgoal = newgoal
          error('new goal: '..tostring(newgoal))
+
          -- reset all actions for good measure
          -- even though perform makes anew one each time, could store them
          if self.actionplan then
@@ -107,12 +125,19 @@ function ResponsiveGOAPNode:Visit()
          self.plan = planactions(self.inst, newgoal)
          print('.\n')
          printt(self.plan)
-         self.actionplan = self:generateActionSequence()         
+         self.actionplan = self:generateActionSequence()
          -- reset idx
          self.idx = 1
       end
 
-      if self.actionplan then         
+      if newgoal:Announce() and replan then
+         error("Something to announce")
+         self.announcegoal = ClosureChattyNode(self.inst, {newgoal:Announce()}, 1)
+         return
+      end
+
+      if self.actionplan then
+         error("xectugin")
          while self.idx <= #self.actionplan do
             local child = self.actionplan[self.idx]
             child:Visit()
@@ -123,7 +148,7 @@ function ResponsiveGOAPNode:Visit()
             elseif child.status == FAILED then
                self.finish = true
                info("FAILED. REPLAN")
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)               
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)
                return
             end
             -- if child succeeds
@@ -141,7 +166,7 @@ function ResponsiveGOAPNode:Visit()
       else
          error("No plan")
       end
-   else      
+   else
       if self.idx then
          local child = self.actionplan[self.idx]
          if child then

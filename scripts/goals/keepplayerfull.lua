@@ -2,7 +2,7 @@ require("goals/goal")
 require("general-utils/config")
 
 KeepPlayerFull = Class(Goal, function(self, inst, player)
-   Goal._ctor(self, inst, "KeepPlayerFull")
+   Goal._ctor(self, inst, "KeepPlayerFull", "I'LL FIND YOU SUSTENANCE")
    self.urgency = KEEP_PLAYER_FULL_U_NORMAL
 
    self.updateUrgency = function (inst, data)

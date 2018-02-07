@@ -4,6 +4,7 @@ require 'behaviours/walkrandomly'
 require 'general-utils/debugprint'
 require 'general-utils/table_ops'
 require("general-utils/config")
+require("behaviours/chattynode")
 
 FollowPlayerAction = Class(Action, function (self, inst, player)
    Action._ctor(self, inst, 'FollowPlayerAction')
@@ -31,7 +32,7 @@ function FollowPlayerAction:Perform()
    if dist_sq < FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST then
       warning('WANDER')
       -- very close to player
-      return WalkRandomly(self.inst)
+      return ChattyNode(self.inst, {"WEATHER: HABITABLE", "NO IMMEDIATE TASK", "", ""}, WalkRandomly(self.inst))
 
    elseif dist_sq > FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST   
    and dist_sq < FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
@@ -40,6 +41,6 @@ function FollowPlayerAction:Perform()
 
    elseif dist_sq > FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
       warning('follow quickly')
-      return Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true)
+      return ChattyNode(self.inst, {"OWNER, PLEASE WAIT"}, Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true))
    end
 end

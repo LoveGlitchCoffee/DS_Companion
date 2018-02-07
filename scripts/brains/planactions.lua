@@ -21,7 +21,8 @@ ALL_ACTIONS = nil
 
 function populate_actions(inst)
 	local player = GetPlayer()	
-	ALL_ACTIONS = {		
+	ALL_ACTIONS = {	
+      -- need Give (food) as well if want command
       FollowPlayerAction(inst, player),
       Gather(inst, 'twigs'),
       Gather(inst, 'cutgrass'),
@@ -41,7 +42,8 @@ function populate_actions(inst)
 		GiveFood(inst, 'carrot', player),
 		GiveFood(inst, 'berries', player),
 		GiveFood(inst, 'meat', player),
-		GiveFood(inst, 'froglegs', player),
+      GiveFood(inst, 'froglegs', player),
+      GiveFood(inst, 'fish', player),
       SearchForResource(inst, 'twigs'),
       SearchForResource(inst, 'cutgrass'),
       SearchForResource(inst, 'carrot'),

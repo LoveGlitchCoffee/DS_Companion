@@ -3,7 +3,7 @@ require 'general-utils/debugprint'
 require("general-utils/config")
 
 GetForPlayer = Class(Goal, function(self, inst, item)
-   Goal._ctor(self, inst, "GetForPlayer"..item)
+   Goal._ctor(self, inst, "GetForPlayer"..item, "I'll BRING THAT TO YOU")
    self.item = item   
    self.urgency = GET_FOR_PLAYER_U
    self.cur_time = GetTime()   
@@ -12,7 +12,7 @@ GetForPlayer = Class(Goal, function(self, inst, item)
       if GetTime() - self.cur_time > GET_FOR_PLAYER_TIME_THRES then
          self.urgency = self.urgency - GET_FOR_PLAYER_U_DECREASE
          self.cur_time = GetTime()
-         error('updating urgency '..tostring(self.urgency))
+         info('updating urgency '..tostring(self.urgency))
          if self.urgency <= 0 then
             -- drop it
             self.inst:PushEvent('dropgoal', {goalname=self.name})
