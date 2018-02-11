@@ -1,3 +1,6 @@
+--- This module contains functions to conveniently debug
+-- hiding certain debug info as appropriate depending on the level
+
 INFO = false
 WARNING = false
 ERROR = true

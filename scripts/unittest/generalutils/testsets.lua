@@ -1,5 +1,5 @@
 lu = require("luaunit")
-require("general-utils/sets")
+require("generalutils/sets")
 
 ------------------------------------------------
 -- 

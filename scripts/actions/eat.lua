@@ -13,7 +13,7 @@ function Eat:PostEffect()
    return {eaten=true}
 end
 
-function Eat:Cost()
+function Eat:PreceivedCost()
    return 1
 end
 

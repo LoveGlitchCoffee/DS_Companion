@@ -1,19 +1,20 @@
-require("general-utils/debugprint")
-require("brains/selectgoal") -- migh wanna place this somewhere else
-require("brains/planactions")
-require("behaviours/closurechattynode")
-require("general-utils/table_ops")
+require "brains/selectgoal"
+require "brains/planactions"
+require "brains/qlearner"
+require "behaviours/closurechattynode"
+require "generalutils/table_ops"
+require "generalutils/debugprint"
 
-require "actions/gather"
-require "actions/gatherfood"
-require "actions/build"
-require "actions/searchfor"
-require "actions/eat"
-require "actions/give"
-require("actions/followplayeraction")
-require "actions/givefood"
-require("brains/qlearner")
-
+---
+-- Root type BT node for GOAP for this mod. Used instead of normal Behaviour Tree nodes
+-- Similar to Sequence Node but with difference that it does not have a SUCCESS state,
+-- this allows for looping, which is similar to Priority Node
+-- @param period Period of each visit of node
+-- @param gwulistfn Function that returns the weighted goal list (explained in Visit())
+-- @param inst Instance for GOAP
+-- @class ResponsiveGOAPNode
+-- @see brains/planactions.populate_actions
+-- @see brains/qlearner.populateallmatrices
 ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn)
    BehaviourNode._ctor(self, "GOAP")
    self.idx = 1
@@ -26,9 +27,13 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
    self.finish = false
    self.lasttime = nil
    self.announcegoal = nil
-   populate_actions(inst)
-   populateallmatrices(ALL_ACTIONS) -- refactor later
 
+   -- populate actions
+   populate_actions(inst)
+   -- populate q-learning matrices
+   populateallmatrices(ALL_ACTIONS)
+
+   -- on change in health level update q-learning appropriately
    self.onHealthChange = function(inst, data)
       if not self.oldgoal or self.plan then
          return
@@ -37,12 +42,14 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
       local changedegree = math.abs( data.oldpercent - data.newpercent )
 
       if data.oldpercent > data.newpercent then
+         -- losing health
          if changedegree > 0.2 then
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 5)
          else
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)
          end
       else
+         -- gaining health
          if changedegree > 0.3 then
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 40)
          else
@@ -54,6 +61,8 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
    self.inst:ListenForEvent('healthdelta', self.onHealthChange)
 end)
 
+-- should have on stop
+
 function ResponsiveGOAPNode:DBString()
    return tostring(self.idx)
 end
@@ -63,6 +72,10 @@ function ResponsiveGOAPNode:Reset()
    self.idx = 1
 end
 
+---
+-- From current STRIPS action plan, generate the appropriate behaviour sequence as a tablle
+-- behaviour sequence returned from action:Perform()
+-- @return table of behaviour sequence
 function ResponsiveGOAPNode:generateActionSequence()
    if self.plan == nil then
       return nil
@@ -76,12 +89,24 @@ function ResponsiveGOAPNode:generateActionSequence()
    return actionsequence
 end
 
+---
+-- Visiting node constitutes the following, executes only when time for evaluation:
+-- 1. Execute any chatting for announcing goals
+-- 2. Select a new goal if appropriate
+-- 3. If new goal is not the same as previous, priorities has changed,
+-- come up with plan to pursue new goal
+-- 4. Announce going to pursue new goal
+-- 5. Similar to SequenceNode, loop through each behaviour in plan an execute them until SUCCESS or FAIL
+-- Success leads to executing next action in plan
+-- Fail leads to termination of current sequence of action for re-planning next iteration
+-- Whether success or failure, update q-learning with experience
 function ResponsiveGOAPNode:Visit()
 
-   if self.announcegoal then      
+   -- Announce goal
+   if self.announcegoal then
       self.announcegoal:Visit()
       if self.announcegoal.status == SUCCESS then
-         self.announcegoal = nil         
+         self.announcegoal = nil
       end
       return
    end
@@ -89,9 +114,10 @@ function ResponsiveGOAPNode:Visit()
    local time = GetTime()
    local do_eval = not self.lasttime or not self.period or self.lasttime + self.period < time
 
+   if do_eval then
 
-   if do_eval then      
       self.lasttime = time
+      -- reset if finish sequence of action, or failed it
       if self.finish then
          info("RESETINNG")
          self.oldgoal = nil
@@ -117,51 +143,61 @@ function ResponsiveGOAPNode:Visit()
                child:Reset()
             end
          end
+
          -- new plan
          self.plan = planactions(self.inst, newgoal)
          print('.\n')
          printt(self.plan)
          self.actionplan = self:generateActionSequence()
-         -- reset idx
+         -- reset index
          self.idx = 1
       end
 
-      if newgoal:Announce() and replan then         
+      -- announce goal if new one
+      if newgoal:Announce() and replan then
          self.announcegoal = ClosureChattyNode(self.inst, {newgoal:Announce()}, 1)
          return
       end
 
-      if self.actionplan then         
+      -- same as Visit for SequenceNode
+      if self.actionplan then
          while self.idx <= #self.actionplan do
+
             local child = self.actionplan[self.idx]
             child:Visit()
             info("child: " .. tostring(child.name) .. ". status: " .. tostring(child.status))
             if child.status == RUNNING then
                self.status = child.status
                return
+
             elseif child.status == FAILED then
+               -- push 'failreasoning' for Follow action to have something to talk about
                self.finish = true
                self.inst:PushEvent('failreasoning', {reason=self.plan[self.idx]:FailReason()})
                error("FAILED. REPLAN")
                updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)
                return
             end
+
             -- if child succeeds
             info("child suceed, move on")
             self.idx = self.idx + 1
+
             -- update qlearner
             if self.idx <= #self.actionplan then
                updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 70)
             end
          end
+
          error("FINISH Sequence")
          self.finish = true
          updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 100) -- update for previous
-      --self.status = SUCCESS
       else
+
          error("No plan")
       end
    else
+
       if self.idx then
          local child = self.actionplan[self.idx]
          if child then
@@ -171,5 +207,6 @@ function ResponsiveGOAPNode:Visit()
             self.lasttime = nil
          end
       end
+
    end
 end

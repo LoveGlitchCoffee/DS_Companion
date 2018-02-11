@@ -1,20 +1,27 @@
-require 'general-utils/debugprint'
-require 'behaviours/performsearchfor'
-require("general-utils/config")
+require "generalutils/debugprint"
+require "behaviours/performsearchfor"
+require "generalutils/config"
 
-PerformSearchForResource = Class(PerformSearchFor, function(self, inst, entity, period,newPos)
-   -- search for is travelling in a random direction
-   -- then do another check to see if entity wanted is in view
-   -- fail if no entity is in view then
-   PerformSearchFor._ctor(self, inst, entity, period, newPos)
+---
+-- Subclass of PerformSearchFor behaviour, way of checking for item is different,
+-- specific to resource that can be harvested
+-- @param inst Instance to do the searching
+-- @param resource resource to harvest
+-- @class PerformSearchForResource
+-- @see behaviours/performsearchfor.PerformSearchFor
+PerformSearchForResource = Class(PerformSearchFor, function(self, inst, resource, period, newpos)
+   PerformSearchFor._ctor(self, inst, resource, period, newpos)
 end)
 
+---
+-- Checking method checks for product of pickable
+-- @return instant of reseource
 function PerformSearchForResource:CheckTarget()
    return FindEntity(self.inst, SIGHT_DISTANCE, function(resource)
       if resource.components.pickable then -- might want to change at some point
-         return resource.components.pickable.product == self.entity
+         return resource.components.pickable.product == self.resource
       else
-         return resource.prefab == self.entity
+         return resource.prefab == self.resource
       end
    end)
 end

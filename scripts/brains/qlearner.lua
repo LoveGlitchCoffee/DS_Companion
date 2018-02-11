@@ -1,10 +1,12 @@
-require("general-utils/debugprint")
-require("general-utils/table_ops")
+require "generalutils/debugprint"
+require "generalutils/table_ops"
 
-local GAMMA = 0.5
+local GAMMA = 0.5 -- learning rate
 local UPDATECOUNT = 0
-local UPDATE = 2 -- variable
+local UPDATE = 5 -- when to update matrices
 
+--- table contains all possible goals
+-- each goal has its own action matrix
 local GOALNAMES = {
 	-- should be exact same name as goals
 	'KeepPlayerFull',
@@ -20,11 +22,17 @@ local GOALNAMES = {
 	'GetForPlayerflint'
 }
 
+--- Q and reward matrices for each goal
 local Q_MATRICES, R_MATRICES = {}, {}
 
-local function populatematrices(matrices, allactions, defaultvalue)
-	-- populate each goal matrix with
-	-- action x action matrix
+---
+-- populate the matrices, either Q or R, with the default value
+-- note that because action encompases possible state->state
+-- it is just a vector of action to represent the q/r matrix for a goal
+-- @param matrices the matrices to populate
+-- @param allactions all possible actions
+-- @param defaultvalue the default value to populate matrices with
+local function populatematrices(matrices, allactions, defaultvalue)	
 	if allactions then
 		for _, goalname in ipairs(GOALNAMES) do
 			matrices[goalname] = {}
@@ -40,10 +48,9 @@ local function populatematrices(matrices, allactions, defaultvalue)
 	end
 end
 
--- remember 'action' is actually state in this case
--- Scratch the above, trying action as action
-
-
+---
+-- normalise the matrix values
+-- @param matrix matrix to normalise
 local function normalise(matrix)
    -- computationally expensive
    local largestvalue = -2
@@ -59,6 +66,10 @@ local function normalise(matrix)
    end
 end
 
+---
+-- unpack a matrix into a list of values
+-- @param matrix matrix to unpack
+-- @return unpacked matrix as table
 local function unpackmatrix(matrix)
 	local unpacked = {}
 	for k,v in pairs(matrix) do
@@ -67,6 +78,13 @@ local function unpackmatrix(matrix)
 	return unpacked
 end
 
+---
+-- update all the matrix values according to q-learning:
+-- m[a] = r + gammer*max(m[a+1])
+-- reward is taken from reward matrix.
+-- This is done for all matrices for every goal.
+-- This is done repeteadly so can normalise more easily
+-- @see unpackmatrix
 local function updateallqmatrix()
 	info('UPDATE Q MATRIX')
 	for i=1,10 do
@@ -85,18 +103,30 @@ local function updateallqmatrix()
 	end
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
-		normalise(qmatrix)
-	end
+      normalise(qmatrix)
+      error('for '..goalname)
+      for action, value in pairs(qmatrix) do
+         error('q-value for '..action..': '..tostring(value))
+      end
+   end   
 end
 
+---
+-- initialise matrices
+-- @param actions all possible actions
+-- @return 
 function populateallmatrices(actions)
    populatematrices(R_MATRICES, actions, -1) -- start off with terrible rewards for all
 	populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
 end
 
-function updaterewardmatrix(goalname, actionname, value)
-   -- occurs when Perform is ran
-
+---
+-- updates the reward for an action being performed to achieve a certain goal.
+-- If reward has been updated UPDATE number of times, update the learning Q matrices
+-- @param goalname name of goal trying to achieve
+-- @param actionname name of action to update
+-- @param value new reward value
+function updaterewardmatrix(goalname, actionname, value)   
    local gmatrix = R_MATRICES[goalname]
 	gmatrix[actionname] = value
 	info('new value for transition '..actionname..' : '..tostring(value))
@@ -112,6 +142,12 @@ function updaterewardmatrix(goalname, actionname, value)
 	end
 end
 
+---
+-- get the current q-value for an action performed achieving a goal
+-- this is used to calculate cost for plannig
+-- @param goalname name of goal trying to achieve
+-- @param actionname name of action to get cost learning value for
+-- @return the learning q-value of action
 function getcost(goalname, actionname)
    return Q_MATRICES[goalname][actionname]
 end

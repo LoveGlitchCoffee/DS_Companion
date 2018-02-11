@@ -1,5 +1,5 @@
 lu = require("luaunit")
-require("general-utils/table_ops")
+require("generalutils/table_ops")
 
 ------------------------------------------------
 -- 

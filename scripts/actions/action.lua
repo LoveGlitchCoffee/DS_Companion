@@ -1,25 +1,40 @@
+---
+-- Abstract base class for all actions
+-- Use to represent a possible action in STRIPS
+-- @param inst Instance that will perform action
+-- @class Action
 Action = Class(function (self, inst, name, failreason)
       self.inst = inst
       self.name = name
       self.failreason = failreason
 end)
 
+---
+-- Preconditions for action
 function Action:Precondition()
-   print('error. Precondition() of ' .. self.name .. ' needs to be implemented')   
+   print('error. Precondition() of ' .. self.name .. ' needs to be implemented')
 end
 
+---
+-- Effects of an action
 function Action:PostEffect()
-   print('error. PostEffect() of ' .. self.name .. ' needs to be implemented')   
+   print('error. PostEffect() of ' .. self.name .. ' needs to be implemented')
 end
 
-function Action:Cost()
-   -- print('error. Cost() of ' .. self.name .. ' needs to be implemented')   
+---
+-- Preceived cost of an action
+function Action:PreceivedCost()
+   print('error. Cost() of ' .. self.name .. ' needs to be implemented')
 end
 
+---
+-- The actual Behaviour of an action in game world
 function Action:Perform()
    print('error. Perform() of ' .. self.name .. ' needs to be implemented')
 end
 
+---
+-- The script used by 'talker' component if action:Perform() fails
 function Action:FailReason()
    if self.failreason then
       return self.failreason

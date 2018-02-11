@@ -1,22 +1,32 @@
-require 'general-utils/sets'
-require 'general-utils/table_ops'
-Peaque = require 'general-utils/peaque'
-require 'general-utils/debugprint'
-require("brains/brainutils")
-require("brains/qlearner")
+require "generalutils/sets"
+require "generalutils/table_ops"
+Peaque = require "generalutils/peaque"
+require "generalutils/debugprint"
+require "brains/brainutils"
+require "brains/qlearner"
 
-distance = {} -- purely to track so far for distance, not used to decide cheapest
+distance = {} -- purely to track distance, not used to decide cheapest
 predecessor = {}
 action_taken = {}
 
+---
+-- reset all tables to start new plan
+-- @param all_actions all actions that need to be reset in terms of stored distance
 local function reset_all_tables(all_actions)
-   for _, a in ipairs(all_actions) do      
+   for _, a in ipairs(all_actions) do
       distance[a] = math.huge
    end
    predecessor = {}
    action_taken = {}
 end
 
+---
+-- generates the next valid action according to the current world state in planning.
+-- basically checks if an aciton's effect satisfy any of the planning precondition states
+-- @param all_actions all possible actions that could be taken
+-- @param world_state current state of the world in planning
+-- @return list of avilable actions
+-- @see brains/brainutils.is_satisfykey
 local function generate_valid_actions(all_actions, world_state)
    -- from all actions, which actions has precondition matching world state
    local available_a = {}
@@ -30,10 +40,15 @@ local function generate_valid_actions(all_actions, world_state)
    return available_a
 end
 
+---
+-- calculates the number of petition required of an action to reach world state
+-- from current planning state.
+-- this only triggers upon valid actions towards world state.
+-- @param node_state the current state in planning
+-- @param world_state the world (goal) state
+-- @param action the action that needs repeating
+-- @return number of repetitions
 local function calc_repeats_needed(node_state, world_state, action)
-   -- calculate number of time needed to repeat an action
-   -- in order for to get number of items in node_state (precondition set to node)
-   -- this only triggers upon valid action
    local repeats = 1 -- default one for actions that is not 'repeatable'
    if action.item then -- having item mean its repeatable (might change)
       local item = action.item
@@ -52,13 +67,27 @@ local function calc_repeats_needed(node_state, world_state, action)
    return repeats
 end
 
+
 -- ALL GOALS MUST ONLY PRECOND HAVE OF 1
+---
+-- backward A* search with each action being a node in the graph.
+-- the 'adjacent node' is decided with generate_valid_actions,
+-- so any actions that can be taken is considered an adjcent node
+-- @param world_state the world state to reach
+-- @param goal the goal, which we can derive the goal state from, this is where search starts
+-- @param all_actions all the actions available to the character
+-- @return a seqence of action to take to reach the world state from a goal state
+-- @see reset_all_tables
+-- @see generate_valid_actions
+-- @see Node
+-- @see actions/action
+-- @see brains/brainutils.is_satisfystate
 function goap_backward_plan_action(world_state, goal, all_actions)
    reset_all_tables(all_actions)
    local pending_actions = Peaque:new()
    local goalstate = goal:GetGoalState()
    -- local goalstate = {seen_fish=true} -- for testing
-   local valid_actions = generate_valid_actions(all_actions, goalstate)   
+   local valid_actions = generate_valid_actions(all_actions, goalstate)
    local goal_set = Set.new(goalstate)
 
    --info('GOAL')
@@ -71,7 +100,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
       local node_state = goal_set - posteff_set + precond_set
       local cost = 0 -- because immediate hits goals state (hoping peaque is smaller first)
       local a_node = Node(a, cost, node_state)
-      distance[a] = cost -- pass world state and goal to calc heuristic      
+      distance[a] = cost -- pass world state and goal to calc heuristic
       predecessor[a] = nil
       pending_actions:push(a_node, cost)
    end
@@ -100,11 +129,11 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          info('found world state\n')
          -- add next action and get all the way back to parent for sequence of action
          local found_node = node
-         local action_sequence = {}         
+         local action_sequence = {}
          while predecessor[found_node] do
             table.insert(action_sequence, #action_sequence+1, found_node.next_action)
             found_node = predecessor[found_node]
-         end         
+         end
          table.insert(action_sequence, #action_sequence+1, found_node.next_action) -- insert last action
          -- printt(action_sequence)
          return action_sequence
@@ -112,7 +141,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          info('not world state')
          table.insert(action_taken, node.next_action)
          info('Precondition when at '..tostring(node.next_action))
-         -- printt(node.world_state)         
+         -- printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
          --printt(available_actions)
@@ -126,9 +155,9 @@ function goap_backward_plan_action(world_state, goal, all_actions)
 
                local cost = 0
                local qcost = getcost(goal.name, action.name)
-               --printt(distance)               
-               info('cost of '..action.name..':'..tostring(action:Cost()))
-               cost = distance[node.next_action] + ((100-qcost) * repeats) + action:Cost()               
+               --printt(distance)
+               info('cost of '..action.name..':'..tostring(action:PreceivedCost()))
+               cost = distance[node.next_action] + ((100-qcost) * repeats) + action:PreceivedCost()
                info('cost of action so far: '..tostring(distance[action]))
 
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
@@ -153,7 +182,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                      next_node = new_node
                      -- REMEMBER its the no of times, not actual test, cba to make it nice rn
                   end
-                  
+
                   distance[next_node.next_action] = cost
                   pending_actions:push(next_node, cost)
                end
@@ -167,6 +196,13 @@ function goap_backward_plan_action(world_state, goal, all_actions)
    return {} -- no plan found
 end
 
+---
+-- A node consist of an action, the cost of the action and the
+-- current world state if the action was taken
+-- @param next_action action taken in this node
+-- @param cost cost of the action
+-- @param world_state current world state resulting in taking this action
+-- @class Node
 Node = Class(function (self, next_action, cost, world_state)
    self.next_action = next_action
    self.cost = cost -- of next action

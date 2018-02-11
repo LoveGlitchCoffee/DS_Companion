@@ -1,10 +1,17 @@
-require "general-utils/gameutils"
+require "generalutils/gameutils"
 
+---
+-- Custom behaviour for gathering items in world
+-- @param inst Instance to do the gathering
+-- @param item Item to gather
+-- @class PerformGather
 PerformGather = Class(BehaviourNode, function(self, inst, item)
    BehaviourNode._ctor(self, "PerformGather")
    self.inst = inst
    self.item = item
    self.action = nil
+
+   -- state reason for failure if fail behaviour
    self.locomotorFailed = function(inst, data)
       local theAction = data.action or "[Unknown]"
       local theReason = data.reason or "[Unknown]"
@@ -12,7 +19,7 @@ PerformGather = Class(BehaviourNode, function(self, inst, item)
          "\nPerformGather: Action: " .. theAction:__tostring() .. " failed. Reason: " .. tostring(theReason) .. "\n"
       )
       self:OnFail()
-   end   
+   end
    self.inst:ListenForEvent("actionfailed", self.locomotorFailed)
 end)
 
@@ -29,8 +36,14 @@ function PerformGather:OnSucceed()
    self.pendingstatus = SUCCESS
 end
 
-function PerformGather:Visit()   
+---
+-- Find the item within certain radius, should be available due to previous searching action.
+-- If item is a resource then use ACTIONS.PICK in BufferedAction
+-- otherwise use ACTIONS.PICKUP as on ground.
+function PerformGather:Visit()
    if self.status == READY then
+
+      -- find the target resource that can be picked
       local target =
          FindEntity(self.inst, SIGHT_DISTANCE,
          function(resource)
@@ -46,6 +59,7 @@ function PerformGather:Visit()
 
       warning("target: " .. tostring(target))
 
+      -- found item and can harvest it
       if target then
          local pAction = BufferedAction(self.inst, target, ACTIONS.PICK)
          pAction:AddFailAction(function() self:OnFail() end)
@@ -55,6 +69,7 @@ function PerformGather:Visit()
          self.inst.components.locomotor:PushAction(pAction, true)
          self.status = RUNNING
       else
+         -- no target that can be picked so pickup instead
          target =
             FindEntity(self.inst, SIGHT_DISTANCE,
             function(item)
@@ -64,7 +79,7 @@ function PerformGather:Visit()
 
          if target and target.components.inventoryitem
             and target.components.inventoryitem.canbepickedup
-            and target:IsOnValidGround() 
+            and target:IsOnValidGround()
             and not target.components.inventoryitem:IsHeld()
          then
             error("found " .. tostring(target))

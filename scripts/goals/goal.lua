@@ -1,7 +1,10 @@
-require("general-utils/debugprint")
+require "generalutils/debugprint"
 
-Goal = Class(function(self, inst, name, announcement)
-    -- constructor
+---
+-- Represent a goal for the character when planning
+-- @param inst Instance of character wanting to reach this goal
+-- @class Goal
+Goal = Class(function(self, inst, name, announcement)    
     self.inst = inst
     self.name = name
     self.urgency = 0.1
@@ -16,7 +19,8 @@ function Goal:__tostring()
    return string.format("Goal: %s", self.name)
 end
 
---- Satisfaciton is how much satisfaction currently at
+---
+-- Satisfaciton is how much satisfaction currently at
 function Goal:Satisfaction()
    error('Satisfaction() needs to be implemented')
 end

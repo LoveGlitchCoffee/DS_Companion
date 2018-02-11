@@ -1,12 +1,24 @@
+---
+-- returns a table containing a goal object and weight value
+-- representing a tuple.
+-- @param goal goal object
+-- @param weight weighting for the goal
+-- @return tuple of goal,weight
 function goaltuple( goal, weight)
    local goal_tuple = {goal=goal, weight=weight}
-   --goal_tuple['goal'] = goal
-   --goal_tuple['weight'] = weight
    return goal_tuple
 end
 
+---
+-- checks if STRIPS effect (of an action) satisfies precondition.
+-- This is an OR relationship, if 1 of the post effects
+-- satisfies a single precondition, returns true.
+-- @param actionpost STRIPS post effect
+-- @param desiredpred preconditions to satisfy
+-- @return whether any precondition is satisfied
 function is_satisfykey(actionpost, desiredpred)
    local satisfysome = false
+
    for k,v in pairs(actionpost) do
       if desiredpred[k] then
          satisfysome = true
@@ -15,97 +27,37 @@ function is_satisfykey(actionpost, desiredpred)
    end
 
    return satisfysome
-   --[[ local needseen = false
-   local needhasweapon = false
-
-   for k,v in pairs(desiredpred) do
-      if string.find(k, 'seen_') then
-         -- the idea is if there is this pred
-         -- get rid of it first
-         -- a nice heuristic I guess
-         needseen = true
-      end
-      if string.find(k, 'has_weapon') then
-         needhasweapon = true
-      end
-   end
-
-   if needseen then
-      -- basically for pred requiring 'seen'
-      -- but post has multiple 'seen'
-      -- only 1 needs to satisfy
-      local seen_one = false
-      local satisfyother = true
-      local seenpost = {}
-      local post_has_seen = false
-      local otherpost = {}
-
-      -- split the posteffects to different groups
-      -- because they're treated in different ways
-      for k,v in pairs(actionpost) do
-         if string.find( k, 'seen_') then
-            seenpost[k] = v
-            post_has_seen = true
-         else
-            otherpost[k] = v
-         end
-      end
-
-      if post_has_seen then
-         for k,v in pairs(seenpost) do
-            if desiredpred[k] then
-               seen_one = true
-               break
-            end
-         end
-         for k,v in pairs(otherpost) do
-            if not desiredpred[k] then
-               satisfyother = false
-               break
-            end
-         end
-
-         return seen_one and satisfyother
-      else
-         return false
-      end
-   elseif needhasweapon then
-      -- case need weapon
-      -- when build weapon, also build item so need to say can skip that
-      for k,v in pairs(actionpost) do
-         if k == 'has_weapon' then
-            return true
-         end
-      end
-   else
-      -- handle 'normal' cases
-      for k,v in pairs(actionpost) do
-         if not desiredpred[k] then
-            return false
-         end
-      end
-
-      return true
-   end]]--
 end
 
+---
+-- Checks if STRIPS condition set is fully satisfied.
+-- Used by GOAP planner to check if reached world state (goal) with planning.
+-- Caters for number type (allows <=), in addition to other types.
+-- AND relation, all must satisfy to return true
+-- @param set current state in planning
+-- @param superset world state
+-- @return whether current planning state satisifes world state
 function is_satisfystate(set, superset)
    local is_satisfystate = true
+
    for k, v in pairs(set) do
+      -- catering for default true/false state
       if superset[k] == nil then
          info('not in world state')
          is_satisfystate = false
          break
       end
+
       if type(set[k]) == type(superset[k]) then
+         -- cater for number types, if planning state has <= world state then also passes
          if type(set[k]) == 'number'
          and superset[k] < set[k] then
             info('values is more')
             is_satisfystate = false
             break
          end
-         -- handle other types
       else
+         -- handle other types, just same value
          if superset[k] ~= set[k] then
             error('value not the same')
             is_satisfystate = false
@@ -113,5 +65,6 @@ function is_satisfystate(set, superset)
          end
       end
    end
+   
    return is_satisfystate
 end

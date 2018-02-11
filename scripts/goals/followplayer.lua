@@ -1,6 +1,11 @@
-require("goals/goal")
-require("general-utils/config")
+require "goals/goal"
+require "generalutils/config"
 
+---
+-- Goal of following player
+-- @param inst Instance to follow player
+-- @param player player to follow
+-- @class FollowPlayer
 FollowPlayer = Class(Goal, function(self, inst, player)
    Goal._ctor(self, inst, "FollowPlayer")
    self.urgency = FOLLOW_PLAYER_U
@@ -10,6 +15,11 @@ end)
 function FollowPlayer:OnStop()
 end
 
+---
+-- Satisfaction of following player is defined as how close the character is
+-- to the player.
+-- The goal is more satisfied the closer the character is to the player.
+-- @return satisfaction of the goal
 function FollowPlayer:Satisfaction()
    -- further away, need to follow more
    -- if doing task, could reduce satisfaction
@@ -20,11 +30,14 @@ function FollowPlayer:Satisfaction()
    -- closer we are the more satisfied we are
    local satisfaction = 1 - (dist_sq / (FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH))
    if satisfaction < 0 then -- super far away
-      return 0
+      return 0 -- no satisfaction
    end
    return satisfaction
 end
 
+---
+-- returns STRIPS goal precondition for planning
+-- @return close_to_player precondition as table
 function FollowPlayer:GetGoalState()
    return {close_to_player=true}
 end
