@@ -3,7 +3,7 @@ require "generalutils/table_ops"
 
 local GAMMA = 0.5 -- learning rate
 local UPDATECOUNT = 0
-local UPDATE = 5 -- when to update matrices
+local UPDATE = 10 -- when to update matrices
 
 --- table contains all possible goals
 -- each goal has its own action matrix
@@ -32,7 +32,7 @@ local Q_MATRICES, R_MATRICES = {}, {}
 -- @param matrices the matrices to populate
 -- @param allactions all possible actions
 -- @param defaultvalue the default value to populate matrices with
-local function populatematrices(matrices, allactions, defaultvalue)	
+local function populatematrices(matrices, allactions, defaultvalue)
 	if allactions then
 		for _, goalname in ipairs(GOALNAMES) do
 			matrices[goalname] = {}
@@ -54,13 +54,13 @@ end
 local function normalise(matrix)
    -- computationally expensive
    local largestvalue = -2
-   for k,v in pairs(matrix) do      
+   for k,v in pairs(matrix) do
       if v > largestvalue then
          largestvalue = v
-      end      
+      end
    end
 
-   for k,v in pairs(matrix) do      
+   for k,v in pairs(matrix) do
 		local normalised_v = v/largestvalue * 100 --get percentage
 		matrix[k]= normalised_v
    end
@@ -92,9 +92,9 @@ local function updateallqmatrix()
 			for action, value in pairs(qmatrix) do
 
 				local reward = R_MATRICES[goalname][action]
-				if reward and reward >= 0 then					
+				if reward and reward >= 0 then
 					info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
-					local qvalues = unpackmatrix(qmatrix)
+               local qvalues = unpackmatrix(qmatrix)
 					qmatrix[action] = reward + GAMMA * math.max(unpack(qvalues))
 					info('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
 		   	end
@@ -105,16 +105,18 @@ local function updateallqmatrix()
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
       error('for '..goalname)
-      for action, value in pairs(qmatrix) do
-         error('q-value for '..action..': '..tostring(value))
+      if goalname == 'KeepPlayerFull' then
+         for action, value in pairs(qmatrix) do
+            error('q-value for '..action..': '..tostring(value))
+         end
       end
-   end   
+   end
 end
 
 ---
 -- initialise matrices
 -- @param actions all possible actions
--- @return 
+-- @return
 function populateallmatrices(actions)
    populatematrices(R_MATRICES, actions, -1) -- start off with terrible rewards for all
 	populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
@@ -126,17 +128,17 @@ end
 -- @param goalname name of goal trying to achieve
 -- @param actionname name of action to update
 -- @param value new reward value
-function updaterewardmatrix(goalname, actionname, value)   
+function updaterewardmatrix(goalname, actionname, value)
    local gmatrix = R_MATRICES[goalname]
 	gmatrix[actionname] = value
 	info('new value for transition '..actionname..' : '..tostring(value))
 
-	if UPDATECOUNT == UPDATE then		
+	if UPDATECOUNT == UPDATE then
 		info('UPDATE COUNT '..tostring(UPDATECOUNT))
 		UPDATECOUNT = 0
 		updateallqmatrix()
 		info('NEW UPDATE COUNT '..tostring(UPDATECOUNT))
-	else		
+	else
 		UPDATECOUNT = UPDATECOUNT + 1
 		info('UPDATE COUNT '..tostring(UPDATECOUNT))
 	end

@@ -175,7 +175,7 @@ function ResponsiveGOAPNode:Visit()
                self.finish = true
                self.inst:PushEvent('failreasoning', {reason=self.plan[self.idx]:FailReason()})
                error("FAILED. REPLAN")
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 20)
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 0)
                return
             end
 

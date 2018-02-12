@@ -67,6 +67,15 @@ local function calc_repeats_needed(node_state, world_state, action)
    return repeats
 end
 
+function shuffle(tbl)
+   local size = #tbl
+   for i = size, 1, -1 do
+     local rand = math.random(size)
+     tbl[i], tbl[rand] = tbl[rand], tbl[i]
+   end
+   return tbl
+ end
+
 
 -- ALL GOALS MUST ONLY PRECOND HAVE OF 1
 ---
@@ -144,6 +153,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
          -- printt(node.world_state)
          local available_actions = generate_valid_actions(all_actions, node.world_state)
          info('available actions generated')
+         available_actions = shuffle(available_actions) -- shuffle for random choice in learning
          --printt(available_actions)
          for _, action in ipairs(available_actions) do
             if action_taken[action] == nil then

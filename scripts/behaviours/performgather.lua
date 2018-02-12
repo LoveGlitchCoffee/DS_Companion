@@ -50,7 +50,7 @@ function PerformGather:Visit()
             if resource.components.pickable then
                warning("FOUND THIS: " .. tostring(resource.components.pickable.product))
                warning("finding: " .. self.item .. "\n")
-            end
+            end            
             return resource.components.pickable and resource.components.pickable.product == self.item and
                resource.components.pickable:CanBePicked() and
                resource.components.pickable.caninteractwith
@@ -91,6 +91,7 @@ function PerformGather:Visit()
             self.inst.components.locomotor:PushAction(pAction, true)
             self.status = RUNNING
          else
+            error('FAILED')
             self.status = FAILED
          end
       end

@@ -40,7 +40,7 @@ function populate_actions(inst)
       GatherFood(inst, "fish"),
       Give(inst, "twigs", player),
       Give(inst, "cutgrass", player),
-      Give(inst, "carrot", player),
+      -- Give(inst, "carrot", player),
       Give(inst, "flint", player),
       Give(inst, "silk", player),
       GiveFood(inst, "carrot", player),
@@ -59,8 +59,8 @@ function populate_actions(inst)
       SearchFor(inst, "silk"),
       SearchFor(inst, "spider"),
       SearchFor(inst, "pond"),
-      SearchFor(inst, 'berries'), -- if on ground
-      SearchFor(inst, 'carrot'),
+      -- SearchFor(inst, 'berries'), -- if on ground, may need to merge
+      -- SearchFor(inst, 'carrot'),
       Build(inst, "trap"),
       Build(inst, "rope"),
       Build(inst, "spear"),
@@ -148,7 +148,7 @@ function generate_items_in_view(inventory, state, inst)
             local entityname = entity.prefab
 
             -- handle resource
-            if entity.components.pickable then
+            if entity.components.pickable and entity.components.pickable:CanBePicked() then
                entityname = entity.components.pickable.product -- so gather works
             end
 

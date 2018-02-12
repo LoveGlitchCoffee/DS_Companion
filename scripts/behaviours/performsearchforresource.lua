@@ -16,12 +16,13 @@ end)
 ---
 -- Checking method checks for product of pickable
 -- @return instant of reseource
-function PerformSearchForResource:CheckTarget()
+function PerformSearchForResource:CheckTarget()   
    return FindEntity(self.inst, SIGHT_DISTANCE, function(resource)
-      if resource.components.pickable then -- might want to change at some point
-         return resource.components.pickable.product == self.resource
-      else
-         return resource.prefab == self.resource
+      if resource.components.pickable 
+      and resource.components.pickable:CanBePicked() then -- might want to change at some point         
+         return resource.components.pickable.product == self.entity
+      else         
+         return resource.prefab == self.entity
       end
    end)
 end

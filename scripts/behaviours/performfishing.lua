@@ -13,21 +13,24 @@ PerformFishing = Class(BehaviourNode, function(self, inst)
    -- function for reeling in fish, actual progression of fishing
    self.reel = function (inst, data)
       local sn = data.statename
-      local fishingrodcomp = self:GetRod().components.fishingrod
+      local rod = self:GetRod()
+      if rod then
+         local fishingrodcomp = rod.components.fishingrod
 
-      if sn == "fishing_nibble" and not fishingrodcomp:HasHookedFish() then
-         -- fish nibbles
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
-         pAction:AddFailAction(function() self:OnFail() end)
-         self.action = pAction
-         inst.components.locomotor:PushAction(pAction, true)
+         if sn == "fishing_nibble" and not fishingrodcomp:HasHookedFish() then
+            -- fish nibbles
+            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
+            pAction:AddFailAction(function() self:OnFail() end)
+            self.action = pAction
+            inst.components.locomotor:PushAction(pAction, true)
 
-      elseif sn == "fishing_strain" and not fishingrodcomp.caughtfish then
-         -- fish hooked
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
-         pAction:AddFailAction(function() self:OnFail() end)
-         self.action = pAction
-         inst.components.locomotor:PushAction(pAction, true)
+         elseif sn == "fishing_strain" and not fishingrodcomp.caughtfish then
+            -- fish hooked
+            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
+            pAction:AddFailAction(function() self:OnFail() end)
+            self.action = pAction
+            inst.components.locomotor:PushAction(pAction, true)
+         end
       end
    end
 
