@@ -1,9 +1,10 @@
 require "generalutils/debugprint"
 require "generalutils/table_ops"
+require "brains/brainutils"
 
 local GAMMA = 0.5 -- learning rate
 local UPDATECOUNT = 0
-local UPDATE = 10 -- when to update matrices
+local UPDATE = 2 -- when to update matrices
 
 --- table contains all possible goals
 -- each goal has its own action matrix
@@ -24,6 +25,9 @@ local GOALNAMES = {
 
 --- Q and reward matrices for each goal
 local Q_MATRICES, R_MATRICES = {}, {}
+-- list containing action objects
+local A_LIST = {}
+local ALL_ACTIONS = nil
 
 ---
 -- populate the matrices, either Q or R, with the default value
@@ -70,11 +74,13 @@ end
 -- unpack a matrix into a list of values
 -- @param matrix matrix to unpack
 -- @return unpacked matrix as table
-local function unpackmatrix(matrix)
-	local unpacked = {}
-	for k,v in pairs(matrix) do
-		table.insert(unpacked, #unpacked+1, v)
-	end
+local function unpack_action_matrix(matrix, action)
+   local unpacked = {}
+   for next_action,v in pairs(matrix) do
+      if is_satisfykey(A_LIST[action]:PostEffect(), A_LIST[next_action]:Precondition()) then
+         table.insert(unpacked, #unpacked+1, v)
+      end
+   end
 	return unpacked
 end
 
@@ -87,25 +93,36 @@ end
 -- @see unpackmatrix
 local function updateallqmatrix()
 	info('UPDATE Q MATRIX')
-	for i=1,10 do
-	   for goalname,qmatrix in pairs(Q_MATRICES) do
-			for action, value in pairs(qmatrix) do
+	for goalname,qmatrix in pairs(Q_MATRICES) do
+		for action, value in pairs(qmatrix) do
+			local reward = R_MATRICES[goalname][action]
+         if reward then
+            error('reward '..tostring(reward))
+				info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
+            local nextqvalues = unpack_action_matrix(qmatrix, action)
+            if #nextqvalues > 0 then
+               error('learning val '..tostring((reward + math.max(unpack(nextqvalues)))))
+               qmatrix[action] = value + GAMMA * (reward + math.max(unpack(nextqvalues) - value))
+            end
+				error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
+	   	end
+	   end
+   end
 
-				local reward = R_MATRICES[goalname][action]
-				if reward and reward >= 0 then
-					info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
-               local qvalues = unpackmatrix(qmatrix)
-					qmatrix[action] = reward + GAMMA * math.max(unpack(qvalues))
-					info('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
-		   	end
-		   end
-      end
-	end
+   -- for goalname,qmatrix in pairs(Q_MATRICES) do
+   --    if goalname == 'KeepPlayerFull' then
+   --       error('for '..goalname)
+   --       for action, value in pairs(qmatrix) do
+   --          error('q-value for '..action..': '..tostring(value))
+   --       end
+   --    end
+   -- end
+   populatematrices(R_MATRICES, ALL_ACTIONS, nil)
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
-      error('for '..goalname)
       if goalname == 'KeepPlayerFull' then
+         error('for '..goalname)
          for action, value in pairs(qmatrix) do
             error('q-value for '..action..': '..tostring(value))
          end
@@ -118,7 +135,11 @@ end
 -- @param actions all possible actions
 -- @return
 function populateallmatrices(actions)
-   populatematrices(R_MATRICES, actions, -1) -- start off with terrible rewards for all
+   for i,action in ipairs(actions) do
+      A_LIST[action.name] = action -- by name safer than by object
+   end
+   ALL_ACTIONS = actions
+   populatematrices(R_MATRICES, actions, nil) -- start off with terrible rewards for all
 	populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
 end
 

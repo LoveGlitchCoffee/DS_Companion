@@ -44,16 +44,16 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
       if data.oldpercent > data.newpercent then
          -- losing health
          if changedegree > 0.2 then
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 5)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, -5)
          else
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, -10)
          end
       else
          -- gaining health
          if changedegree > 0.3 then
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 40)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 4)
          else
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 30)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 3)
          end
       end
    end
@@ -175,7 +175,10 @@ function ResponsiveGOAPNode:Visit()
                self.finish = true
                self.inst:PushEvent('failreasoning', {reason=self.plan[self.idx]:FailReason()})
                error("FAILED. REPLAN")
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 0)
+               for i=self.idx, #self.actionplan do
+                  -- all future action fails
+                  updaterewardmatrix(self.oldgoal.name, self.plan[i].name, -10)
+               end
                return
             end
 
@@ -185,13 +188,13 @@ function ResponsiveGOAPNode:Visit()
 
             -- update qlearner
             if self.idx <= #self.actionplan then
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 70)
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 7)
             end
          end
 
          error("FINISH Sequence")
          self.finish = true
-         updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 100) -- update for previous
+         updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 10) -- update for previous
       else
 
          error("No plan")
