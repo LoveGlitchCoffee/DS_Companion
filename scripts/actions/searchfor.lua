@@ -31,41 +31,6 @@ function SearchFor:PostEffect()
 end
 
 ---
--- Generate random point within the specified radius to go for searching.
--- Checks point is valid before returning.
--- Returns nil if no valid point found after 10 tried. Just class as fail.
--- @param startpos centre of circle
--- @param minradius minimum radius for point to be in from centre
--- @param maxradius maximum radius for point to be in from centre
--- @return vector3 point for search
-function SearchFor:GenerateRandomValidPointWithRadius(startpos, minradius, maxradius)
-   for i=1,10 do
-      local offsetx = math.random( minradius, maxradius)
-      local offsetz = math.random( minradius, maxradius)
-
-      -- to randomises if left/right or up/down
-      if math.random( 2 ) == 1 then
-         offsetx = offsetx * -1
-      end
-      if math.random(2) == 1 then
-         offsetz = offsetz * -1
-      end
-
-      local newx = startpos.x + offsetx
-      local newz = startpos.z + offsetz
-      local tile = GetWorld().Map:GetTileAtPoint(newx, startpos.y, newz)
-      if tile ~= GROUND.IMPASSABLE or tile ~= GROUND.INVALID then
-         local newpos = Vector3(newx, startpos.y, newz)
-         return newpos
-      else
-         info("not valid ground")
-      end
-   end
-   info("can't find valid ground")
-   return nil
-end
-
----
 -- Preceived Cost of searching for item at certain random point
 -- is the level of danger in that area
 -- @return preceived danger in area around search point
@@ -74,7 +39,7 @@ end
 function SearchFor:PreceivedCost()
 
    local currentPos = self.inst:GetPosition()
-   self.newPos = self:GenerateRandomValidPointWithRadius(currentPos, MIN_SEARCH_DIST, MAX_SEARCH_DIST)
+   self.newPos = GenerateRandomValidPointWithRadius(currentPos, MIN_SEARCH_DIST, MAX_SEARCH_DIST)
    if self.newPos then
       return CheckDangerLevel(self.newPos)
    end

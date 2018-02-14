@@ -156,6 +156,7 @@ function ResponsiveGOAPNode:Visit()
       -- announce goal if new one
       if newgoal:Announce() and replan then
          self.announcegoal = ClosureChattyNode(self.inst, {newgoal:Announce()}, 1)
+         self.inst.components.locomotor:Stop()
          return
       end
 

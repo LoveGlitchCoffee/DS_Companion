@@ -4,7 +4,7 @@ require "brains/brainutils"
 
 local GAMMA = 0.5 -- learning rate
 local UPDATECOUNT = 0
-local UPDATE = 2 -- when to update matrices
+local UPDATE = 5 -- when to update matrices
 
 --- table contains all possible goals
 -- each goal has its own action matrix
@@ -121,12 +121,12 @@ local function updateallqmatrix()
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
-      if goalname == 'KeepPlayerFull' then
-         error('for '..goalname)
-         for action, value in pairs(qmatrix) do
-            error('q-value for '..action..': '..tostring(value))
-         end
-      end
+      --if goalname == 'KeepPlayerFull' then
+      --   error('for '..goalname)
+      --   for action, value in pairs(qmatrix) do
+      --      error('q-value for '..action..': '..tostring(value))
+      --   end
+      --end
    end
 end
 

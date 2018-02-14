@@ -62,21 +62,23 @@ function FollowPlayerAction:Perform()
    local target_pos = Point(self.player.Transform:GetWorldPosition())
    local dist_sq = distsq(pos, target_pos)
 
-   warning('DISTANCE: '..tostring(dist_sq))
-   if dist_sq < FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST then
-      warning('WANDER')
+   error('DISTANCE: '..tostring(dist_sq))
+   if dist_sq <= FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST then
+      error('WANDER')
       -- very close to player
-      return ChattyNode(self.inst, {"WEATHER: HABITABLE", "", "",self.reason}, WalkRandomly(self.inst))
+      return ChattyNode(self.inst, {"WEATHER: HABITABLE", "", "",self.reason}, WalkRandomly(self.inst, self.player))
 
    elseif dist_sq > FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST
-   and dist_sq < FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
-      warning('follow slowly')
+   and dist_sq <= FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
+      error('follow slowly')
       -- close-ish but should follow
       return Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true) -- want to be walk but no anim
 
    elseif dist_sq > FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
-      warning('follow quickly')
+      error('follow quickly')
       -- far away so run
-      return ChattyNode(self.inst, {"OWNER, PLEASE WAIT"}, Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true))
+      return ChattyNode(self.inst, {"CREATOR, PLEASE WAIT"}, Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true))
+   else
+      error("STUCK")
    end
 end

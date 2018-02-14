@@ -44,7 +44,7 @@ function PerformSearchFor:SearchWithPoint()
    if self.status == READY then
       if self.newpos then
          -- timeout after 5 seconds because behaviour is bugging on valid point
-         self.timeout = GetTime() + 5
+         self.timeout = GetTime() + 7
          self.inst.components.locomotor:GoToPoint(self.newpos, nil, true)
          self.lasttime = GetTime()
 

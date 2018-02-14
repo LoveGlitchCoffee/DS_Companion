@@ -1,13 +1,22 @@
 require "generalutils/debugprint"
+require "generalutils/gameutils"
+require "generalutils/config"
 
 ---
 -- Custom behaviour that replaces default Wander behaviour when following player
 -- @param inst Instance to do the wandering
 -- @class WalkRandomly
-WalkRandomly = Class(BehaviourNode, function(self, inst)
+WalkRandomly = Class(BehaviourNode, function(self, inst, player)
    BehaviourNode._ctor(self, "WalkRandomly")
    self.inst = inst
-   self.waittime = 0
+   self.timeout = 0
+   self.player = player
+
+   self.inst.components.locomotor:SetReachDestinationCallback(
+      function()
+         error('reached')
+         self.status = SUCCESS
+      end)
 end)
 
 function WalkRandomly:OnFail()
@@ -18,27 +27,33 @@ function WalkRandomly:OnSucceed()
 end
 
 ---
--- Visit chooses a random angle to walk towards
--- also sets a timeout walking in that direction
+-- Visit chooses a random point within the targeted distance to player
+-- to walk to.
+-- also sets a timeout walking in that direction.
 -- Sleeps until timeout then stops locomoting
 function WalkRandomly:Visit()
    if self.status == READY then
-      local randomAngle = math.random() * 360 -- in degrees
-      self.waittime = GetTime() + 2
-      self.inst.components.locomotor:RunInDirection(randomAngle) -- can't do walk for now cuz no SG
+
+      self.timeout = GetTime() + 3
+      error('current pos '..tostring(self.inst:GetPosition()))
+      self.newpos = GenerateRandomValidPointWithRadius(self.player:GetPosition(), FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST)
+      error('got new pos fine '..tostring(self.newpos))      
       self.status = RUNNING
 
    elseif self.status == RUNNING then
       --error('time now: '..tostring(GetTime()))
-      --error('end time: '..tostring(self.waittime))
+      --error('end time: '..tostring(self.timeout))
 
-      if GetTime() > self.waittime then      
+      self.inst.components.locomotor:GoToPoint(self.newpos, nil, true) -- can't do walk for now cuz no SG
+         
+      if GetTime() > self.timeout then
          self.inst.components.locomotor:Stop()
+         error("STOPPING")
          -- could do a wait before succeed, look more natural
          self.status = SUCCESS
          return
       end
 
-      self:Sleep(self.waittime - GetTime()) -- sleep until timeout
+      self:Sleep(self.timeout - GetTime()) -- sleep until timeout
    end
 end
