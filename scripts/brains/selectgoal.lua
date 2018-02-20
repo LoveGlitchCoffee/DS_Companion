@@ -41,8 +41,9 @@ function get_weighted_goals(gwu_list)
       -- multiply the inverse current satisfaciton value of goal and weightage
       -- we multiply inverse because we usually want to satisfy goals that are less satisfied
       weighted_goals[i]["weighted_value"] = (1 - v.goal:Satisfaction()) * v.weight * v.goal:Urgency()
-      info('satisfaction for '..weighted_goals[i]["goal"].name..': '..tostring(v.goal:Satisfaction()))
-      info(string.format("%s: %s", weighted_goals[i]["goal"].name, weighted_goals[i]["weighted_value"]))
+      info('urgency for '..weighted_goals[i]["goal"].name..': '..tostring(v.goal:Urgency()))
+      info('satisfaction for '..weighted_goals[i]["goal"].name..': '..tostring(((1 - v.goal:Satisfaction()) * v.goal:Urgency())))
+      info(string.format("%s: %s\n", weighted_goals[i]["goal"].name, weighted_goals[i]["weighted_value"]))
 
       i = i + 1
    end

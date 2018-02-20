@@ -13,9 +13,9 @@ WalkRandomly = Class(BehaviourNode, function(self, inst, player)
    self.player = player
 
    self.inst.components.locomotor:SetReachDestinationCallback(
-      function()
-         error('reached')
-         self.status = SUCCESS
+      function()         
+         error("reached")
+         self.inst.components.locomotor:Stop()         
       end)
 end)
 
@@ -34,10 +34,10 @@ end
 function WalkRandomly:Visit()
    if self.status == READY then
 
-      self.timeout = GetTime() + 3
-      error('current pos '..tostring(self.inst:GetPosition()))
+      self.timeout = GetTime() + WAIT_TIME
+      -- error('current pos '..tostring(self.inst:GetPosition()))
       self.newpos = GenerateRandomValidPointWithRadius(self.player:GetPosition(), FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST)
-      error('got new pos fine '..tostring(self.newpos))      
+      -- error('got new pos fine '..tostring(self.newpos))      
       self.status = RUNNING
 
    elseif self.status == RUNNING then
@@ -47,9 +47,7 @@ function WalkRandomly:Visit()
       self.inst.components.locomotor:GoToPoint(self.newpos, nil, true) -- can't do walk for now cuz no SG
          
       if GetTime() > self.timeout then
-         self.inst.components.locomotor:Stop()
-         error("STOPPING")
-         -- could do a wait before succeed, look more natural
+         self.inst.components.locomotor:Stop()         
          self.status = SUCCESS
          return
       end

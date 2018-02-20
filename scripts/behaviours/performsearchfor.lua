@@ -24,6 +24,7 @@ PerformSearchFor = Class(BehaviourNode, function(self, inst, entity, period, new
             -- found something after searching
             self.status = SUCCESS
          else
+            error("failed to find "..tostring(self.entity))
             self.status = FAILED
          end
       end)

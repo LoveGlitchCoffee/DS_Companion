@@ -97,14 +97,14 @@ local function updateallqmatrix()
 		for action, value in pairs(qmatrix) do
 			local reward = R_MATRICES[goalname][action]
          if reward then
-            error('reward '..tostring(reward))
+            -- error('reward '..tostring(reward))
 				info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
             local nextqvalues = unpack_action_matrix(qmatrix, action)
             if #nextqvalues > 0 then
-               error('learning val '..tostring((reward + math.max(unpack(nextqvalues)))))
+               -- error('learning val '..tostring((reward + math.max(unpack(nextqvalues)))))
                qmatrix[action] = value + GAMMA * (reward + math.max(unpack(nextqvalues) - value))
             end
-				error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
+				-- error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
 	   	end
 	   end
    end

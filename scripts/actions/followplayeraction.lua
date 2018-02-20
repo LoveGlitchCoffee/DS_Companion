@@ -18,7 +18,7 @@ FollowPlayerAction = Class(Action, function (self, inst, player)
 
    -- whilst following player, can talk about previously failed action
    self.addreasontochatlines = function (inst, data)
-      error("GOT REASON "..tostring(data.reason))
+      info("GOT REASON "..tostring(data.reason))
       self.reason = data.reason
    end
 
@@ -62,23 +62,23 @@ function FollowPlayerAction:Perform()
    local target_pos = Point(self.player.Transform:GetWorldPosition())
    local dist_sq = distsq(pos, target_pos)
 
-   error('DISTANCE: '..tostring(dist_sq))
+   info('DISTANCE: '..tostring(dist_sq))
    if dist_sq <= FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST then
-      error('WANDER')
+      info('WANDER')
       -- very close to player
       return ChattyNode(self.inst, {"WEATHER: HABITABLE", "", "",self.reason}, WalkRandomly(self.inst, self.player))
 
    elseif dist_sq > FOLLOW_TARGET_DIST * FOLLOW_TARGET_DIST
    and dist_sq <= FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
-      error('follow slowly')
+      info('follow slowly')
       -- close-ish but should follow
       return Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true) -- want to be walk but no anim
 
    elseif dist_sq > FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH then
-      error('follow quickly')
+      info('follow quickly')
       -- far away so run
       return ChattyNode(self.inst, {"CREATOR, PLEASE WAIT"}, Follow(self.inst, self.player, FOLLOW_CLOSE_DIST, FOLLOW_TARGET_DIST, FOLLOW_FAR_DIST, true))
    else
-      error("STUCK")
+      info("STUCK")
    end
 end

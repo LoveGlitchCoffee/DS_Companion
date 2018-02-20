@@ -28,7 +28,7 @@ function FollowPlayer:Satisfaction()
    local dist_sq = distsq(pos, target_pos)
 
    -- closer we are the more satisfied we are
-   local satisfaction = 1 - (dist_sq / (FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH * INDEPENDENCE_SCALE))
+   local satisfaction = 1 - (dist_sq / (FOLLOW_OUT_OF_REACH * FOLLOW_OUT_OF_REACH * INDEPENDENCE_SCALE))   
    if satisfaction < 0 then -- super far away
       return 0 -- no satisfaction
    end
