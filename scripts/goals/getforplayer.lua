@@ -12,14 +12,23 @@ GetForPlayer = Class(Goal, function(self, inst, item)
    self.item = item
    self.urgency = GET_FOR_PLAYER_U
    self.cur_time = GetTime()
+   self.unlocked = false
 
+   self.unlockSelf = function (inst, data)
+      if data.goal == self then         
+         self.unlocked = true
+      end
+   end
    -- callback function to update the urgency value of goal
    self.updateUrgency = function(inst, data)
+      if not self.unlocked then
+         return
+      end
       -- update after certain amount of time has passed
       if GetTime() - self.cur_time > GET_FOR_PLAYER_TIME_THRES then
          self.urgency = self.urgency - GET_FOR_PLAYER_U_DECREASE -- decrease urgency
          self.cur_time = GetTime()
-         info('updating urgency '..tostring(self.urgency))
+         info('updating urgency '..tostring(self.urgency)..' of '..self.name)
          if self.urgency <= 0 then
             -- drop it if not urgent anymore
             self.inst:PushEvent('dropgoal', {goalname=self.name})
@@ -30,12 +39,12 @@ GetForPlayer = Class(Goal, function(self, inst, item)
 
    -- callback to drop all callbacks if this goal was dropped
    self.dropSelf = function (inst, data)
-      if data.goalname == self.name then
-         self.inst:RemoveEventCallback('clocktick', self.updateUrgency)
-         self.inst:RemoveEventCallback('dropgoal', self.dropSelf)
+      if data.goalname == self.name then         
+         self.unlocked = false
       end
    end
 
+   self.inst:ListenForEvent('insertgoal', self.unlockSelf)
    self.inst:ListenForEvent('clocktick', self.updateUrgency)
    self.inst:ListenForEvent('dropgoal', self.dropSelf) -- self callback event
    -- need to tell player its lost interest (maybe in debug for now)

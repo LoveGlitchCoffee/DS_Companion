@@ -19,14 +19,14 @@ PerformFishing = Class(BehaviourNode, function(self, inst)
 
          if sn == "fishing_nibble" and not fishingrodcomp:HasHookedFish() then
             -- fish nibbles
-            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
+            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_REEL_DIST)
             pAction:AddFailAction(function() self:OnFail() end)
             self.action = pAction
             inst.components.locomotor:PushAction(pAction, true)
 
          elseif sn == "fishing_strain" and not fishingrodcomp.caughtfish then
             -- fish hooked
-            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_DIST)
+            local pAction = BufferedAction(self.inst, self.target, ACTIONS.REEL, self:GetRod(), nil, nil, FISHING_REEL_DIST)
             pAction:AddFailAction(function() self:OnFail() end)
             self.action = pAction
             inst.components.locomotor:PushAction(pAction, true)
@@ -82,7 +82,7 @@ function PerformFishing:Visit()
       self.target = GetClosestInstOf('pond', self.inst, SIGHT_DISTANCE) -- only fish in pond
 
       if self.target then
-         local pAction = BufferedAction(self.inst, self.target, ACTIONS.FISH, self:GetRod(), nil, nil, DEFAULT_DISTANCE)
+         local pAction = BufferedAction(self.inst, self.target, ACTIONS.FISH, self:GetRod(), nil, nil, FISHING_DIST)
          pAction:AddFailAction(function() self:OnFail() end)
          self.action = pAction
          self.pendingstatus = nil

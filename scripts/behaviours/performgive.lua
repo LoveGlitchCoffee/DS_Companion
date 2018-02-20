@@ -21,8 +21,7 @@ end
 -- Kinda wrong, should fix
 function PerformGive:OnSucceed()
    error('\nsuccesffuly gave\n')
-   self.pendingstatus = SUCCESS   
-   self.inst:PushEvent('dropgoal', {goalname=('GetForPlayer'..self.item)})
+   self.pendingstatus = SUCCESS     
 end
 
 ---
