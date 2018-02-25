@@ -95,7 +95,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
    reset_all_tables(all_actions)
    local pending_actions = Peaque:new()
    local goalstate = goal:GetGoalState()
-   -- local goalstate = {seen_fish=true} -- for testing
+   --local goalstate = {seen_fish=true} -- for testing
    local valid_actions = generate_valid_actions(all_actions, goalstate)
    local goal_set = Set.new(goalstate)
 

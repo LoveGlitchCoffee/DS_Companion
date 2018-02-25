@@ -37,7 +37,8 @@ function SpawnSmartCompanion(player)
       --companion:RemoveComponent('hunger') -- don't die
       companion:AddComponent('gatherminion')
       companion:AddComponent('inspectable')
-      companion:AddComponent('clock')      
+      companion:AddComponent('clock')
+      companion:AddComponent('qlearnersave')      
       --companion:SetStateGraph('SGperdcompanion')
       --companion:RemoveTag('player')
       --companion:RemoveComponent

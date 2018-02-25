@@ -121,12 +121,12 @@ local function updateallqmatrix()
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
-      -- if goalname == 'KeepPlayerFull' then
-      --    error('for '..goalname)
-      --    for action, value in pairs(qmatrix) do
-      --       error('q-value for '..action..': '..tostring(value))
-      --    end
-      -- end
+       if goalname == 'KeepPlayerFull' then
+          error('for '..goalname)
+          for action, value in pairs(qmatrix) do
+             error('q-value for '..action..': '..tostring(value))
+          end
+       end
    end
 end
 
@@ -140,7 +140,9 @@ function populateallmatrices(actions)
    end
    ALL_ACTIONS = actions
    populatematrices(R_MATRICES, actions, nil) -- start off with terrible rewards for all
-	populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
+   if next(Q_MATRICES) == nil then
+      populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
+   end
 end
 
 ---
