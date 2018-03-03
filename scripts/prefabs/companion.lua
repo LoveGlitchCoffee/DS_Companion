@@ -115,6 +115,8 @@ local function fn()
    anim:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")
    anim:OverrideSymbol("shadow_hands", "shadow_hands", "shadow_hands")   
 
+   inst.soundsname = "wx78"
+
    inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
    inst.components.locomotor:SetSlowMultiplier(0.6)
    --inst.components.locomotor.pathcaps = {player = true, ignorecreep = true} -- 'player' cap not actually used, just useful for testing
