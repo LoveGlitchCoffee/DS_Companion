@@ -142,7 +142,7 @@ function ResponsiveGOAPNode:Visit()
                child:Reset()
             end
          end
-
+         
          -- new plan
          self.plan = planactions(self.inst, newgoal)
          print('.\n')

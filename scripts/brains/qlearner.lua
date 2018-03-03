@@ -16,11 +16,11 @@ local GOALNAMES = {
 	'GetForPlayertwigs',
 	'GetForPlayercutgrass',
 	'GetForPlayerrocks',
-	'GetForPlayercarrot',
-	'GetForPlayerberries',
+	'GetForPlayercarrot',	
 	'GetForPlayersilk',
 	'GetForPlayergoldnugget',
-	'GetForPlayerflint'
+   'GetForPlayerflint',
+   'GetForPlayerseeds'
 }
 
 --- Q and reward matrices for each goal
@@ -122,12 +122,12 @@ local function updateallqmatrix()
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
-       if goalname == 'KeepPlayerFull' then
-          error('for '..goalname)
-          for action, value in pairs(qmatrix) do
-             error('q-value for '..action..': '..tostring(value))
-          end
-       end
+       -- if goalname == 'KeepPlayerFull' then
+       --    error('for '..goalname)
+       --    for action, value in pairs(qmatrix) do
+       --       error('q-value for '..action..': '..tostring(value))
+       --    end
+       -- end
    end
 end
 

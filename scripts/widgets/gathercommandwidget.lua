@@ -44,7 +44,7 @@ local resource = {
    'twigs',
    'log',
    'carrot',
-   'berries',
+   'seeds',
    'silk',
    'goldnugget'
 }

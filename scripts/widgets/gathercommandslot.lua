@@ -18,7 +18,7 @@ local GatherCommandSlot = Class(ItemSlot, function (self, atlas, bgim, owner, re
    self.owner = owner   
    self.item = resource   
    self.target = target
-   self.goal = GetForPlayer(self.target, self.item)
+   self.goal = GetForPlayer(self.target, self.item)   
    self.widget = commandwidget
 end)
 

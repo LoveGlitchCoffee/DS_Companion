@@ -10,8 +10,8 @@ require "generalutils/debugprint"
 -- @see GatherCommandSlot
 local GatherCommandTile = Class(Widget, function(self, resource)
    Widget._ctor(self, "GatherCommandTile")
-   self.image = self:AddChild(Image('images/inventoryimages.xml', resource..'.tex'))
    self.resource = resource
+   self.image = self:AddChild(Image('images/inventoryimages.xml', resource..'.tex'))   
 end)
 
 ---

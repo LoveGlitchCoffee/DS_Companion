@@ -331,4 +331,6 @@ local function fn()
    return inst
 end
 
+STRINGS.NAMES.COMPANION = "CX-88"
+
 return Prefab("common/companion", fn, assets, prefabs)
