@@ -43,11 +43,11 @@ PerformFishing = Class(BehaviourNode, function(self, inst)
 end)
 
 function PerformFishing:OnFail()
-   error('\nfail to fish\n')
+   info('\nfail to fish\n')
    self.pendingstatus = FAILED
 end
 function PerformFishing:OnSucceed()
-   error('\nsuccesffuly fished\n')
+   info('\nsuccesfully fished\n')
    self.status = SUCCESS
 end
 

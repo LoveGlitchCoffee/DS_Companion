@@ -12,7 +12,7 @@ PerformGive = Class(BehaviourNode, function(self, inst, item, target)
 end)
 
 function PerformGive:OnFail()
-   error('\nfail to give\n')
+   info('\nfail to give\n')
    self.pendingstatus = FAILED
 end
 
@@ -20,7 +20,7 @@ end
 -- On success, push event to drop goal of giving item to player
 -- Kinda wrong, should fix
 function PerformGive:OnSucceed()
-   error('\nsuccesffuly gave\n')
+   info('\nsuccesfully gave\n')
    self.pendingstatus = SUCCESS     
 end
 

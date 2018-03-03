@@ -100,10 +100,9 @@ end
 -- Success leads to executing next action in plan
 -- Fail leads to termination of current sequence of action for re-planning next iteration
 -- Whether success or failure, update q-learning with experience
-function ResponsiveGOAPNode:Visit()
-
+function ResponsiveGOAPNode:Visit()   
    -- Announce goal
-   if self.announcegoal then
+   if self.announcegoal then      
       self.announcegoal:Visit()
       if self.announcegoal.status == SUCCESS then
          self.announcegoal = nil
@@ -152,19 +151,18 @@ function ResponsiveGOAPNode:Visit()
          -- reset index
          self.idx = 1
       end
-
+      
       -- announce goal if new one
       if newgoal:Announce() and replan then
          self.status = RUNNING
          self.announcegoal = ClosureChattyNode(self.inst, {newgoal:Announce()}, 1)
-      --   self.inst.components.locomotor:Stop()
-          return
-      end
+         --   self.inst.components.locomotor:Stop()
+         return
+      end 
 
       -- same as Visit for SequenceNode
-      if self.actionplan then
-         while self.idx <= #self.actionplan do
-
+      if self.actionplan then         
+         while self.idx <= #self.actionplan do            
             local child = self.actionplan[self.idx]
             child:Visit()
             info("child: " .. tostring(child.name) .. ". status: " .. tostring(child.status))
@@ -194,15 +192,13 @@ function ResponsiveGOAPNode:Visit()
             end
          end
 
-         error("FINISH Sequence")
+         info("FINISH Sequence")
          self.finish = true
          updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 10) -- update for previous
       else
-
          error("No plan")
       end
-   else
-
+   else      
       if self.idx then
          local child = self.actionplan[self.idx]
          if child then

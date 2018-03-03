@@ -97,7 +97,7 @@ function GoalBasedBrain:OnStart()
 
    local root = ResponsiveGOAPNode(self.inst, .25, function ()
       return self.gwu_list
-   end)
+   end)   
    self.bt = BT(self.inst, root)
 end
 
