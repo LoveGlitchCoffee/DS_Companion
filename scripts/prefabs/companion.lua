@@ -143,11 +143,12 @@ local function fn()
 
    inst:AddComponent("hunger")
    inst.components.hunger:SetMax(TUNING.WILSON_HUNGER)
-   inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE)
-   inst.components.hunger:SetKillRate(TUNING.WILSON_HEALTH / TUNING.STARVE_KILL_TIME)
+   inst.components.hunger:SetRate(0)
+   inst.components.hunger:SetKillRate(0)
 
    inst:AddComponent("sanity")
    inst.components.sanity:SetMax(TUNING.WILSON_SANITY)
+   inst.components.sanity.ignore = true
    -- inst.components.sanity.onSane = OnSane
    -- inst.components.sanity.onInsane = OnInsane
 
