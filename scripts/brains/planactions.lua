@@ -34,6 +34,9 @@ function populate_actions(inst)
       Gather(inst, "flint"),
       Gather(inst, "silk"),
       Gather(inst, "seeds"),
+      Gather(inst, "log"),
+      Gather(inst, "rocks"),
+      Gather(inst, "goldnugget"),
       GatherFood(inst, "carrot"), -- special case
       GatherFood(inst, "berries"),
       GatherFood(inst, "meat"),
@@ -45,6 +48,9 @@ function populate_actions(inst)
       Give(inst, "silk", player),
       Give(inst, "seeds", player),
       Give(inst, "carrot", player),
+      Give(inst, "log", player),
+      Give(inst, "rocks", player),
+      Give(inst, "goldnugget", player),
       GiveFood(inst, "carrot", player),
       GiveFood(inst, "berries", player),
       GiveFood(inst, "meat", player),
@@ -53,7 +59,7 @@ function populate_actions(inst)
       SearchForResource(inst, "twigs"),
       SearchForResource(inst, "cutgrass"),
       SearchForResource(inst, "carrot"),
-      SearchForResource(inst, "berries"),      
+      SearchForResource(inst, "berries"),
       SearchFor(inst, "seeds"),
       SearchFor(inst, "pigman"),
       SearchFor(inst, "frog"),
@@ -62,6 +68,9 @@ function populate_actions(inst)
       SearchFor(inst, "silk"),
       SearchFor(inst, "spider"),
       SearchFor(inst, "pond"),
+      SearchFor(inst, "log"),
+      SearchFor(inst, "rocks"),
+      SearchFor(inst, "goldnugget"),
       -- SearchFor(inst, 'berries'), -- if on ground, may need to merge
       -- SearchFor(inst, 'carrot'),
       Build(inst, "trap"),
@@ -170,11 +179,11 @@ end
 
 ---
 -- generate the world state for planning
--- @param inst instance of character 
+-- @param inst instance of character
 -- @return the world state
 function generate_world_state(inst)
    local state = {}
-   local inventory = inst.components.inventory   
+   local inventory = inst.components.inventory
    generate_inv_state(inventory, state)
    generate_items_in_view(inventory, state, inst)
    return state
