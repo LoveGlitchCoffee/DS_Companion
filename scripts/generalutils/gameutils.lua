@@ -58,11 +58,12 @@ function CheckDangerLevel(centrept)
 
    for k, entity in pairs(ents) do
       -- if any is hostile then increase danger level
-      if entity:HasTag("hostile") or entity:HasTag("scarytoprey") then
+      if (entity:HasTag("hostile") or entity:HasTag("scarytoprey")) and not entity:HasTag("companion") and not entity:HasTag("player") then
+         error(tostring(entity))
          dangercounter = dangercounter + 3
       elseif entity:HasTag("fire") then
          -- if fire in area, increase danger level
-         if entity.prefab ~= "torch" or entity.prefab ~= "fire" then
+         if entity.prefab ~= "torch" or entity.prefab ~= "campfire" or entity.prefab ~= "firepit" then
             dangercounter = dangercounter + 5
          end
       end
