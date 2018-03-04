@@ -11,6 +11,7 @@ require "actions/followplayeraction"
 require "actions/givefood"
 require "actions/attack"
 require "actions/fishing"
+require "actions/stayput"
 
 require "goals/keepplayerfull"
 
@@ -28,6 +29,7 @@ function populate_actions(inst)
    ALL_ACTIONS = {
       -- need Give (food) as well if want command
       FollowPlayerAction(inst, player),
+      StayPut(inst),
       Gather(inst, "twigs"),
       Gather(inst, "cutgrass"),
       -- Gather(inst, "carrot"),

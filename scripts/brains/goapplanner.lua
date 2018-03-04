@@ -107,7 +107,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
       local precond_set = Set.new(a:Precondition())
       local posteff_set = Set.new(a:PostEffect())
       local node_state = goal_set - posteff_set + precond_set
-      local cost = 0 -- because immediate hits goals state (hoping peaque is smaller first)
+      local cost = a:PreceivedCost() -- because immediate hits goals state (hoping peaque is smaller first)
       local a_node = Node(a, cost, node_state)
       distance[a] = cost -- pass world state and goal to calc heuristic
       predecessor[a] = nil
@@ -166,7 +166,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                local cost = 0
                local qcost = getcost(goal.name, action.name)
                --printt(distance)
-               info('cost of '..action.name..':'..tostring(action:PreceivedCost()))
+               error('cost of '..action.name..':'..tostring(action:PreceivedCost()))
                cost = distance[node.next_action] + ((100-qcost) * repeats) + action:PreceivedCost()
                info('cost of action so far: '..tostring(distance[action]))
 

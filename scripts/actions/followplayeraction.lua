@@ -5,6 +5,7 @@ require "generalutils/debugprint"
 require "generalutils/table_ops"
 require "generalutils/config"
 require "behaviours/chattynode"
+require "generalutils/gameutils"
 
 ---
 -- STRIPS action for following player
@@ -44,8 +45,9 @@ end
 -- Could be improved with danger level around player,
 -- but current onyl action to satisfy that goal so no meaningful advantage.
 -- @return No cost
-function FollowPlayerAction:PreceivedCost()
-   return 0 -- only action to follow. this is goal adjustable
+function FollowPlayerAction:PreceivedCost()   
+   info("follow cost "..tostring(CheckDangerLevel(Point(self.player.Transform:GetWorldPosition()))))
+   return CheckDangerLevel(Point(self.player.Transform:GetWorldPosition())) -- only action to follow. this is goal adjustable
 end
 
 ---
