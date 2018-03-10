@@ -62,9 +62,9 @@ function CheckDangerLevel(centrept)
          error(tostring(entity))
          dangercounter = dangercounter + 3
       elseif entity:HasTag("fire") then
-         -- if fire in area, increase danger level
-         if entity.prefab ~= "torch" or entity.prefab ~= "campfire" or entity.prefab ~= "firepit" then
-            dangercounter = dangercounter + 5
+         -- if fire in area, increase danger level         
+         if entity.prefab ~= "torch" and entity.prefab ~= "campfire" and entity.prefab ~= "firepit" then
+            dangercounter = dangercounter + 5            
          end
       end
    end

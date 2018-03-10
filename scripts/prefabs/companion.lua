@@ -220,7 +220,7 @@ local function fn()
    local smart_brain = require "brains/goalbasedbrain"
    inst:SetBrain(smart_brain)   
    
-   inst.components.locomotor.runspeed = 5
+   inst.components.locomotor.runspeed = 6
    inst.components.locomotor.walkspeed = 3
    -- inst:RemoveComponent('sleeper')
 
