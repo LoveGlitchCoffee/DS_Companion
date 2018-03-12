@@ -122,12 +122,12 @@ local function updateallqmatrix()
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
-       -- if goalname == 'KeepPlayerFull' then
-       --    error('for '..goalname)
-       --    for action, value in pairs(qmatrix) do
-       --       error('q-value for '..action..': '..tostring(value))
-       --    end
-       -- end
+        if goalname == 'KeepPlayerFull' then
+           error('for '..goalname)
+           for action, value in pairs(qmatrix) do
+              error('q-value for '..action..': '..tostring(value))
+           end
+        end
    end
 end
 

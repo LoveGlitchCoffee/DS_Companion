@@ -7,9 +7,9 @@ require "generalutils/table_ops"
 local FOOD_COST = {
    carrot=1,
    berries=1,
-   meat=2,
-   froglegs=2,
-   fish=2
+   meat=1,
+   froglegs=1,
+   fish=1
 }
 
 ---

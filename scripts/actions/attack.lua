@@ -57,9 +57,9 @@ end
 -- @return the 'danger level'
 -- @see generalutils/gameutils.CheckDangerLevel
 function Attack:PreceivedCost()
-   local centrept = GetClosestInstOf(self.enemy, self.inst, ASSUME_DANGER_DIST)
-   if centrept then
-      return CheckDangerLevel(centrept)
+   local enemy = GetClosestInstOf(self.enemy, self.inst, ASSUME_DANGER_DIST)
+   if enemy then
+      return CheckDangerLevel(Point(enemy.Transform:GetWorldPosition()))
    end
    return 0
 end
