@@ -1,4 +1,4 @@
-name = "Companionship"
+name = "Companionship_DEV"
 description = [[Everyone needs companions!
 
 Gives you a robot companion (same model as wx78 so I can use his sprites hehe) that:
@@ -19,7 +19,7 @@ The idea of this mod was to give a companion kind of like in other games such as
 author = "ParityB1t"
 forumthread = ""
 
-version = "0.1"
+version = "0.2"
 api_version = 6
 
 dont_starve_compatible = true
