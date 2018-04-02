@@ -167,8 +167,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                local qcost = getcost(goal.name, action.name)
                --printt(distance)
                info('cost of '..action.name..':'..tostring(action:PreceivedCost()))
-               cost = distance[node.next_action] + ((100-qcost) * repeats) + action:PreceivedCost()
-               info('cost of action so far: '..tostring(distance[action]))
+               cost = distance[node.next_action] + ((100-qcost) * repeats) + action:PreceivedCost()               
 
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
                   local precond = Set.new(action:Precondition())
@@ -193,7 +192,8 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                      -- REMEMBER its the no of times, not actual test, cba to make it nice rn
                   end
 
-                  distance[next_node.next_action] = cost
+                  distance[action] = cost
+                  info('cost of action so far: '..tostring(distance[action]))
                   pending_actions:push(next_node, cost)
                end
             else

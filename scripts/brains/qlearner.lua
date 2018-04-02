@@ -2,7 +2,8 @@ require "generalutils/debugprint"
 require "generalutils/table_ops"
 require "brains/brainutils"
 
-local GAMMA = 0.5 -- learning rate
+local ALPHA = 0.9 -- learning rate
+local GAMMA = 0.1 -- discount rate
 local UPDATECOUNT = 0
 local UPDATE = 5 -- when to update matrices
 
@@ -79,6 +80,7 @@ local function unpack_action_matrix(matrix, action)
    local unpacked = {}
    for next_action,v in pairs(matrix) do
       if is_satisfykey(A_LIST[action]:PostEffect(), A_LIST[next_action]:Precondition()) then
+         error('next action '..next_action..' val '..tostring(v))
          table.insert(unpacked, #unpacked+1, v)
       end
    end
@@ -98,14 +100,15 @@ local function updateallqmatrix()
 		for action, value in pairs(qmatrix) do
 			local reward = R_MATRICES[goalname][action]
          if reward then
-            -- error('reward '..tostring(reward))
-				info('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
+            error('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
+            error('reward '..tostring(reward))				
             local nextqvalues = unpack_action_matrix(qmatrix, action)
             if #nextqvalues > 0 then
-               -- error('learning val '..tostring((reward + math.max(unpack(nextqvalues)))))
-               qmatrix[action] = value + GAMMA * (reward + math.max(unpack(nextqvalues) - value))
+               error('learning val gam '..tostring(GAMMA * math.max(unpack(nextqvalues))))
+               error('learning val '..tostring(reward + GAMMA * math.max(unpack(nextqvalues))))
+               qmatrix[action] = value + ALPHA * (reward + GAMMA * math.max(unpack(nextqvalues))) -- usually - value but start from 100
             end
-				-- error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
+				error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
 	   	end
 	   end
    end

@@ -43,17 +43,17 @@ ResponsiveGOAPNode = Class(BehaviourNode, function(self, inst, period, gwulistfn
 
       if data.oldpercent > data.newpercent then
          -- losing health
-         if changedegree > 0.2 then
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, -5)
-         else
+         if changedegree > 0.1 then
             updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, -10)
+         else
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, -20)
          end
       else
          -- gaining health
          if changedegree > 0.3 then
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 4)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 5)
          else
-            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 3)
+            updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)
          end
       end
    end
@@ -183,18 +183,21 @@ function ResponsiveGOAPNode:Visit()
             end
 
             -- if child succeeds
+
+            -- update qlearner            
+            if self.idx <= #self.actionplan then               
+               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 10)
+            end
+            
             info("child suceed, move on")
             self.idx = self.idx + 1
 
-            -- update qlearner
-            if self.idx <= #self.actionplan then
-               updaterewardmatrix(self.oldgoal.name, self.plan[self.idx].name, 7)
-            end
+            
          end
 
          info("FINISH Sequence")
          self.finish = true
-         updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 10) -- update for previous
+         --updaterewardmatrix(self.oldgoal.name, self.plan[self.idx - 1].name, 20) -- update for previous
       else
          error("No plan")
       end

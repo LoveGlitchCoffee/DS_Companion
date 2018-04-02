@@ -61,7 +61,7 @@ function Attack:PreceivedCost()
    if enemy then
       return CheckDangerLevel(Point(enemy.Transform:GetWorldPosition()))
    end
-   return 0
+   return 1 -- default attacking involves some danger
 end
 
 ---

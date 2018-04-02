@@ -65,7 +65,7 @@ function populate_actions(inst)
       SearchFor(inst, "seeds"),
       SearchFor(inst, "pigman"),
       SearchFor(inst, "frog"),
-      SearchFor(inst, "meat"),
+      --SearchFor(inst, "meat"),
       SearchFor(inst, "flint"),
       SearchFor(inst, "silk"),
       SearchFor(inst, "spider"),
@@ -170,9 +170,13 @@ function generate_items_in_view(inventory, state, inst)
             if entity.inlimbo then
                info("item is part of inventory")
             else
-               local seenkey = ("seen_" .. entityname)
-               state[seenkey] = true
-               info(seenkey)
+               if entityname == nil or entityname == '' then
+                  error("WHAT THE FUK")
+               else
+                  local seenkey = ("seen_" .. entityname)
+                  state[seenkey] = true
+                  info(seenkey)                  
+               end
             end
          end
       end
