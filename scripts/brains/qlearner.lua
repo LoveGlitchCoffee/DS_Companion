@@ -2,8 +2,7 @@ require "generalutils/debugprint"
 require "generalutils/table_ops"
 require "brains/brainutils"
 
-local ALPHA = 0.9 -- learning rate
-local GAMMA = 0.1 -- discount rate
+local ALPHA = 0.1 -- learning rate
 local UPDATECOUNT = 0
 local UPDATE = 5 -- when to update matrices
 
@@ -99,14 +98,16 @@ local function updateallqmatrix()
 	for goalname,qmatrix in pairs(Q_MATRICES) do
 		for action, value in pairs(qmatrix) do
 			local reward = R_MATRICES[goalname][action]
-         if reward then
+         if reward ~= 0 then
             error('q-matrix value before of '..action..': '..tostring(qmatrix[action]))
             error('reward '..tostring(reward))				
             local nextqvalues = unpack_action_matrix(qmatrix, action)
             if #nextqvalues > 0 then
-               error('learning val gam '..tostring(GAMMA * math.max(unpack(nextqvalues))))
-               error('learning val '..tostring(reward + GAMMA * math.max(unpack(nextqvalues))))
-               qmatrix[action] = value + ALPHA * (reward + GAMMA * math.max(unpack(nextqvalues))) -- usually - value but start from 100
+               --error('learning val gam '..tostring(GAMMA * math.max(unpack(nextqvalues))))
+               --error('learning val '..tostring(reward + GAMMA * math.max(unpack(nextqvalues))))
+               qmatrix[action] = value + ALPHA * (reward + math.max(unpack(nextqvalues)) - value) -- usually - value but start from 100
+            else               
+               qmatrix[action] = value + ALPHA * reward
             end
 				error('q-matrix value after of '..action..': '..tostring(qmatrix[action]))
 	   	end
@@ -121,7 +122,7 @@ local function updateallqmatrix()
    --       end
    --    end
    -- end
-   populatematrices(R_MATRICES, ALL_ACTIONS, nil)
+   populatematrices(R_MATRICES, ALL_ACTIONS, 0)
 
 	for goalname,qmatrix in pairs(Q_MATRICES) do
       normalise(qmatrix)
@@ -143,7 +144,7 @@ function populateallmatrices(actions)
       A_LIST[action.name] = action -- by name safer than by object
    end
    ALL_ACTIONS = actions
-   populatematrices(R_MATRICES, actions, nil) -- start off with terrible rewards for all
+   populatematrices(R_MATRICES, actions, 0) -- start off with terrible rewards for all
    if next(Q_MATRICES) == nil then
       error("POPULATING")
       populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
@@ -158,7 +159,7 @@ end
 -- @param value new reward value
 function updaterewardmatrix(goalname, actionname, value)
    local gmatrix = R_MATRICES[goalname]
-	gmatrix[actionname] = value
+	gmatrix[actionname] = gmatrix[actionname] + value
 	info('new value for transition '..actionname..' : '..tostring(value))
 
 	if UPDATECOUNT == UPDATE then

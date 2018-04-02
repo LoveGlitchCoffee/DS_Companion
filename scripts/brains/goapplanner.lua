@@ -167,7 +167,7 @@ function goap_backward_plan_action(world_state, goal, all_actions)
                local qcost = getcost(goal.name, action.name)
                --printt(distance)
                info('cost of '..action.name..':'..tostring(action:PreceivedCost()))
-               cost = distance[node.next_action] + ((100-qcost) * repeats) + action:PreceivedCost()               
+               cost = distance[node.next_action] + (((100-qcost) + action:PreceivedCost()) * repeats)
 
                if cost < distance[action] or not pending_actions:is_exist(action)  then -- pending_actions already - node
                   local precond = Set.new(action:Precondition())
