@@ -3,7 +3,6 @@ require "generalutils/debugprint"
 
 local QLearnerSave = Class(function(self, inst)
    self.inst = inst
-   error("ADDED Q LEARNER SAVE")
 end)
 
 function QLearnerSave:OnSave()

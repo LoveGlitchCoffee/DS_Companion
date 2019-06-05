@@ -1,4 +1,5 @@
 require "brains/qlearner"
+require "generalutils/gameutils"
 
 local font = TALKINGFONT
 local fontsize = 28
@@ -72,7 +73,7 @@ local prefabs = {
    "mining_fx"
 }
 
-local function fn()  
+local function fn()
    
    local inst = CreateEntity()
    inst.entity:SetCanSleep(false)
@@ -185,6 +186,12 @@ local function fn()
    inst:AddComponent("frostybreather")
    inst:AddComponent("age")
 
+   inst.AddComponent("bundler")
+
+   inst.AddComponent("rider")
+   inst.AddComponent("pinnable")
+   inst.AddComponent("vision")
+
    inst:AddComponent("gatherminion")
    inst:AddComponent("inspectable")
    inst:AddComponent("clock")
@@ -227,7 +234,9 @@ local function fn()
    inst:AddInherentAction(ACTIONS.PICK)
    inst:AddInherentAction(ACTIONS.SLEEPIN)      
 
-   inst:SetStateGraph("SGwilson")   
+   error("fine to here")   
+   inst:SetStateGraph("SGwilson")
+   error("creating companion")
 
    inst:ListenForEvent(
       "startfiredamage",
@@ -257,7 +266,7 @@ local function fn()
       function(it, data)
          if data.slot then
             Print(VERBOSITY.DEBUG, "gotnewitem: [" .. data.item.prefab .. "]")
-            inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
+            -- inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
          end
       end
    )   
@@ -292,7 +301,7 @@ local function fn()
       "builditem",
       function(it, data)
          -- Print(VERBOSITY.DEBUG, "builditem: [" .. data.item.prefab .. "]")
-         inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
+         -- inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
       end
    )
 
@@ -300,7 +309,7 @@ local function fn()
       "buildstructure",
       function(it, data)
          -- Print(VERBOSITY.DEBUG, "buildstructure: [" .. data.item.prefab .. "]")
-         inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
+         -- inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_newitem")
       end
    )
 
@@ -336,4 +345,4 @@ end
 
 STRINGS.NAMES.COMPANION = "CX-88"
 
-return Prefab("common/companion", fn, assets, prefabs)
+return Prefab("companion", fn, assets, prefabs)

@@ -8,12 +8,12 @@ local Vector3 = GLOBAL.Vector3
 local ACTIONS = GLOBAL.ACTIONS
 local STRINGS = GLOBAL.STRINGS
 local COLLISION = GLOBAL.COLLISION
--- local GetPlayer = GLOBAL.GetPlayer
+--- local GetPlayer = GLOBAL.GetPlayer
 
 -- set Gathering ----------------------------------------
 STRINGS.ACTIONS.GATHERCOMMAND = "Command"
 
-ACTIONS.GATHERCOMMAND = GLOBAL.Action(-1, true)
+ACTIONS.GATHERCOMMAND = GLOBAL.Action({},-1, true)
 ACTIONS.GATHERCOMMAND.fn = function(act)
    local targ = act.target
    if act.doer.HUD and targ.components.gatherminion then

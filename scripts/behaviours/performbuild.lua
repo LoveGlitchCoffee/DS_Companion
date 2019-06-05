@@ -16,6 +16,14 @@ end)
 function PerformBuild:OnStop()
 end
 
+function PerformBuild:OnSucceed()
+   
+end
+
+function PerformBuild:OnFail()
+
+end
+
 ---
 -- Check if can build item from what is available in inventory
 -- @param recname name of item to get recipe for
@@ -62,10 +70,27 @@ function PerformBuild:Visit()
    -- currently instantaneous
 
    if self.status == READY then
+
       self.inst.components.locomotor:Stop()
       local recipe = GetRecipe(self.item)
       -- local buffered = self:IsBuildBuffered(recname)
       if recipe and self:CanBuild(self.item) then
+      --- adding animation
+         local pAction = BufferedAction(self.inst, target, ACTIONS.BUILD) -- can't do this. as calls player doBuild
+         -- need to find a different way of invoking animation
+         pAction:AddFailAction(function() self:OnFail() end)
+         pAction:AddSuccessAction(function() self:OnSucceed() end)
+         self.action = pAction
+         self.pendingstatus = nil
+         self.inst.components.locomotor:PushAction(pAction, true)
+         self.status = RUNNING
+      else
+         info('Cannot find recipe for '..self.item..'or dont have resource for it')
+         self.status = FAILED
+      end   
+   elseif self.status == RUNNING then
+      -----
+      
          self:RemoveIngredients(self.item)
 
          local prod = SpawnPrefab(recipe.product)
@@ -125,10 +150,6 @@ function PerformBuild:Visit()
 
                self.status = SUCCESS
             end
-         end
-      else
-         info('Cannot find recipe for '..self.item..'or dont have resource for it')
-         self.status = FAILED
-      end
+         end      
    end
 end

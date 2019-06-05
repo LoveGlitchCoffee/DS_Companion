@@ -146,7 +146,6 @@ function populateallmatrices(actions)
    ALL_ACTIONS = actions
    populatematrices(R_MATRICES, actions, 0) -- start off with terrible rewards for all
    if next(Q_MATRICES) == nil then
-      error("POPULATING")
       populatematrices(Q_MATRICES, actions, 100) --start off naively taking any action, assuming they all are good. only works this way cuz how A* works
    end
 end
